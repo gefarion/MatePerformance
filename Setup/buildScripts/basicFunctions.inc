@@ -95,7 +95,6 @@ function checkout() {
     fi
     if [ $# -eq 3 ]
     then
-      echo "$#"
       INFO Cloning git repository from $3
       git clone -b $3 --depth=1 $2 $1
       pushd $1
