@@ -8,7 +8,7 @@ then
     source $BUILDSCRIPTS/basicFunctions.inc
     source $BUILDSCRIPTS/config.inc
 else
-    MOSTAZA_ROOT_PATH='Documents/Writings/Research/optimizing-reflective-execution-environments/Experiments/Setup/'
+    MOSTAZA_ROOT_PATH='Documents/Writings/Research/optimizing-reflective-execution-environments/Experiments/Setup'
     MOSTAZA_DATA_PATH=$MOSTAZA_ROOT_PATH/../Data
 fi
 
@@ -35,9 +35,10 @@ then
     then
         ssh gchari@zorzal.dc.uba.ar 'bash -s' < $SCRIPT_PATH/$0 "guido@mostaza.cuartos.inv.dc.uba.ar"
         scp "gchari@zorzal.dc.uba.ar:$name" $DATA_DIR/
+        ssh gchari@zorzal.dc.uba.ar "bash rm $name"
     else
         ssh "$1" "bash $MOSTAZA_ROOT_PATH/update-data.sh"
-        scp "$1:$MOSTAZA_DATA_PATH/name" .
+        scp "$1:$MOSTAZA_DATA_PATH/$name" .
     fi    
 else
     prepare_data
