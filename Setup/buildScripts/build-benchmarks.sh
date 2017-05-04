@@ -11,6 +11,6 @@ then
 else
   checkout $ROOT_PATH "https://github.com/smarr/are-we-fast-yet.git" "master" "benchmarks"
   checkout "$BENCHMARKS_DIR/Mate" "https://github.com/charig/som.git" "reflectiveCompiler" "Examples/Benchmarks/*;Smalltalk/*" 
-  #$SCRIPT_PATH/makeBenchmarks.sh
+  $SCRIPT_PATH/makeBenchmarks.sh
 fi
 OK TruffleMATE Build Completed.
