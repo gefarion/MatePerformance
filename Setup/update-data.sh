@@ -17,9 +17,11 @@ name="experiments$date.tar.gz"
 
 prepare_data() {
     INFO Moving data from $ROOT_PATH to $DATA_DIR
+    pushd $SCRIPT_PATH
     for file in *.data; do
         mv "$file" "$DATA_DIR/$file"
     done
+    popd > /dev/null
     pushd $DATA_DIR
     INFO Compressing data into $name
     tar -czvf $name *.data
