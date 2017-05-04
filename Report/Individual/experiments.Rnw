@@ -1,0 +1,94 @@
+<<IndividualMateoperationsPerformance, echo=FALSE, message=FALSE>>=
+knitr::opts_chunk$set(fig.width=10, fig.height=5, fig.path='',
+                      echo=FALSE, warning=FALSE, message=FALSE, results="asis", cache=FALSE)
+
+mop <- getFilteredData("../../Data/individualActivations.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), vmNamesMap(), iterationsAndInliningFilename, iterationsAndInliningCols, numberOfIterationsPerBenchmarks)
+
+allOperations <- droplevels(subset(mop, (
+				(Suite == "mop-operations-steady" & Benchmark != "VMReflectiveFieldRead" & Benchmark != "VMReflectiveFieldWrite"))))
+
+duplicatedOps <- droplevels(subset(mop, Benchmark == "FieldRead" | Benchmark == "SeveralObjectsFieldRead" | Benchmark == "SeveralObjectsFieldRead2" | Benchmark == "FieldWrite" | Benchmark == "MessageSend"))
+
+duplicatedOps <- change_names(duplicatedOps, list("FieldRead" = "LayoutFieldRead", "SeveralObjectsFieldRead" = "SeveralObjectsFieldReadOneMO", "SeveralObjectsFieldRead2" = "SeveralObjectsFieldReadOneMO2", "FieldWrite"	= "LayoutFieldWrite", "MessageSend"	= "MethodActivation"), "Benchmark")
+
+allOperations <- rbind(allOperations, duplicatedOps)
+
+allOperations <- ddply(allOperations, ~ Benchmark + VM , transform, 
+	Var = grepl("Reflective", Benchmark),
+	Benchmark = gsub("VMReflective", "", Benchmark))
+
+allOperations$Benchmark <- factor(allOperations$Benchmark)
+
+allOperations <- droplevels(subset(allOperations, Benchmark != "VMReflectiveReturn"))
+
+allOperationsNormalized <- ddply(allOperations, ~ Benchmark + VM, transform,
+                   RuntimeRatio = Value / mean(Value[Var == FALSE]))
+
+name_map <- list(
+	"LayoutFieldRead"		 = "FieldRead",
+	"LayoutFieldWrite"	 = "FieldWrite",
+	"ArgumentRead"	     = "ArgRead",
+	"LocalVariableRead"	 = "LocalRead",
+	"LocalVariableWrite" = "LocalWrite",
+	"MessageSend"			   = "Send",
+	"MethodActivation" 	 = "Activation",
+	"AllOperations" 		 = "All",
+	"SeveralObjectsFieldRead" 	= "Mega2",
+	"SeveralObjectsFieldReadOneMO" 	= "Mono2",
+	"SeveralObjectsFieldRead2" 	= "Mega",
+	"SeveralObjectsFieldReadOneMO2" = "Mono"
+)
+
+
+allOperationsNormalized <- change_names(allOperationsNormalized, name_map, "Benchmark")
+
+mopNormalized <- droplevels(subset(
+    allOperationsNormalized, (Var == TRUE & Benchmark != "Mega" & Benchmark != "Mono" & Benchmark != "Mega2" & Benchmark != "Mono2")))
+
+megamorphicNormalized <- droplevels(subset(
+#    allOperationsNormalized, (Var == TRUE & (Benchmark == "Mono" | Benchmark == "Mega" | Benchmark == "Mono2" | Benchmark == "Mega2"))))
+    allOperationsNormalized, (Var == TRUE & (Benchmark == "Mono" | Benchmark == "Mega"))))
+
+
+summarizedMop <- summarizeData(mopNormalized)
+summarizedMega <- summarizeData(megamorphicNormalized)
+
+overallSummaryMop <- summarizeOverall(summarizedMop)
+overallSummaryMega <- summarizeOverall(summarizedMega)
+
+@
+\def\IndividualMOPPerfComparisonPlot{%
+<<perf-overview-mop>>=
+print(boxplot(mopNormalized, TRUE, "Run Time"))
+@
+}%
+
+\def\MegaMorphicPerfComparisonPlot{%
+<<perf-overview-mega>>=
+print(boxplot(megamorphicNormalized, TRUE, "Run Time"))
+@
+}%
+
+\def\MopTableSummary{%
+<<perf-summary-table-mop, echo=FALSE, results="asis", cache=FALSE>>=
+print(xtable(arrange(summarizedMop, Benchmark)))
+@
+}
+
+\def\MegamorphicTableSummary{%
+<<perf-summary-table-mega, echo=FALSE, results="asis", cache=FALSE>>=
+print(xtable(arrange(summarizedMega, Benchmark)))
+@
+}
+
+\def\MopTableOverall{%
+<<perf-mop-table-overall, echo=FALSE, results="asis", cache=FALSE>>=
+print(xtable(overallSummaryMop))
+@
+}
+
+\def\MegaTableOverall{%
+<<perf-mega-table-overall, echo=FALSE, results="asis", cache=FALSE>>=
+print(xtable(overallSummaryMega))
+@
+}

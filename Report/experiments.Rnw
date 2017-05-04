@@ -1,0 +1,23 @@
+<<performance, echo=FALSE, include=FALSE>>=
+if (Sys.getenv("RSTUDIO") == "1") { 
+  setwd("/Users/guidochari/Documents/Escritos/Research/optimizing-reflective-execution-environments/Experiments/Report") 
+  #setwd("/home/guido/Documents/Writings/Research/Towards Meta Optimization/Experiments/")
+}
+
+options(scipen = 5)
+
+source("../Scripts/libraries.R", chdir=TRUE, echo=FALSE)
+source("../Scripts/data-processing.R")
+source("../Scripts/plots.R")
+source("../Scripts/colors.R", chdir=TRUE, echo=FALSE)
+source("../Scripts/auxiliaryFunctions.R", chdir=TRUE)
+
+iterationsAndInliningFilename <- "../../Data/iterationsAndInlining.tsv"
+iterationsAndInliningCols <- c("Benchmark", "Iterations")
+numberOfIterationsPerBenchmarks <- 50
+
+@
+<<InherentPerformance, child='Inherent/experiments.Rnw', results='markup'>>=
+@
+<<IndividualMetaOperationsPerformance, child='Individual/experiments.Rnw', results='markup'>>=
+@

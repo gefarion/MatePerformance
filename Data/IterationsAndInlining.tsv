@@ -1,0 +1,59 @@
+	
+Bounce	210
+BubbleSort	210
+Dispatch	410
+Fannkuch	60
+Fibonacci	210
+FieldLoop	210
+IntegerLoop	210
+List	410
+Loop	210
+Permute	210
+Queens	210
+QuickSort	210
+Recurse	210
+Sieve	210
+Storage	210
+Sum	210
+Towers	400
+TreeSort	410
+WhileLoop	210
+	
+CD	800
+DeltaBlue	1200
+GraphSearch	700
+Havlak	800
+Json	700
+Mandelbrot	800
+NBody	700
+PageRank	1000
+Richards	700
+
+AllOperations	210
+ArgumentRead	210
+FieldRead	210
+FieldWrite	210
+MessageSend	210
+LocalVariableRead	210
+LocalVariableWrite	210
+SeveralObjectsFieldRead	210
+SeveralObjectsFieldRead2	210
+VMReflectiveAllOperations	210
+VMReflectiveArgumentRead	210
+VMReflectiveFieldRead	210
+VMReflectiveFieldWrite	210
+VMReflectiveMessageSend	210
+VMReflectiveMethodActivation	210
+VMReflectiveLayoutFieldRead	210
+VMReflectiveLayoutFieldWrite	210
+VMReflectiveLocalVariableRead	210
+VMReflectiveLocalVariableWrite	210
+VMReflectiveReturn	210
+VMReflectiveSeveralObjectsFieldReadOneMO	210
+VMReflectiveSeveralObjectsFieldReadOneMO2	210
+VMReflectiveSeveralObjectsFieldRead	210
+VMReflectiveSeveralObjectsFieldRead2	210
+
+
+
+
