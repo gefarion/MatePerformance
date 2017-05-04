@@ -87,25 +87,28 @@ function check_for_graalvm() {
 
 
 function checkout() {
-	if [[ (-z $4 && ! -d $1) || (! -z $4 && ! -d $1/$4) ]]
+	if [[ ! -d $1 || ! -d "$1/.git" ]]
   then
-    INFO Cloning git repository from $2
-    if [ -z $4 ]
+    if [ ! -d $1 ]
     then
-        git clone -b $3 --depth=1 $2 $1
-        pushd $1
-        load_submodule    	
-        popd > /dev/null
-    else
       mkdir $1
+    fi
+    if [ $# -eq 3 ]
+    then
+      echo "$#"
+      INFO Cloning git repository from $3
+      git clone -b $3 --depth=1 $2 $1
       pushd $1
-      if [ ! -x ".git" ]
-      then
-        git init
-      fi
+      load_submodule    	
+      popd > /dev/null
+    else
+      pushd $1
+      git init
       git config core.sparseCheckout true
       git remote add -f $(basename $2) $2
-      echo "$4/*" > .git/info/sparse-checkout    
+      for dir in $(echo $4 | tr ";" "\n"); do
+        echo "$dir" >> .git/info/sparse-checkout    
+      done  
       git pull --depth=1 $(basename $2) $3
       git checkout $3
       load_submodule
