@@ -8,6 +8,6 @@ export ROOT_PATH=$SCRIPT_PATH
 
 source $BUILDSCRIPTS/config.inc
 
-updateGitRepo $IMPLEMENTATIONS_PATH/TruffleMate/Standard
-updateGitRepo "$IMPLEMENTATIONS_PATH/TruffleMate/EnvironmentInObject"
-updateGitRepo $BENCHMARKS_DIR/Mate "som.git"
+update_git_repo $IMPLEMENTATIONS_PATH/TruffleMate/Standard
+update_git_repo "$IMPLEMENTATIONS_PATH/TruffleMate/EnvironmentInObject"
+update_git_repo $BENCHMARKS_DIR/Mate "som.git"

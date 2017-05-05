@@ -77,6 +77,10 @@ function check_for_node() {
   check_for "node" "Please see https://nodejs.org/en/download/" "$1"
 }
 
+function check_for_pypy() {
+  check_for "pypy" "https://pypy.org/download.html" "$1"
+}
+
 function check_for_graalvm() {
   if [ ! -x "$SCRIPT_PATH/graalvm/bin/javao" ]
   then
@@ -118,7 +122,7 @@ function checkout() {
   fi
 }
 
-function updateGitRepo() {
+function update_git_repo() {
   #default remote = origin
   if [ ! -z $2 ]
   then
@@ -146,3 +150,43 @@ function updateGitRepo() {
     OK done
   fi
 } 
+
+function find_and_link() {
+  dir=[${!1}]
+  INFO "$2 is still not linked, linking..." 
+  if [ -d $dir ]
+  then
+    app_dir=$1    
+  else
+    INFO "${1} env variable not set in config.inc, let's try the $2 directories in your os"
+    look_in_and_choose "$HOME" $2
+  fi
+  if [ ! -z $app_dir ]
+  then
+    INFO "Linking $2 to $1"
+    ln -s $app_dir $2    
+    OK done
+  else
+    WARN "$2 was not linked in $PWD, experiments will failed!"
+  fi
+  
+}
+
+function look_in_and_choose() {
+  #output=`find "$1" -d -iname $2`
+  output="/Users/guidochari/Documents/Projects/RTruffleMate/pypy/pypy /Users/guidochari/Documents/Projects/RTruffleMate/pypy /Users/guidochari/Library/Logs/Homebrew/pypy"
+  vars= IFS=' ' read -r -a options <<< "$output"
+  PS3='Please enter your choice: '
+  installed=`which $2`
+  select opt in "${options[@]}" "$installed" "Quit" 
+  do
+      if [ $opt = "Quit" ]
+      then
+        break;
+      else 
+        app_dir=$opt
+        break
+      fi
+  done
+}
+

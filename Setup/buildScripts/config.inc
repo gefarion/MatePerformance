@@ -26,6 +26,9 @@ GRAAL_JIT_FLAGS="-server -XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI -XX:+
 
 BENCHMARKS_DIR=$ROOT_PATH/benchmarks/
 
+#set pypy dir manually
+PYPY_DIR=""
+
 ## GraalVM Binary
 export GRAAL_VM_CMD=$IMPLEMENTATIONS_PATH/graalvm/bin/java
 export GRAAL_JS=$IMPLEMENTATIONS_PATH/graalvm/bin/node
@@ -64,4 +67,12 @@ function home_from_command() {
   HOME=`dirname $HOME`
   HOME=`dirname $HOME`
   HOME=`dirname $HOME`
+}
+
+pushd () {
+    command pushd "$@" > /dev/null
+}
+
+popd () {
+    command popd "$@" > /dev/null
 }

@@ -58,7 +58,8 @@ vmNamesMap <- function() {
                        "TruffleSOM-graal"  = "TruffleSOM",
                        "TruffleMate-graal" = "TruffleMate",
                        "TruffleSOM-graal-enterprise"  = "TruffleSOM",
-                       "TruffleMate-graal-enterprise" = "TruffleMate")
+                       "TruffleMate-graal-enterprise" = "TruffleMate",
+                       "TruffleMate-graal-enterprise-envInObj" = "TruffleMate-envInObj")
   #                       "TruffleSOM-graal-no-split" = "TruffleSOM.ns",
   #                       "SOMpp"                 = "SOM++")
   # Rename
