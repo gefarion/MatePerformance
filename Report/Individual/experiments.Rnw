@@ -13,6 +13,12 @@ duplicatedOps <- change_names(duplicatedOps, list("FieldRead" = "LayoutFieldRead
 
 allOperations <- rbind(allOperations, duplicatedOps)
 
+duplicatedOps <- droplevels(subset(mop, Benchmark == "FieldRead"))
+
+duplicatedOps <- change_names(duplicatedOps, list("FieldRead" = "Return"), "Benchmark")
+
+allOperations <- rbind(allOperations, duplicatedOps)
+
 allOperations <- ddply(allOperations, ~ Benchmark + VM , transform, 
 	Var = grepl("Reflective", Benchmark),
 	Benchmark = gsub("VMReflective", "", Benchmark))

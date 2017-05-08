@@ -17,7 +17,9 @@ iterationsAndInliningCols <- c("Benchmark", "Iterations")
 numberOfIterationsPerBenchmarks <- 50
 
 @
-<<InherentPerformance, child='Inherent/experiments.Rnw', results='markup'>>=
+<<InherentPerformance, child='Inherent/mate.Rnw', results='markup'>>=
+@
+<<InherentPerformance, child='Inherent/areWeFast.Rnw', results='markup'>>=
 @
 <<IndividualMetaOperationsPerformance, child='Individual/experiments.Rnw', results='markup'>>=
 @

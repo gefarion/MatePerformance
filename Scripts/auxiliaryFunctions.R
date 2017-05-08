@@ -97,7 +97,7 @@ selectIterationsAndInlining <- function(data, filename, rowNames, numberOfIterat
 
 boxplot <- function (data, axisYText, titleVertical) {
   p <- ggplot(data, aes(x = Benchmark, y = RuntimeRatio))
-  #  p <- p + facet_grid(~VM, labeller = label_parsed)
+  p <- p + facet_grid(~VM, labeller = label_parsed)
   p <- p + geom_hline(yintercept = 1, linetype = "dashed")
   p <- p + geom_boxplot(outlier.size = 0.9) + theme_simple()
   p <- p + scale_y_continuous(name=titleVertical) + 
