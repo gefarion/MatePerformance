@@ -141,9 +141,9 @@ function update_git_repo() {
     git pull $remote $branchname
     INFO Updating submodules
     load_submodule
-    INFO Compiling
-    if [ -f MAKEFILE ]
+    if [ -f Makefile ]
     then
+      INFO Compiling
       make clean; make
     fi
     popd > /dev/null
