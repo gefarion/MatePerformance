@@ -54,6 +54,9 @@ VMReflectiveSeveralObjectsFieldReadOneMO2	210
 VMReflectiveSeveralObjectsFieldRead	210
 VMReflectiveSeveralObjectsFieldRead2	210
 
+SumKeys	210
+DelegationProxiesSumKeys	210
+ReadonlySumKeys	210
 
 
 
