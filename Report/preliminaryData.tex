@@ -8,9 +8,25 @@
 
 \begin{document}
 
+\section{Baseline}
+
+\begin{figure}[ht]
+\begin{center}
+\LanguagesPerfComparisonPlot
+\end{center}
+\vspace*{-5pt}
+\caption{Execution times for the whole micro benchmarks}
+\label{fig:perf-overview}
+\end{figure}
+
+\LanguagesTableSummary
+
+\LanguagesTableOverall
+
+
 \section{Inherent}
 
-\begin{figure}
+\begin{figure}[ht]
 \begin{center}
 \MicroPerfComparisonPlot
 \end{center}
@@ -24,7 +40,7 @@
 \MicroTableOverall
 
 
-\begin{figure}
+\begin{figure}[ht]
 \begin{center}
 \MicroWithoutRecursivePerfComparisonPlot
 \end{center}
@@ -38,7 +54,7 @@
 \MicroWithoutRecursiveTableOverall
 
 
-\begin{figure}
+\begin{figure}[ht]
 \begin{center}
 \MacroPerfComparisonPlot
 \end{center}
@@ -73,5 +89,18 @@
 \MopTableOverall
 
 \MegaTableOverall
+
+\section{Readonly}
+\begin{figure}[ht]
+\begin{center}
+\ReadonlyPerfComparisonPlot
+\end{center}
+\vspace*{-5pt}
+\caption{Execution times for the readonly benchmarks}
+\label{fig:perf-overview}
+\end{figure}
+
+\ReadonlyTableSummary
+
 
 \end{document}

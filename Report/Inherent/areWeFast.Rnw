@@ -1,80 +1,41 @@
-<<InherentPerformance, echo=FALSE, message=FALSE>>=
+<<LanguagesPerformance, echo=FALSE, message=FALSE>>=
 knitr::opts_chunk$set(fig.width=10, fig.height=5, fig.path='',
                       echo=FALSE, warning=FALSE, message=FALSE, results="asis", cache=FALSE)
 
 steady <- getFilteredData("../../Data/areWeFast.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), vmNamesMap(), iterationsAndInliningFilename, iterationsAndInliningCols, numberOfIterationsPerBenchmarks)
 
-normalizedSteady <- normalizeData(steady, "Java", FALSE)
+normalizedSteady <- ddply(steady, ~ Benchmark, transform,
+                RuntimeRatio = Value / mean(Value[VM == "Java"]))
+normalizedSteady <- droplevels(subset(normalizedSteady, VM != "Java"))  
 
-summarizedSteady <- summarizeData(normalizedSteady)
+summarizedPerBench <- ddply(normalizedSteady, ~ VM + Benchmark, summarise,
+               RuntimeFactor = geometric.mean(RuntimeRatio),
+               sd            = sd(RuntimeRatio),
+               median        = median(RuntimeRatio))
 
-overallSummarySteady <- summarizeOverall(summarizedSteady)
+summarizedPerBenchAndVM <- ddply(summarizedPerBench, ~ VM, transform,
+    VMMean = geometric.mean(RuntimeFactor),
+    min = min(RuntimeFactor),
+    max = max(RuntimeFactor))
+
+summarizedOverall <- summarizeOverall(summarizedPerBenchAndVM)
+
+vm_colors <- brewer.pal(12, "Paired")  # to replace scale_fill_brewer(type = "qual", palette = "Paired")
+names(vm_colors) <- vmNamesMap()
+
 @
-\def\MicroPerfComparisonPlot{%
-<<perf-overview-micro>>=
-print(boxplot(normalizedMicro, TRUE, "Run Time"))
+\def\LanguagesPerfComparisonPlot{%
+<<languages-perf-overview>>=
+print(overview_box_plot(summarizedPerBenchAndVM))
 @
 }%
-\def\MicroWithoutRecursivePerfComparisonPlot{%
-<<perf-overview-micro-withoutRecursive>>=
-print(boxplot(normalizedMicroWithoutRecursive, TRUE, "Run Time"))
-@
-}%
-\def\MacroPerfComparisonPlot{%
-<<perf-overview-macro>>=
-print(boxplot(normalizedMacro, TRUE, "Run Time"))
-@
-}%
-\def\OverallPerfComparisonPlot{%
-<<perf-overview-overall>>=
-print(boxplot(normalizedSteady, TRUE, "Run Time"))
-@
-}%
-
-\def\MicroTableSummary{%
-<<perf-summary-table-micro, echo=FALSE, results="asis", cache=FALSE>>=
-print(xtable(arrange(summarizedMicro, Benchmark)))
+\def\LanguagesTableSummary{%
+<<languages-summary-table, echo=FALSE, results="asis", cache=FALSE>>=
+print(xtable(arrange(summarizedPerBenchAndVM, Benchmark)))
 @
 }
-
-\def\MicroWithoutRecursiveTableSummary{%
-<<perf-summary-table-micro-withoutRecursive, echo=FALSE, results="asis", cache=FALSE>>=
-print(xtable(arrange(summarizedMicroWithoutRecursive, Benchmark)))
-@
-}
-
-\def\MacroTableSummary{%
-<<perf-summary-table-macro, echo=FALSE, results="asis", cache=FALSE>>=
-print(xtable(arrange(summarizedMacro, Benchmark)))
-@
-}
-
-\def\OverallTableSummary{%
-<<perf-summary-table-overall, echo=FALSE, results="asis", cache=FALSE>>=
-print(xtable(arrange(summarizedSteady, Benchmark)))
-@
-}
-
-\def\MicroTableOverall{%
-<<perf-micro-table-overall, echo=FALSE, results="asis", cache=FALSE>>=
-print(xtable(overallSummaryMicro))
-@
-}
-
-\def\MicroWithoutRecursiveTableOverall{%
-<<perf-microWithoutRecursive-table-overall, echo=FALSE, results="asis", cache=FALSE>>=
-print(xtable(overallSummaryMicroWithoutRecursive))
-@
-}
-
-\def\MacroTableOverall{%
-<<perf-macro-table-overall, echo=FALSE, results="asis", cache=FALSE>>=
-print(xtable(overallSummaryMacro))
-@
-}
-
-\def\OverallTableOverall{%
-<<perf-overall-table-overall, echo=FALSE, results="asis", cache=FALSE>>=
-print(xtable(overallSummarySteady))
+\def\LanguagesTableOverall{%
+<<languages-overall-table, echo=FALSE, results="asis", cache=FALSE>>=
+print(xtable(summarizedOverall))
 @
 }

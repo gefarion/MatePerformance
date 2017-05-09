@@ -23,3 +23,5 @@ numberOfIterationsPerBenchmarks <- 50
 @
 <<IndividualMetaOperationsPerformance, child='Individual/experiments.Rnw', results='markup'>>=
 @
+<<ReadonlyPerformance, child='Readonly/experiments.Rnw', results='markup'>>=
+@
