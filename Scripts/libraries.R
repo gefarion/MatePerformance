@@ -14,6 +14,7 @@ load_and_install_if_necessary("psych")   # uses only geometric.mean
 load_and_install_if_necessary("tables")
 load_and_install_if_necessary("assertthat")
 load_and_install_if_necessary("ggrepel")   # make sure labels don't overlap
+load_and_install_if_necessary("RColorBrewer")   #Palette of colors for overview_language_boxplots
 load_and_install_if_necessary("knitr")
 load_and_install_if_necessary("xtable")
 
