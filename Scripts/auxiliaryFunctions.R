@@ -31,52 +31,6 @@ normalizeData <- function (dataset, normalizeTo, keepBaseline) {
   norm
 }
 
-summarizeMopOperations <- function (data, discriminator){
-  ### Individual MOP operations
-  stats <- summarizeData(data)
-  
-  #allOperations <- ddply(stats, ~ Benchmark , transform, 
-  #                       Var = grepl("VMReflective", Benchmark),
-  #                       Benchmark = gsub("VMReflective", "", Benchmark))
-  
-  #allOperations$Benchmark <- factor(allOperations$Benchmark)
-  
-  #standardOperations <- droplevels(subset(allOperations, Var == FALSE))
-  
-  name_map <- list(
-    "FieldRead"		= "LayoutFieldRead",
-    "FieldWrite"	= "LayoutFieldWrite",
-    "MessageSend"	= "MethodActivation"
-  )
-  
-  #levels(standardOperations$Benchmark) <- map_names(
-  #  levels(standardOperations$Benchmark),
-  #  name_map)
-  
-  #allOperations <- rbind(allOperations, standardOperations)
-  
-  #allOperationsNormalized <- ddply(allOperations, ~ Benchmark + VM, transform,
-  #                                 RuntimeRatio = Time.mean / Time.mean[Var == FALSE])
-  
-  name_map <- list(
-    "LayoutFieldRead"		= "Read",
-    "LayoutFieldWrite"		= "Write",
-    "MessageSend"			= "Send",
-    "MethodActivation" 		= "Activation",
-    "AllOperations" 		= "All",
-    "SeveralObjectsFieldRead" 	= "Mega2",
-    "SeveralObjectsFieldReadOneMO" 	= "Mono2",
-    "SeveralObjectsFieldRead2" 	= "Mega",
-    "SeveralObjectsFieldReadOneMO2" = "Mono"
-  )
-  
-  #levels(allOperationsNormalized$Benchmark) <- map_names(
-  #  levels(allOperationsNormalized$Benchmark),
-  #  name_map)
-  
-  stats
-}
-
 selectIterationsAndInlining <- function(data, filename, rowNames, numberOfIterations) {
   bench <- read.table(filename, sep="\t", header=FALSE, col.names=rowNames, fill=TRUE)
   resultSet <- data
@@ -112,4 +66,23 @@ boxplot <- function (data, axisYText, titleVertical) {
   #p <- p + coord_cartesian(ylim = c(scaleyLow, scaleyHigh))	
   #p <- p + ggtitle(titleHorizontal)	
   p
-}  
+}
+
+overview_box_plot <- function(stats) {
+  stats$VM <- reorder(stats$VM, X=-stats$VMMean)
+  
+  breaks <- levels(droplevels(stats)$VM)
+  col_values <- sapply(breaks, function(x) vm_colors[[x]])
+  
+  plot <- ggplot(stats, aes(x=VM, y=RuntimeFactor, fill = VM))
+  
+  plot <- plot +
+    geom_boxplot(outlier.size = 0.5) + #fill=get_color(5, 7)
+    theme_bw() + theme_simple(font_size = 12) +
+    theme(axis.text.x = element_text(angle= 90, vjust=0.5, hjust=1), legend.position="none", plot.title = element_text(hjust = 0.5), aspect.ratio=0.5) +
+    #scale_y_log10(breaks=c(1,2,3,10,20,30,50,100,200,300,500,1000)) + #limit=c(0,30), breaks=seq(0,100,5), expand = c(0,0)
+    #+ coord_flip()
+    ggtitle("Runtime Factor, normalized to Java (lower is better)") + xlab("") +
+    scale_fill_manual(values = col_values)
+  plot
+}
