@@ -19,7 +19,7 @@ numberOfIterationsPerBenchmarks <- 50
 @
 <<InherentPerformance, child='Inherent/mate.Rnw', results='markup'>>=
 @
-<<InherentPerformance, child='Inherent/areWeFast.Rnw', results='markup'>>=
+<<LanguagesPerformance, child='Inherent/areWeFast.Rnw', results='markup'>>=
 @
 <<IndividualMetaOperationsPerformance, child='Individual/experiments.Rnw', results='markup'>>=
 @

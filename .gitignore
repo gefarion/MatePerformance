@@ -178,3 +178,17 @@ TSWLatexianTemp*
 
 # KBibTeX
 *~[0-9]*
+
+# Data
+Data/*.data
+Data/*.tar.gz
+Setup/*.data
+
+# Reports
+Report/*.pdf
+
+# Implementations
+Setup/Implementations/RTruffleMate/*
+Setup/Implementations/TruffleMate/*
+Setup/Implementations/graalvm
+Setup/benchmarks/*
