@@ -1,0 +1,28 @@
+<<ReadonlyPerformance, echo=FALSE, message=FALSE>>=
+knitr::opts_chunk$set(fig.width=10, fig.height=5, fig.path='',
+                      echo=FALSE, warning=FALSE, message=FALSE, results="asis", cache=FALSE)
+
+steady <- getFilteredData("../../Data/readonly.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), vmNamesMap(), iterationsAndInliningFilename, iterationsAndInliningCols, numberOfIterationsPerBenchmarks)
+
+readonly <- droplevels(subset(steady, (VM == "TruffleMate" & (Benchmark == "DelegationProxiesSumKeys" | Benchmark == "ReadonlySumKeys"))))
+baseline <- droplevels(subset(steady, (Benchmark == "SumKeys" & VM == "TruffleMate")))
+
+baseline_mean <- mean(baseline$Value)
+
+readonlyNormalized <- ddply(readonly, ~ Benchmark, transform, RuntimeRatio = Value / baseline_mean)
+
+readonlyNormalized <- change_names(readonlyNormalized, list("DelegationProxiesSumKeys" = "Proxies", "ReadonlySumKeys" = "MOP"),"Benchmark")
+
+summarizedReadonly <- summarizeData(readonlyNormalized)
+@
+\def\ReadonlyPerfComparisonPlot{%
+<<perf-overview-readonly>>=
+print(boxplot(readonlyNormalized, TRUE, "Run Time"))
+@
+}%
+
+\def\ReadonlyTableSummary{%
+<<perf-summary-table-readonly, echo=FALSE, results="asis", cache=FALSE>>=
+print(xtable(arrange(summarizedReadonly, Benchmark)))
+@
+}
