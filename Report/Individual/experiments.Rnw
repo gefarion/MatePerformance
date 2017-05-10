@@ -77,19 +77,19 @@ print(boxplot(megamorphicNormalized, TRUE, "Run Time"))
 
 \def\MopTableSummary{%
 <<perf-summary-table-mop, echo=FALSE, results="asis", cache=FALSE>>=
-print(xtable(arrange(summarizedMop, Benchmark)))
+print(xtable(arrange(summarizedMop, Benchmark), c("Mop")))
 @
 }
 
 \def\MegamorphicTableSummary{%
 <<perf-summary-table-mega, echo=FALSE, results="asis", cache=FALSE>>=
-print(xtable(arrange(summarizedMega, Benchmark)))
+print(xtable(arrange(summarizedMega, Benchmark), c("Mop summary")))
 @
 }
 
 \def\MopTableOverall{%
 <<perf-mop-table-overall, echo=FALSE, results="asis", cache=FALSE>>=
-print(xtable(overallSummaryMop))
+print(xtable(overallSummaryMop, c("Mop Overall")))
 @
 }
 

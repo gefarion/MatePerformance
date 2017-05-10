@@ -23,6 +23,6 @@ print(boxplot(readonlyNormalized, TRUE, "Run Time"))
 
 \def\ReadonlyTableSummary{%
 <<perf-summary-table-readonly, echo=FALSE, results="asis", cache=FALSE>>=
-print(xtable(arrange(summarizedReadonly, Benchmark)))
+print(xtable(arrange(summarizedReadonly, Benchmark), c("Readonly")))
 @
 }

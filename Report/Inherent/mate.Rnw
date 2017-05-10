@@ -46,48 +46,48 @@ print(boxplot(normalizedSteady, TRUE, "Run Time"))
 
 \def\MicroTableSummary{%
 <<perf-summary-table-micro, echo=FALSE, results="asis", cache=FALSE>>=
-print(xtable(arrange(summarizedMicro, Benchmark)))
+print(xtable(arrange(summarizedMicro, Benchmark), c("Micro benchmarks summary")))
 @
 }
 
 \def\MicroWithoutRecursiveTableSummary{%
 <<perf-summary-table-micro-withoutRecursive, echo=FALSE, results="asis", cache=FALSE>>=
-print(xtable(arrange(summarizedMicroWithoutRecursive, Benchmark)))
+print(xtable(arrange(summarizedMicroWithoutRecursive, Benchmark), c("Micro benchmaks without recursive summary")))
 @
 }
 
 \def\MacroTableSummary{%
 <<perf-summary-table-macro, echo=FALSE, results="asis", cache=FALSE>>=
-print(xtable(arrange(summarizedMacro, Benchmark)))
+print(xtable(arrange(summarizedMacro, Benchmark), c("Macro benchmarks summary")))
 @
 }
 
 \def\OverallTableSummary{%
 <<perf-summary-table-overall, echo=FALSE, results="asis", cache=FALSE>>=
-print(xtable(arrange(summarizedSteady, Benchmark)))
+print(xtable(arrange(summarizedSteady, Benchmark), c("Whole benchs summary")))
 @
 }
 
 \def\MicroTableOverall{%
 <<perf-micro-table-overall, echo=FALSE, results="asis", cache=FALSE>>=
-print(xtable(overallSummaryMicro))
+print(xtable(overallSummaryMicro, c("Micro benchmarks overall")))
 @
 }
 
 \def\MicroWithoutRecursiveTableOverall{%
 <<perf-microWithoutRecursive-table-overall, echo=FALSE, results="asis", cache=FALSE>>=
-print(xtable(overallSummaryMicroWithoutRecursive))
+print(xtable(overallSummaryMicroWithoutRecursive, c("Micro benchmarks without recursive overall")))
 @
 }
 
 \def\MacroTableOverall{%
 <<perf-macro-table-overall, echo=FALSE, results="asis", cache=FALSE>>=
-print(xtable(overallSummaryMacro))
+print(xtable(overallSummaryMacro, c("Macro benchmarks overall")))
 @
 }
 
 \def\OverallTableOverall{%
 <<perf-overall-table-overall, echo=FALSE, results="asis", cache=FALSE>>=
-print(xtable(overallSummarySteady))
+print(xtable(overallSummarySteady, c("Whole benchmarks overall")))
 @
 }
