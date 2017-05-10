@@ -192,3 +192,9 @@ Setup/Implementations/RTruffleMate/*
 Setup/Implementations/TruffleMate/*
 Setup/Implementations/graalvm
 Setup/benchmarks/*
+
+# R files
+Report/.Rhistory
+
+# Knitr output
+Report/experiments.tex

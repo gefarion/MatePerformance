@@ -39,6 +39,11 @@ then
     else
         ssh "$1" "bash $MOSTAZA_ROOT_PATH/update-data.sh"
         scp "$1:$MOSTAZA_DATA_PATH/$name" .
+        pushd $MOSTAZA_DATA_PATH
+        INFO Uncompressing $name
+        tar -zxvf $name 
+        popd > /dev/null
+        OK done
     fi    
 else
     prepare_data
