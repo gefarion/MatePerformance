@@ -1,6 +1,6 @@
 <<InherentPerformance, echo=FALSE, message=FALSE>>=
-knitr::opts_chunk$set(fig.width=10, fig.height=5, fig.path='',
-                      echo=FALSE, warning=FALSE, message=FALSE, results="asis", cache=FALSE)
+knitr::opts_chunk$set(fig.width=10, fig.height=5,
+                      echo=FALSE, warning=FALSE, message=FALSE, results="asis", cache=TRUE)
 
 steady <- getFilteredData("../../Data/inherent.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), vmNamesMap(), iterationsAndInliningFilename, iterationsAndInliningCols, numberOfIterationsPerBenchmarks)
 
@@ -45,49 +45,49 @@ print(boxplot(normalizedSteady, TRUE, "Run Time"))
 }%
 
 \def\MicroTableSummary{%
-<<perf-summary-table-micro, echo=FALSE, results="asis", cache=FALSE>>=
+<<perf-summary-table-micro, results="asis">>=
 print(xtable(arrange(summarizedMicro, Benchmark), c("Micro benchmarks summary")))
 @
 }
 
 \def\MicroWithoutRecursiveTableSummary{%
-<<perf-summary-table-micro-withoutRecursive, echo=FALSE, results="asis", cache=FALSE>>=
+<<perf-summary-table-micro-withoutRecursive, results="asis">>=
 print(xtable(arrange(summarizedMicroWithoutRecursive, Benchmark), c("Micro benchmaks without recursive summary")))
 @
 }
 
 \def\MacroTableSummary{%
-<<perf-summary-table-macro, echo=FALSE, results="asis", cache=FALSE>>=
+<<perf-summary-table-macro, results="asis">>=
 print(xtable(arrange(summarizedMacro, Benchmark), c("Macro benchmarks summary")))
 @
 }
 
 \def\OverallTableSummary{%
-<<perf-summary-table-overall, echo=FALSE, results="asis", cache=FALSE>>=
+<<perf-summary-table-overall, results="asis">>=
 print(xtable(arrange(summarizedSteady, Benchmark), c("Whole benchs summary")))
 @
 }
 
 \def\MicroTableOverall{%
-<<perf-micro-table-overall, echo=FALSE, results="asis", cache=FALSE>>=
+<<perf-micro-table-overall, results="asis">>=
 print(xtable(overallSummaryMicro, c("Micro benchmarks overall")))
 @
 }
 
 \def\MicroWithoutRecursiveTableOverall{%
-<<perf-microWithoutRecursive-table-overall, echo=FALSE, results="asis", cache=FALSE>>=
+<<perf-microWithoutRecursive-table-overall, results="asis">>=
 print(xtable(overallSummaryMicroWithoutRecursive, c("Micro benchmarks without recursive overall")))
 @
 }
 
 \def\MacroTableOverall{%
-<<perf-macro-table-overall, echo=FALSE, results="asis", cache=FALSE>>=
+<<perf-macro-table-overall, results="asis">>=
 print(xtable(overallSummaryMacro, c("Macro benchmarks overall")))
 @
 }
 
 \def\OverallTableOverall{%
-<<perf-overall-table-overall, echo=FALSE, results="asis", cache=FALSE>>=
+<<perf-overall-table-overall, results="asis">>=
 print(xtable(overallSummarySteady, c("Whole benchmarks overall")))
 @
 }

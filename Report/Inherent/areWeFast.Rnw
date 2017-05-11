@@ -1,6 +1,5 @@
 <<LanguagesPerformance, echo=FALSE, message=FALSE>>=
-knitr::opts_chunk$set(fig.width=10, fig.height=5, fig.path='',
-                      echo=FALSE, warning=FALSE, message=FALSE, results="asis", cache=FALSE)
+knitr::opts_chunk$set(fig.width=10, fig.height=5, results="asis")
 
 steady <- getFilteredData("../../Data/areWeFast.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), vmNamesMap(), iterationsAndInliningFilename, iterationsAndInliningCols, numberOfIterationsPerBenchmarks)
 
@@ -25,17 +24,17 @@ names(vm_colors) <- vmNamesMap()
 
 @
 \def\LanguagesPerfComparisonPlot{%
-<<languages-perf-overview>>=
+<<languages-perf-overview, echo=FALSE, message=FALSE>>=
 print(overview_box_plot(summarizedPerBenchAndVM))
 @
 }%
 \def\LanguagesTableSummary{%
-<<languages-summary-table, echo=FALSE, results="asis", cache=FALSE>>=
+<<languages-summary-table>>=
 print(xtable(arrange(summarizedPerBenchAndVM, Benchmark)))
 @
 }
 \def\LanguagesTableOverall{%
-<<languages-overall-table, echo=FALSE, results="asis", cache=FALSE>>=
+<<languages-overall-table>>=
 print(xtable(summarizedOverall))
 @
 }

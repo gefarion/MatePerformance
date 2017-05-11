@@ -4,6 +4,14 @@ if (Sys.getenv("RSTUDIO") == "1") {
   #setwd("/home/guido/Documents/Writings/Research/Towards Meta Optimization/Experiments/")
 }
 
+root_path <- getwd()
+
+opts_knit$set(child.path = "")
+
+knitr::opts_chunk$set(fig.path=paste0(getwd(),"/images/"), echo=FALSE, warning=FALSE, message=FALSE, results="asis", cache=TRUE)
+
+root_path <- getwd()
+
 options(scipen = 5)
 
 source("../Scripts/libraries.R", chdir=TRUE, echo=FALSE)

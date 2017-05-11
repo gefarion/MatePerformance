@@ -19,6 +19,10 @@ prepare_data() {
     INFO Moving data from $ROOT_PATH to $DATA_DIR
     pushd $SCRIPT_PATH
     for file in *.data; do
+        if [ ! -e $file ]
+        then
+            break
+        fi
         mv "$file" "$DATA_DIR/$file"
     done
     popd > /dev/null
@@ -39,7 +43,7 @@ then
     else
         ssh "$1" "bash $MOSTAZA_ROOT_PATH/update-data.sh"
         scp "$1:$MOSTAZA_DATA_PATH/$name" .
-        pushd $MOSTAZA_DATA_PATH
+        pushd $HOME/$MOSTAZA_DATA_PATH
         INFO Uncompressing $name
         tar -zxvf $name 
         popd > /dev/null
