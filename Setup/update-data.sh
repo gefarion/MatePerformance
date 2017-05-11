@@ -37,17 +37,17 @@ if [ $# -eq 1 ]
 then
     if [ "$1" = "zorzal" ]
     then
-        ssh gchari@zorzal.dc.uba.ar 'bash -s' < $SCRIPT_PATH/$0 "guido@mostaza.cuartos.inv.dc.uba.ar"
-        scp "gchari@zorzal.dc.uba.ar:$name" $DATA_DIR/
-        ssh gchari@zorzal.dc.uba.ar "rm $name"
-    else
-        ssh "$1" "bash $MOSTAZA_ROOT_PATH/update-data.sh"
-        scp "$1:$MOSTAZA_DATA_PATH/$name" .
-        pushd $HOME/$MOSTAZA_DATA_PATH
+        #ssh gchari@zorzal.dc.uba.ar 'bash -s' < $SCRIPT_PATH/$0 "guido@mostaza.cuartos.inv.dc.uba.ar"
+        #scp "gchari@zorzal.dc.uba.ar:$name" $DATA_DIR/
+        #ssh gchari@zorzal.dc.uba.ar "rm $name"
+        pushd $DATA_DIR
         INFO Uncompressing $name
         tar -zxvf $name 
         popd > /dev/null
         OK done
+    else
+        ssh "$1" "bash $MOSTAZA_ROOT_PATH/update-data.sh"
+        scp "$1:$MOSTAZA_DATA_PATH/$name" .
     fi    
 else
     prepare_data
