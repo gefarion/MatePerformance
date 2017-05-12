@@ -190,3 +190,16 @@ function look_in_and_choose() {
   done
 }
 
+function download_file {
+  if [ ! -f $1 ]
+  then
+    get_web_getter 
+    $GET $2
+  fi
+}
+
+function download_zip {
+  download_file $1 $2
+  unzip $1
+  rm $1
+} 

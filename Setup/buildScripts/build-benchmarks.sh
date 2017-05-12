@@ -13,14 +13,9 @@ else
   checkout "$BENCHMARKS_DIR/Mate" "https://github.com/charig/som.git" "reflectiveCompiler" "Examples/Benchmarks/*;Smalltalk/*"
   INFO Downloading MTG JSON data files 
   pushd $BENCHMARKS_DIR/Mate/Examples/Benchmarks/Mate/Tracing/ 
-  if [ ! -f "AllSets-x.json.zip" ]
-  then
-    get_web_getter 
-    $GET "https://mtgjson.com/json/AllSets-x.json.zip"
-  fi
-  unzip AllSets-x.json.zip
-  rm AllSets-x.json.zip
-  python cleanJsonFile
+  download_zip "AllSets-x.json.zip" "https://mtgjson.com/json/AllSets-x.json.zip"
+  python cleanJsonFile "AllSets-x"
+  python cleanJsonFile "AllSets"
   popd
   $SCRIPT_PATH/makeBenchmarks.sh
 fi
