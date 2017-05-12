@@ -14,6 +14,7 @@ else
   INFO Downloading MTG JSON data files 
   pushd $BENCHMARKS_DIR/Mate/Examples/Benchmarks/Mate/Tracing/ 
   download_zip "AllSets-x.json.zip" "https://mtgjson.com/json/AllSets-x.json.zip"
+  download_zip "AllSets.json.zip" "https://mtgjson.com/json/AllSets.json.zip"
   python cleanJsonFile "AllSets-x"
   python cleanJsonFile "AllSets"
   popd
