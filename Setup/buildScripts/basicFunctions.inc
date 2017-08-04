@@ -97,15 +97,13 @@ function checkout() {
     then
       mkdir $1
     fi
+    pushd $1
     if [ $# -eq 3 ]
     then
       INFO Cloning git repository from $3
       git clone -b $3 --depth=1 $2 $1
-      pushd $1
       load_submodule    	
-      popd > /dev/null
     else
-      pushd $1
       git init
       git config core.sparseCheckout true
       git remote add -f $(basename $2) $2
@@ -115,10 +113,14 @@ function checkout() {
       git pull --depth=1 $(basename $2) $3
       git checkout $3
       load_submodule
-      popd > /dev/null
     fi
+    popd > /dev/null
   else
-    WARN $2 was already cloned	
+    WARN $2 was already cloned, Updating
+    pushd $1
+    git pull
+    load_submodule
+    popd > /dev/null
   fi
 }
 
@@ -159,22 +161,21 @@ function find_and_link() {
     app_dir=$1    
   else
     INFO "${1} env variable not set in config.inc, let's try the $2 directories in your os"
-    look_in_and_choose "$HOME" $2
+    look_in_and_choose "$HOME" $2 $3
   fi
   if [ ! -z $app_dir ]
   then
-    INFO "Linking $2 to $1"
-    ln -s $app_dir $2    
+    INFO "Linking $2 to $app_dir"
+    `ln -s $app_dir $2`
     OK done
   else
-    WARN "$2 was not linked in $PWD, experiments will failed!"
+    WARN "$2 was not linked in $PWD, experiments will failed! Please go to config.inc and fill the directory in the corresponding variable"
   fi
-  
 }
 
 function look_in_and_choose() {
   #output=`find "$1" -d -iname $2`
-  output="/Users/guidochari/Documents/Projects/RTruffleMate/pypy/pypy /Users/guidochari/Documents/Projects/RTruffleMate/pypy /Users/guidochari/Library/Logs/Homebrew/pypy"
+  output=$3
   vars= IFS=' ' read -r -a options <<< "$output"
   PS3='Please enter your choice: '
   installed=`which $2`
