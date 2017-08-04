@@ -198,3 +198,5 @@ Report/.Rhistory
 
 # Knitr output
 Report/experiments.tex
+
+Setup/Benchmarks/*
