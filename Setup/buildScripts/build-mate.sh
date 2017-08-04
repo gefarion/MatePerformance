@@ -9,6 +9,10 @@ if [ "$1" = "style" ]
 then
   exit 0
 else
+  if [ ! -d $ROOT_PATH/Implementations/TruffleMate ]
+  then
+    mkdir $ROOT_PATH/Implementations/TruffleMate
+  fi
   checkout $ROOT_PATH/Implementations/TruffleMate/Standard "https://github.com/charig/TruffleMATE.git" "reflectiveCompiler"
   pushd $ROOT_PATH/Implementations/TruffleMate/Standard
   pushd libs/truffle
