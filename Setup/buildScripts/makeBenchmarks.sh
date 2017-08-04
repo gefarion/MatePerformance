@@ -10,7 +10,7 @@ then
   exit 0
 else
   INFO Building Java Benchmarks
-  pushd $BENCHMARKS_DIR\Java
+  pushd $BENCHMARKS_DIR/AreWeFast/benchmarks/Java
   ant jar
   popd > /dev/null
   OK Java Benchmarks Build Completed.  
