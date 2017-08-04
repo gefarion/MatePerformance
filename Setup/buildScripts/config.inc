@@ -24,7 +24,7 @@ GRAAL_CORE_CMD=/home/guido/Documents/Projects/GraalBasic/graal-jvmci-8/jdk1.8.0_
 GRAAL_HOSTED_FLAGS="-server -XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI -d64 "
 GRAAL_JIT_FLAGS="-server -XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI -XX:+UseJVMCICompiler -d64 "
 
-BENCHMARKS_DIR=$ROOT_PATH/benchmarks/
+BENCHMARKS_DIR=$ROOT_PATH/Benchmarks/
 
 #set pypy dir manually
 PYPY_DIR=""
