@@ -1,0 +1,408 @@
+Benchmark Characterization
+==========================
+
+```{r load-scripts, echo=FALSE, include=FALSE}
+if (Sys.getenv("RSTUDIO") == "1") { setwd("/Users/smarr/Projects/PostDoc/FASTXX/paper/data") }
+
+source("../scripts/libraries.R", chdir=TRUE)
+source("../scripts/metrics.R", chdir=TRUE)
+source("../scripts/data.R", chdir=TRUE)
+
+opts_chunk$set(
+    fig.path="figures/",
+    dev='png',
+    dev.args=list(pointsize=10),
+    echo=FALSE,
+    cache=TRUE,
+    external=FALSE,
+    tidy=FALSE)
+```
+
+## Code Size Statistics
+
+The following metrics characterize the size of the benchmarks. The numbers are
+based on the SOMns benchmark implementations, but should be similar to the
+numbers one would measure for the other languages.
+
+##### Executed Lines of Code
+
+Compared to the classic notion of lines of code (LOC), we count only lines of
+code that have been executed at least once to measure the dynamic size of the
+program instead of its static size.
+
+##### Classes
+
+The number of classes includes only classes of which at least one method was
+executed. It is stable across languages with the exception of JavaScript which
+does not use classes in the version of the language used for this work.
+
+##### Executed Methods
+
+Similar to counting executed LOC, we count methods that have been executed at
+least once.
+
+##### Per Iteration Methods
+
+In addition to executed methods, we further distinguish methods that are
+executed for each benchmark iteration. Thus, we separate out code that was only
+executed once during startup or shutdown. The number of per iteration methods
+indicates the methods that get likely compiled during benchmarking.
+
+
+```{r structural-stats-table, results='asis'}
+gen_stats <- ldply(benchmark_names, get_general_stats)
+struct_data <- get_structural_execution_stats()
+
+empty_gen_stats    <- get_general_stats("Empty")
+empty_meth         <- get_method_data("Empty")
+empty_used_classes <- get_class_stats("Empty")
+
+
+gen_stats <- ddply(gen_stats, ~ Benchmark, here(transform),
+                   LinesExecutedWOEmpty = LinesExecuted - empty_gen_stats$LinesExecuted)
+
+struct_data <- ddply(struct_data, ~ Benchmark, here(transform),
+                     NumClassesWithExecutedMethodsWOEmpty   = NumClassesWithExecutedMethods   - empty_used_classes$NumClassesWithExecutedMethods,
+                     NumMethodsExecutedEachIterationWOEmpty = NumMethodsExecutedEachIteration - empty_meth$NumMethodsExecutedEachIteration,
+                     NumMethodsExecutedAtLeastOnceWOEmpty   = max(NumMethodsExecutedEachIteration - empty_meth$NumMethodsExecutedEachIteration, NumMethodsExecutedAtLeastOnce - empty_meth$NumMethodsExecutedAtLeastOnce))
+
+t <- tabular(
+  Justify("l")*Heading()*Benchmark ~
+  Justify("r")*(  #Heading("Lines Loaded")*LinesLoaded +
+                  Heading("Executed Lines")*LinesExecutedWOEmpty
+                + Heading("Classes")*NumClassesWithExecutedMethodsWOEmpty
+                #+ Heading("Lines with Statements")*LinesWithStatements
+                + Heading("Executed Methods")*NumMethodsExecutedAtLeastOnceWOEmpty
+                + Heading("Per Iteration Methods")*NumMethodsExecutedEachIterationWOEmpty
+                )*Heading()*identity, data=merge(gen_stats, struct_data))
+html(t)
+```
+
+## Dynamic Metrics
+
+The dynamic metrics characterize the behavior of the benchmarks in more detail.
+
+##### Method Calls
+
+For method calls, we count at each call site, i.e., the lexical point in the
+program where a call is made, the number of different receiver types, as well as
+the number of different target methods that were activated at that point. The
+number of target methods should always be smaller or equal to the number of
+different receiver types.
+
+Operators such as `+` or `*` are excluded from the method call count.
+
+
+Observed receiver polymorphism, i.e., different observed receiver
+types/classes:
+
+```{r method-calls-rcvr, results='asis'}
+call_stats <- ldply(benchmark_names, get_rcvr_callsite_stats)
+t <- tabular(
+  Justify("l")*(Heading()*Benchmark*(Heading("Receivers")*Factor(Num.Rcvrs))) ~
+  Justify("r")*(  Heading("Call Sites")*NumCallSites
+                + Heading("Calls")*NumCalls*Format(big.mark=",")
+                )*Heading()*mean, data=call_stats)
+
+html(t[!is.na(t[,2])])
+```
+
+Observed target polymorphism, i.e., different activated methods:
+
+```{r method-calls-target, results='asis'}
+call_stats <- ldply(benchmark_names, get_target_callsite_stats)
+t <- tabular(
+  Justify("l")*(Heading()*Benchmark * Heading("Targets")*Factor(Num.Targets)) ~
+  Justify("r")*(  Heading("Call Sites")*NumCallSites
+                + Heading("Calls")*NumCalls*Format(big.mark=",")
+                )*Heading()*mean, data=call_stats)
+html(t[!is.na(t[,2])])
+```
+
+##### Closure Applications
+
+Similar to method calls, we measure the number of lexical closures observed at a
+closure application site. A closure application site is the lexical point where
+a closure is executed.
+
+```{r closure-application, results='asis'}
+cl_stats <- ldply(benchmark_names, get_closure_stats)
+cl_t <- tabular(
+  Justify("l")*(Heading()*Benchmark * Heading("Targets")*Factor(Num.Targets)) ~
+  Justify("r")*(  Heading("Sites")*NumSites
+                + Heading("Activations")*NumApplications*Format(big.mark=",")
+                )*Heading()*mean, data=cl_stats)
+html(cl_t[!is.na(cl_t[,2])])
+```
+
+##### Maximum Stack Height
+
+As an indication for the recursive behavior, we measure the maximal observed
+stack height, i.e., the number of method activations on the runtime stack.
+
+```{r stack-height, results='asis'}
+stats <- ldply(benchmark_names, get_general_stats)
+t <- tabular(
+  Justify("l")*(Heading()*Benchmark) ~
+  Justify("r")*(  Heading("Max Stack Height")*MaxStackHeight
+                )*Heading()*identity, data=stats)
+html(t)
+```
+
+##### Loops
+
+We count loops that have been activated at least once. Furthermore, we count the
+number of times a loop body has been executed.
+
+```{r loop-stats, results='asis'}
+stats <- ldply(benchmark_names, get_loop_stats)
+t <- tabular(
+  Justify("l")*(Heading()*Benchmark) ~
+  Justify("r")*(  Heading("Loops")*NumLoops
+                + Heading("Iterations")*LoopIterations*Format(big.mark=",")
+                )*Heading()*identity, data=stats)
+html(t)
+```
+
+##### Branches
+
+We count the number of control flow branches that have been taken at least once.
+This includes `if`-branches, but also operations that have control flow
+semantics such as short-cutting `or` and `and` operators where the right-hand
+expression is executed conditionally. Furthermore, we count how often each
+branch is taken. The reported branch bias ratio is calculated with `max(#true, #false) / (#true + #false)`.
+
+
+```{r branch-stats, results='asis'}
+stats <- ldply(benchmark_names, get_branch_stats)
+t <- tabular(
+  Justify("l")*(Heading()*Benchmark) ~
+  Justify("r")*(  Heading("Branches")*Branches
+                + Heading("Activations")*BranchesPerIter*Format(big.mark=",")
+                + Heading("Bias")*BiasRatioIter*Format(digits=2)
+                )*Heading()*identity, data=stats)
+html(t)
+```
+
+##### Control Flow Statistics Overview
+
+As an overview of the control flow metrics, the following plot aggregates these
+metrics and puts them into relation to each other.
+
+```{r control-flow-stats, fig.width=8, fig.height=4, fig.show='asis', strip.white=TRUE}
+data <- ldply(benchmark_names, get_operation_stats)
+data[is.na(data)] <- 0
+
+ctf <- subset(data, select = c(Benchmark, MonoRcvrCalls, PolyRcvrCalls, MonoApplies, PolyApplies, BranchesPerIter, LoopIterations))
+ctf <- prepare_benchmark_names(ctf)
+ctf <- rename(ctf, c("MonoRcvrCalls" = "mono. calls",
+                     "PolyRcvrCalls" = "poly. calls",
+                     "MonoApplies"   = "mono. closures",
+                     "PolyApplies"   = "poly. closures",
+                     "BranchesPerIter" = "branches",
+                     "LoopIterations"  = "loop iterations"))
+
+ggplot(melt(ctf, id.vars = c('Benchmark')), aes(x = Benchmark, y = value, fill = variable)) + 
+  geom_bar(position = "fill", stat = "identity") + 
+  scale_y_continuous(name = NULL) +
+  scale_fill_brewer(palette = "Paired", guide = guide_legend(title = NULL, reverse = TRUE)) +
+  theme_bw() + theme_simple(font_size = 11) + theme(
+    legend.title = element_blank(),
+    legend.text = element_text(size = 11),
+    legend.key.size = unit(0.25, "cm"),
+    legend.position = "bottom",
+    axis.text.x = element90())
+```
+
+##### Allocations
+
+We track the number of arrays created as well as their overall size.
+Furthermore, we track the number of objects created and the number of declared
+fields.
+
+Array allocations:
+
+```{r array-alloc-stats, results='asis'}
+stats <- ldply(benchmark_names, get_array_allocation_stats)
+t <- tabular(
+  Justify("l")*(Heading()*Benchmark) ~
+  Justify("r")*(  Heading("Allocation Sites")*Sites
+                + Heading("#Arrays")*NumArrays*Format(big.mark=",")
+                + Heading("Total Length")*AllocArrMem*Format(big.mark=",")
+                )*Heading()*identity, data=stats)
+html(t)
+```
+
+Object allocations:
+
+```{r object-alloc-stats, results='asis'}
+stats <- ldply(benchmark_names, get_object_allocation_stats)
+t <- tabular(
+  Justify("l")*(Heading()*Benchmark) ~
+  Justify("r")*(  Heading("Allocation Sites")*Sites
+                + Heading("#Objects")*NumObjects
+                + Heading("Total Requested Slots")*AllocObjMem
+                )*Heading()*identity, data=stats)
+html(t)
+```
+
+##### Object Field Accesses
+
+We count object field reads and writes that were executed
+at least once. Furthermore, we report the number of accesses per iteration.
+
+```{r field-access-stats, results='asis'}
+stats <- ldply(benchmark_names, get_field_access_stats)
+t <- tabular(
+  Justify("l")*(Heading()*Benchmark) ~
+  Justify("r")*(  Heading("Read Sites")*NumReadSites
+                + Heading("Write Sites")*NumWriteSites
+                + Heading("Read Sites (per iter)")*NumReadSitesPerIter
+                + Heading("Write Sites (per iter)")*NumWriteSitesPerIter
+                + Heading("Reads")*NumFieldReads*Format(big.mark=",")
+                + Heading("Writes")*NumFieldWrites*Format(big.mark=",")
+                + Heading("Read Ratio")*FieldReadRatio*Format(digits=2)
+                )*Heading()*identity, data=stats)
+html(t)
+```
+
+##### Array Accesses
+
+We count the sites of array reads and writes that were executed at least once.
+Furthermore, we count the number of array reads and writes per iteration.
+
+```{r array-access-stats, results='asis'}
+stats <- ldply(benchmark_names, get_array_access_stats)
+t <- tabular(
+  Justify("l")*(Heading()*Benchmark) ~
+  Justify("r")*(  Heading("Read Sites")*NumReadSites
+                + Heading("Write Sites")*NumWriteSites
+                + Heading("Read Sites (per iter)")*NumReadSitesPerIter
+                + Heading("Write Sites (per iter)")*NumWriteSitesPerIter
+                + Heading("Reads")*NumArrReads*Format(big.mark=",")
+                + Heading("Writes")*NumArrWrites*Format(big.mark=",")
+                + Heading("Read Ratio")*ArrReadRatio*Format(digits=2)
+                )*Heading()*identity, data=stats)
+html(t)
+```
+
+##### Allocation and Access Overview
+
+As an overview of allocation and access metrics, the following plot aggregates and
+relates them to each other.
+
+```{r alloc-and-access-stats, fig.width=8, fig.height=4, fig.show='asis', strip.white=TRUE}
+aaa <- subset(data, select = c(Benchmark, NumArrays, NumObjects, NumFieldReads, NumFieldWrites, NumArrReads, NumArrWrites))
+aaa <- prepare_benchmark_names(aaa)
+aaa <- rename(aaa, c("NumArrays" = "new arrays",
+                     "NumObjects" = "new objects",
+                     "NumFieldReads"   = "field reads",
+                     "NumFieldWrites"   = "field writes",
+                     "NumArrReads" = "array reads",
+                     "NumArrWrites"  = "array writes"))
+
+ggplot(melt(aaa, id.vars = c('Benchmark')), aes(x = Benchmark, y = value, fill = variable)) + 
+  geom_bar(position = "fill", stat = "identity") + 
+  scale_y_continuous(name = NULL) +
+  scale_fill_brewer(palette = "Paired", guide = guide_legend(title = NULL, reverse = TRUE)) +
+  theme_bw() + theme_simple(font_size = 11) + theme(
+    legend.title = element_blank(),
+    legend.text = element_text(size = 11),
+    legend.key.size = unit(0.25, "cm"),
+    legend.position = "bottom",
+    axis.text.x = element90())
+```
+
+##### Variable Accesses
+
+We report the number of sites of variable reads and writes that were executed at
+least once. This includes variables in methods and closures. Furthermore, we
+report the number of accesses per iteration.
+
+```{r var-accessess, results='asis'}
+stats <- ldply(benchmark_names, get_local_access_stats)
+t <- tabular(
+  Justify("l")*(Heading()*Benchmark) ~
+  Justify("r")*(  Heading("Read Sites")*NumReadSites
+                + Heading("Write Sites")*NumWriteSites
+                + Heading("Read Sites (per iter)")*NumReadSitesPerIter
+                + Heading("Write Sites (per iter)")*NumWriteSitesPerIter
+                + Heading("Reads")*NumVarReads*Format(big.mark=",")
+                + Heading("Writes")*NumVarWrites*Format(big.mark=",")
+                + Heading("Read Ratio")*VarReadRatio*Format(digits=2)
+                )*Heading()*identity, data=stats)
+html(t)
+```
+
+
+##### Basic Operations
+
+Basic operations are also known as *primitives* or *built-in functions*. We
+include comparisons, arithmetic and bit operations, reading the size of strings
+or arrays, and string operations. Since the complexity of these operations range
+from simple integer additions, which can be mapped directly to a processor
+instruction, up to trigonometric functions, or string comparisons, which require
+complex algorithms, we categorize them in groups with similar properties.
+
+These groups are defined as follows:
+
+| Operands | Operations |
+| -------- | ---------- |
+| ptr       | `=`, `!=`                            |
+| bool, int | `<`, `>`, `=`, `<=`, `!=`, `>=`      |
+| float     | `<`, `>`, `=`, `<=`, `!=`, `>=`      |
+| bool, int | `+`, `-`, `&`, `^`, `!`, `<<`, `>>>` |
+| int       | `*`, `/`, `%`, `rem`                 |
+| float     | `+`, `-`, `*`, `/`, `round`          |
+| float     | `sin`, `cos`, `sqrt`                 |
+| str       | `+`, `=`, `!=`                       |
+| str, arr  | `length`                             |
+| str       | `substring`                          |
+
+The following plot gives an overview of the usage of these operations by the
+benchmarks.
+
+```{r basic-operations, fig.width=8, fig.height=4.5, fig.show='asis', strip.white=TRUE}
+d <- ldply(benchmark_names, get_op_group_stats)
+bo <- prepare_benchmark_names(d)
+
+name_map <- list(
+  "IntArith" = "bool, int: +, -, &, ^, !, <<, >>>",
+  "IntCplx"  = "int: *, /, %, rem",
+  "FltArith" = "float: +, -, *, /, round",
+  "FltCplx"  = "float: sin, cos, sqrt",
+  "IntCmp" = "bool, int: <, >, =, <=, !=, >=",
+  "FltCmp" = "float: <, >, =, <=, !=, >=",
+  "PtrCmp" = "ptr: =, !=",
+  "StrCmp" = "str: +, =, !=",
+  "Length" = "str, arr: length",
+  "SubStr" = "str: substring")
+
+levels(bo$GroupSimple) <- map_names(levels(bo$GroupSimple), name_map)
+bo <- arrange(bo, Benchmark, GroupSimple)
+
+ggplot(bo, aes(x = Benchmark, y = PerIteration, fill = GroupSimple)) + 
+  geom_bar(position = "fill", stat = "identity") + 
+  scale_y_continuous(name = NULL) + 
+  guides(fill = guide_legend(nrow = 5, reverse = TRUE, title = NULL)) +
+  scale_fill_brewer(palette = "Paired") +
+  theme_bw() + theme_simple(font_size = 11) + theme(
+    legend.title = element_blank(),
+    legend.text = element_text(size = 11),
+    legend.key.size = unit(0.25, "cm"),
+    legend.position = "bottom",
+    axis.text.x = element90())
+```
+
+The following table gives a numerical overview of the metrics.
+
+```{r basic-operation-stats, results='asis'}
+stats <- ldply(benchmark_names, get_op_group_stats)
+
+t <- tabular(
+  Justify("l")*(Heading()*Benchmark * Factor(Group, texify=FALSE)) ~
+  Justify("r")*(  Heading("Sites")*Sites
+                + Heading("Activations (per iter.)")*PerIteration*Format(big.mark=",")
+                )*Heading()*mean, data=stats)
+html(t[!is.na(t[,2])])
+```
