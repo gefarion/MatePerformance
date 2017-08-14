@@ -8,7 +8,7 @@ then
     source $BUILDSCRIPTS/basicFunctions.inc
     source $BUILDSCRIPTS/config.inc
 else
-    MOSTAZA_ROOT_PATH='Documents/Writings/Research/optimizing-reflective-execution-environments/Experiments/Setup'
+    MOSTAZA_ROOT_PATH='Documents/Projects/MatePerformance/Setup'
     MOSTAZA_DATA_PATH=$MOSTAZA_ROOT_PATH/../Data
 fi
 
@@ -37,9 +37,9 @@ if [ $# -eq 1 ]
 then
     if [ "$1" = "zorzal" ]
     then
-        #ssh gchari@zorzal.dc.uba.ar 'bash -s' < $SCRIPT_PATH/$0 "guido@mostaza.cuartos.inv.dc.uba.ar"
-        #scp "gchari@zorzal.dc.uba.ar:$name" $DATA_DIR/
-        #ssh gchari@zorzal.dc.uba.ar "rm $name"
+        ssh gchari@zorzal.dc.uba.ar 'bash -s' < $SCRIPT_PATH/$0 "guido@mostaza.cuartos.inv.dc.uba.ar"
+        scp "gchari@zorzal.dc.uba.ar:$name" $DATA_DIR/
+        ssh gchari@zorzal.dc.uba.ar "rm $name"
         pushd $DATA_DIR
         INFO Uncompressing $name
         tar -zxvf $name 
