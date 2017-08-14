@@ -7,12 +7,16 @@ source $SCRIPT_PATH/config.inc
 INFO Building Benchmarks
 if [ "$1" = "style" ]
 then
-  exit 0
+  exit 
 else
-  INFO Building Java Benchmarks
-  pushd $BENCHMARKS_DIR/AreWeFast/benchmarks/Java
-  ant jar
-  popd > /dev/null
-  OK Java Benchmarks Build Completed.  
+  buildBench Java $BENCHMARKS_DIR/AreWeFast/benchmarks/Java "ant jar"
+  buildBench Crystal $BENCHMARKS_DIR/AreWeFast/benchmarks/Crystal "build.sh"
+  if [ -e "$SCRIPT_PATH/../node_modules/jshint/bin/jshint" ]
+  then
+    CMD="$SCRIPT_PATH/../node_modules/jshint/bin/jshint *.js"
+  else
+    CMD="jshint *.js"
+  fi
+  buildBench JS $BENCHMARKS_DIR/AreWeFast/benchmarks/JavaScript $CMD
 fi
-OK TruffleMATE Build Completed.
+OK Benchmarks Build Completed.

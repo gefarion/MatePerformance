@@ -203,4 +203,13 @@ function download_zip {
   download_file $1 $2
   unzip $1
   rm $1
+}
+
+function buildBench {
+  INFO Building $1 Benchmarks
+  pushd $2
+  sh $3
+  popd > /dev/null
+  OK $1 Benchmarks Build Completed. 
+  
 } 
