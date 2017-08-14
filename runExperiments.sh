@@ -12,3 +12,8 @@ if [[ "$ALL" = true || "$@" == "dynMetrics"  ]]
 then
     ./runScripts/runDynMetrics.sh
 fi
+
+if [[ "$ALL" = true || "$@" == "AreWeFast"  ]]
+then
+    ./runScripts/runBenchs.sh $@
+fi
