@@ -5,7 +5,7 @@ export GRAAL_HOME=$GRAAL_HOME
 #export GRAAL_FLAGS=$GRAAL_HOSTED_FLAGS
 if [ "$1" == "--envInObject" ]
 then
-    exec $SCRIPT_PATH/TruffleMate/EnvironmentInObject/oficial ${@:2}
+    exec $SCRIPT_PATH/TruffleMate/EnvironmentInObject/som ${@:2}
 else
-    exec $SCRIPT_PATH/TruffleMate/Standard/oficial "$@"
+    exec $SCRIPT_PATH/TruffleMate/Standard/som "$@"
 fi

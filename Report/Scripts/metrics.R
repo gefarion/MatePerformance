@@ -1,3 +1,11 @@
+benchmark_names <- c(
+  "CD", "DeltaBlue", "Havlak", "Json", "Richards",
+  
+  "Bounce", "List", "Mandelbrot",
+  "NBody", "Permute", "Queens",  "Sieve",
+  "Storage", "Towers")
+  
+
 get_per_iteration_data <- function(benchmark_name, file_name, equal_columns, per_iter_columns, ...) {
   data4 <- load_metrics_file(benchmark_name, 2, file_name)
   data5 <- load_metrics_file(benchmark_name, 3, file_name)

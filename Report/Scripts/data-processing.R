@@ -1,4 +1,8 @@
 ## This file defines common functions used for data processing.
+load_metrics_file <- function(benchmark_name, iter, data_set) {
+  filename <- paste0("/../Data/Metrics/", benchmark_name, "-", iter, "/", data_set, ".csv")
+  read.table(filename, sep="\t", header=TRUE, fill=TRUE, comment.char = "")
+}
 
 load_data_file <- function (file, row_names) {
   if (missing(row_names)) {

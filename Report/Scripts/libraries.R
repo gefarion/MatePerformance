@@ -12,16 +12,12 @@ load_and_install_if_necessary("plyr")
 load_and_install_if_necessary("ggplot2")
 load_and_install_if_necessary("psych")   # uses only geometric.mean
 load_and_install_if_necessary("tables")
-load_and_install_if_necessary("reshape2")
 load_and_install_if_necessary("assertthat")
-load_and_install_if_necessary("scales")
-load_and_install_if_necessary("memoise")
-load_and_install_if_necessary("RColorBrewer")
 load_and_install_if_necessary("ggrepel")   # make sure labels don't overlap
-
-source("data-processing.R")
-source("plots.R")
-source("colors.R")
+load_and_install_if_necessary("memoise")
+load_and_install_if_necessary("RColorBrewer")   #Palette of colors for overview_language_boxplots
+load_and_install_if_necessary("knitr")
+load_and_install_if_necessary("xtable")
 
 # avoid scientific notation for numbers, it's more readable to me
 options(scipen=999)
