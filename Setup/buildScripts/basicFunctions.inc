@@ -59,10 +59,10 @@ function load_submodule() {
 }
 
 function check_for() {
-  if [ ! -x `which $1` ]
+  if [ -z `which $1` ]
   then
     ERR "$1 binary not found. $2"
-    if [ "non-fatal" -ne "$3" ]
+    if [ ! "non-fatal" == "$3" ]
     then
       exit 1
     fi
