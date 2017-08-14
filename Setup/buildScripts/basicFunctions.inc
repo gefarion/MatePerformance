@@ -208,7 +208,7 @@ function download_zip {
 function buildBench {
   INFO Building $1 Benchmarks
   pushd $2
-  sh $3
+  $3
   popd > /dev/null
   OK $1 Benchmarks Build Completed. 
   
