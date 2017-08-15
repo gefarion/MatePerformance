@@ -13,7 +13,7 @@ else
   then
     mkdir $BENCHMARKS_DIR
   fi
-  checkout $ROOT_PATH/Benchmarks/AreWeFast "https://github.com/smarr/are-we-fast-yet.git" "master" "benchmarks"
+  checkout $ROOT_PATH/Benchmarks/AreWeFast "https://github.com/charig/are-we-fast-yet.git" "master" "benchmarks"
   checkout "$BENCHMARKS_DIR/Mate" "https://github.com/charig/som.git" "reflectiveCompiler" "Examples/Benchmarks/*;Smalltalk/*"
   INFO Downloading MTG JSON data files 
   pushd $BENCHMARKS_DIR/Mate/Examples/Benchmarks/Mate/Tracing/ 
