@@ -18,7 +18,7 @@ IMPLEMENTATIONS_PATH=$ROOT_PATH/Implementations
 
 DATA_DIR=$ROOT_PATH/Data
 
-GRAAL_HOME=$IMPLEMENTATIONS_PATH/graalvm
+#GRAAL_HOME=$IMPLEMENTATIONS_PATH/graalvm
 GRAAL_CORE_CMD=/home/guido/Documents/Projects/GraalBasic/graal-jvmci-8/jdk1.8.0_101/product/bin/java
 
 GRAAL_HOSTED_FLAGS="-server -XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI -d64 "
