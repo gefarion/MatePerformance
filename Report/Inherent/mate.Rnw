@@ -2,16 +2,45 @@
 knitr::opts_chunk$set(fig.width=10, fig.height=5,
                       echo=FALSE, warning=FALSE, message=FALSE, results="asis", cache=TRUE)
 
-steady <- getFilteredData("../../Data/inherent.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), vmNamesMap(), iterationsAndInliningFilename, iterationsAndInliningCols, numberOfIterationsPerBenchmarks)
+steadyOwn <- getFilteredData("../../Data/inherent.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), vmNamesMap(), iterationsAndInliningFilename, iterationsAndInliningCols, numberOfIterationsPerBenchmarks)
+steadyOwn <- droplevels(subset(steadyOwn, VM == "SOMpe-Ent" | VM == "MATEmt" | VM== "SOMmt" | VM == "SOMpe" | VM == "MATEpe-Ent")) # | VM == "MATEpe-Ent-envInObj"))
 
-micro <- droplevels(subset(steady, Suite == "classic-micro-steady"))
-microWithoutRecursive <- droplevels(subset(steady, Suite == "classic-micro-steady" & Benchmark!="Fibonacci" & Benchmark!="Recurse" & Benchmark!="Permute"))
-macro <- droplevels(subset(steady, Suite == "classic-macro-steady"))
+steadyAWF <- getFilteredData("../../Data/areWeFast.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), vmNamesMap(), iterationsAndInliningFilename, iterationsAndInliningCols, numberOfIterationsPerBenchmarks)
 
-normalizedSteady <- normalizeData(steady, "TruffleSOM", FALSE)
-normalizedMicro <- normalizeData(micro, "TruffleSOM", FALSE)
-normalizedMicroWithoutRecursive <- normalizeData(microWithoutRecursive, "TruffleSOM", FALSE)
-normalizedMacro <- normalizeData(macro, "TruffleSOM", FALSE)
+steadyAWF <- droplevels(subset(steadyAWF, VM == "SOMpe-Ent" | VM == "MATEmt" | VM == "SOMmt" | VM=="SOMpe" | VM == "MATEpe-Ent")) # | VM == "MATEpe-Ent-envInObj"))
+
+steady <- rbind(steadyOwn, steadyAWF)
+
+micro <- droplevels(subset(steady, Suite == "classic-micro-steady" | (Suite == "are-we-fast-som" & Benchmark %in% microBenchmarks)))
+microWithoutRecursive <- droplevels(subset(micro, Benchmark != "Fibonacci" & Benchmark != "Recurse" & Benchmark != "Permute"))
+macro <- droplevels(subset(steady, Suite == "classic-macro-steady" | (Suite == "are-we-fast-som" & Benchmark %in% macroBenchmarks)))
+
+steadyMT <- droplevels(subset(steady, VM %in% mtVMs))
+steadyPE <- droplevels(subset(steady, VM %in% peVMs))
+normalizedSteadyMT <- normalizeData(steadyMT, FALSE)
+normalizedSteadyPE <- normalizeData(steadyPE, FALSE)
+
+
+microMT <- droplevels(subset(micro, VM %in% mtVMs))
+microPE <- droplevels(subset(micro, VM %in% peVMs))
+normalizedMicroMT <- normalizeData(microMT, FALSE)
+normalizedMicroPE <- normalizeData(microPE, FALSE)
+
+microWithoutRecursiveMT <- droplevels(subset(microWithoutRecursive, VM %in% mtVMs))
+microWithoutRecursivePE <- droplevels(subset(microWithoutRecursive, VM %in% peVMs))
+normalizedMicroWithoutRecursiveMT <- normalizeData(microWithoutRecursiveMT, FALSE)
+normalizedMicroWithoutRecursivePE <- normalizeData(microWithoutRecursivePE, FALSE)
+
+macroMT <- droplevels(subset(macro, VM %in% mtVMs))
+macroPE <- droplevels(subset(macro, VM %in% peVMs))
+normalizedMacroMT <- normalizeData(macroMT, FALSE)
+normalizedMacroPE <- normalizeData(macroPE, FALSE)
+
+normalizedSteady <- rbind(normalizedSteadyMT, normalizedSteadyPE)
+normalizedMicro <- rbind(normalizedMicroMT, normalizedMicroPE)
+normalizedMicroWithoutRecursive <- rbind(normalizedMicroWithoutRecursiveMT, 
+                                         normalizedMicroWithoutRecursivePE)
+normalizedMacro <- rbind(normalizedMacroMT, normalizedMacroPE)
 
 summarizedSteady <- summarizeData(normalizedSteady)
 summarizedMicro <- summarizeData(normalizedMicro)
@@ -46,48 +75,101 @@ print(boxplot(normalizedSteady, TRUE, "Run Time"))
 
 \def\MicroTableSummary{%
 <<perf-summary-table-micro, results="asis">>=
-print(xtable(arrange(summarizedMicro, Benchmark), c("Micro benchmarks summary")))
+#tableData <- summarizedPerBenchAndVM[,c(2,1,3:6)]
+print(
+  kable(arrange(summarizedMicro, Benchmark), 
+       booktabs = T,
+       format = "latex",
+       longtable = T,
+       digits = 2)  %>%
+       kable_styling(latex_options = c("repeat_header"), font_size = 7)  %>%
+       collapse_rows(columns = 1:2))
 @
 }
 
 \def\MicroWithoutRecursiveTableSummary{%
 <<perf-summary-table-micro-withoutRecursive, results="asis">>=
-print(xtable(arrange(summarizedMicroWithoutRecursive, Benchmark), c("Micro benchmaks without recursive summary")))
+print(
+  kable(arrange(summarizedMicroWithoutRecursive, Benchmark), 
+       booktabs = T,
+       format = "latex",
+       longtable = T,
+       digits = 2)  %>%
+       kable_styling(latex_options = c("repeat_header"), font_size = 7)  %>%
+       collapse_rows(columns = 1:2))
 @
 }
 
 \def\MacroTableSummary{%
 <<perf-summary-table-macro, results="asis">>=
-print(xtable(arrange(summarizedMacro, Benchmark), c("Macro benchmarks summary")))
+print(
+  kable(arrange(summarizedMacro, Benchmark), 
+       booktabs = T,
+       format = "latex",
+       longtable = T,
+       digits = 2)  %>%
+       kable_styling(latex_options = c("repeat_header"), font_size = 7)  %>%
+       collapse_rows(columns = 1:2))
 @
 }
 
 \def\OverallTableSummary{%
 <<perf-summary-table-overall, results="asis">>=
-print(xtable(arrange(summarizedSteady, Benchmark), c("Whole benchs summary")))
+print(
+  kable(arrange(summarizedSteady, Benchmark), 
+       booktabs = T,
+       format = "latex",
+       longtable = T,
+       digits = 2)  %>%
+       kable_styling(latex_options = c("repeat_header"), font_size = 7)  %>%
+       collapse_rows(columns = 1:2))
 @
 }
 
 \def\MicroTableOverall{%
 <<perf-micro-table-overall, results="asis">>=
-print(xtable(overallSummaryMicro, c("Micro benchmarks overall")))
+print(
+  kable(arrange(overallSummaryMicro, Geomean), 
+       booktabs = T,
+       format = "latex",
+       digits = 2,
+       caption = "Overall Baseline Results")  %>%
+       kable_styling(latex_options = c("repeat_header"), font_size = 8))
 @
 }
 
 \def\MicroWithoutRecursiveTableOverall{%
 <<perf-microWithoutRecursive-table-overall, results="asis">>=
-print(xtable(overallSummaryMicroWithoutRecursive, c("Micro benchmarks without recursive overall")))
+print(
+  kable(arrange(overallSummaryMicroWithoutRecursive, Geomean), 
+       booktabs = T,
+       format = "latex",
+       digits = 2,
+       caption = "Overall Baseline Results")  %>%
+       kable_styling(latex_options = c("repeat_header"), font_size = 8))
 @
 }
 
 \def\MacroTableOverall{%
 <<perf-macro-table-overall, results="asis">>=
-print(xtable(overallSummaryMacro, c("Macro benchmarks overall")))
+print(
+  kable(arrange(overallSummaryMacro, Geomean), 
+       booktabs = T,
+       format = "latex",
+       digits = 2,
+       caption = "Overall Baseline Results")  %>%
+       kable_styling(latex_options = c("repeat_header"), font_size = 8))
 @
 }
 
 \def\OverallTableOverall{%
 <<perf-overall-table-overall, results="asis">>=
-print(xtable(overallSummarySteady, c("Whole benchmarks overall")))
+print(
+   kable(arrange(overallSummarySteady, Geomean), 
+       booktabs = T,
+       format = "latex",
+       digits = 2,
+       caption = "Overall Baseline Results")  %>%
+       kable_styling(latex_options = c("repeat_header"), font_size = 8))
 @
 }
