@@ -202,3 +202,5 @@ Report/experiments.tex
 Setup/Benchmarks/*
 .Rproj.user
 Setup/Implementations/pharo
+Report/AreWeFast/preliminaryData.pdf
+Report/Inherent/preliminaryData.pdf
