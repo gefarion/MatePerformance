@@ -1,6 +1,6 @@
 <<performance, echo=FALSE, include=FALSE>>=
 if (Sys.getenv("RSTUDIO") == "1") { 
-  setwd("/Users/guidochari/Documents/Escritos/Research/optimizing-reflective-execution-environments/Experiments/Report") 
+  setwd("/Users/guidochari/Documents/Projects/MatePerformance/Report") 
   #setwd("/home/guido/Documents/Writings/Research/Towards Meta Optimization/Experiments/")
 }
 
@@ -8,28 +8,28 @@ root_path <- getwd()
 
 opts_knit$set(child.path = "")
 
-knitr::opts_chunk$set(fig.path=paste0(getwd(),"/images/"), echo=FALSE, warning=FALSE, message=FALSE, results="asis", cache=TRUE)
+knitr::opts_chunk$set(fig.path=paste0(getwd(),"/images/"), echo=FALSE, warning=FALSE, message=FALSE, results="asis", cache=TRUE, knitr.table.format = "latex")
 
 root_path <- getwd()
 
 options(scipen = 5)
 
-source("../Scripts/libraries.R", chdir=TRUE, echo=FALSE)
-source("../Scripts/data-processing.R")
-source("../Scripts/plots.R")
-source("../Scripts/colors.R", chdir=TRUE, echo=FALSE)
-source("../Scripts/auxiliaryFunctions.R", chdir=TRUE)
+source("Scripts/libraries.R", chdir=TRUE, echo=FALSE)
+source("Scripts/data-processing.R")
+source("Scripts/plots.R")
+source("Scripts/colors.R", chdir=TRUE, echo=FALSE)
+source("Scripts/auxiliaryFunctions.R", chdir=TRUE)
 
 iterationsAndInliningFilename <- "../../Data/iterationsAndInlining.tsv"
 iterationsAndInliningCols <- c("Benchmark", "Iterations")
 numberOfIterationsPerBenchmarks <- 50
 
 @
-<<InherentPerformance, child='Inherent/mate.Rnw', results='markup'>>=
+<<InherentPerformance, child='Inherent/mate.Rnw', results='asis'>>=
 @
-<<LanguagesPerformance, child='Inherent/areWeFast.Rnw', results='markup'>>=
+<<LanguagesPerformance, child='Inherent/areWeFast.Rnw', results='asis'>>=
 @
-<<IndividualMetaOperationsPerformance, child='Individual/experiments.Rnw', results='markup'>>=
+<<IndividualMetaOperationsPerformance, child='Individual/experiments.Rnw', results='asis'>>=
 @
-<<ReadonlyPerformance, child='Readonly/experiments.Rnw', results='markup'>>=
+<<ReadonlyPerformance, child='Readonly/experiments.Rnw', results='asis'>>=
 @
