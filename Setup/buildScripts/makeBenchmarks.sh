@@ -30,7 +30,7 @@ else
   mv AWFY.changes AWFY_Pharo.changes
   rm $BENCHMARKS_DIR/AreWeFast/benchmarks/Smalltalk/Pharo.image
   rm $BENCHMARKS_DIR/AreWeFast/benchmarks/Smalltalk/Pharo.changes
-  popd /dev/null
+  popd > /dev/null
 
 fi
 OK Benchmarks Build Completed.
