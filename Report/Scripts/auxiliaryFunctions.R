@@ -11,21 +11,20 @@ summarizeData <- function(dataset){
 
 summarizeOverall <- function(dataset){
   overall <- ddply(dataset, ~ VM, summarise,
-                   OverallRtFactor = geometric.mean(RuntimeFactor),
-                   sd              = sd(RuntimeFactor),
-                   min             = min(RuntimeFactor),
-                   max             = max(RuntimeFactor),
-                   median          = median(RuntimeFactor))
+                   Geomean         = geometric.mean(RuntimeFactor),
+                   Sd              = sd(RuntimeFactor),
+                   Min             = min(RuntimeFactor),
+                   Max             = max(RuntimeFactor),
+                   Median          = median(RuntimeFactor))
   overall
 }
 
-normalizeData <- function (dataset, normalizeTo, keepBaseline) {
+normalizeData <- function (dataset, keepBaseline) {
   # normalize for each benchmark separately to the baseline
-  norm <- ddply(dataset, ~ Benchmark, transform,
-                RuntimeRatio = Value / mean(Value[VM == "TruffleSOM"]))
-  
+    norm <- ddply(dataset, ~ Benchmark, transform,
+                  RuntimeRatio = Value / mean(Value[grepl("SOM", VM)]))
   if (!keepBaseline){
-    norm <- droplevels(subset(norm, VM != normalizeTo))  
+    norm <- droplevels(subset(norm, !grepl("SOM", VM)))  
   }
   
   norm
@@ -62,14 +61,13 @@ boxplot <- function (data, axisYText, titleVertical) {
   p <- p + theme (axis.text.x = element_text(angle = 90, hjust = 1, vjust=0.5))
   } else {
   p <- p + theme (axis.text.x = element_blank())
-  }	        
-  #p <- p + coord_cartesian(ylim = c(scaleyLow, scaleyHigh))	
+  }
   #p <- p + ggtitle(titleHorizontal)	
   p
 }
 
-overview_box_plot <- function(stats) {
-  stats$VM <- reorder(stats$VM, X=-stats$VMMean)
+overview_box_plot <- function(stats, yLimits) {
+  stats$VM <- reorder(stats$VM, X=-stats$Geomean)
   
   breaks <- levels(droplevels(stats)$VM)
   col_values <- sapply(breaks, function(x) vm_colors[[x]])
@@ -82,7 +80,10 @@ overview_box_plot <- function(stats) {
     theme(axis.text.x = element_text(angle= 90, vjust=0.5, hjust=1), legend.position="none", plot.title = element_text(hjust = 0.5), aspect.ratio=0.5) +
     #scale_y_log10(breaks=c(1,2,3,10,20,30,50,100,200,300,500,1000)) + #limit=c(0,30), breaks=seq(0,100,5), expand = c(0,0)
     #+ coord_flip()
-    ggtitle("Runtime Factor, normalized to Java (lower is better)") + xlab("") +
+    #ggtitle("Runtime Factor, normalized to Java (lower is better)") + xlab("") +
     scale_fill_manual(values = col_values)
+  if (!missing(yLimits)){
+    plot <- plot + coord_cartesian(ylim = yLimits)	
+  }
   plot
 }

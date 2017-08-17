@@ -53,17 +53,20 @@ vmNamesMap <- function() {
                        #                       "MRI23"                 = "Ruby, MRI 2.3",
                        #                       "RBX314"                = "Ruby, Rubinius 3.14",
                        #                       "GraalJS"               = "JavaScript, GraalJS",
-                       #                       "Node"                  = "JavaScript, Node.js 5.4.0",
+                                               "Node"                  = "Node.js",
                        #                       "SOMns"                 = "SOMns, Newspeak, master",
                        #                       "SOMns-Enterprise"      = "SOMns, Newspeak",
                        #                       "JRubyTruffle"          = "Ruby, JRuby+Truffle, truffle head (basic)",
                        #                       "JRubyTruffleEnterprise" = "Ruby, JRuby+Truffle", # , truffle head
                        
-                       "TruffleSOM-graal"  = "TruffleSOM",
-                       "TruffleMate-graal" = "TruffleMate",
-                       "TruffleSOM-graal-enterprise"  = "TruffleSOM",
-                       "TruffleMate-graal-enterprise" = "TruffleMate",
-                       "TruffleMate-graal-enterprise-envInObj" = "TruffleMate-envInObj")
+                       "TruffleSOM-graal"  = "SOMpe",
+                       "TruffleMate-graal" = "MATEpe",
+                       "RTruffleSOM"       = "SOMmt",
+                       "RTruffleMate"      = "MATEmt",
+                       "TruffleSOM-graal-enterprise"  = "SOMpe-Ent",
+                       "TruffleMate-graal-enterprise" = "MATEpe-Ent",
+                       "TruffleMate-graal-enterprise-envInObj" = "MATEpe-Ent-envInObj",
+                       "Pharo"                  = "Pharo")
   #                       "TruffleSOM-graal-no-split" = "TruffleSOM.ns",
   #                       "SOMpp"                 = "SOM++")
   # Rename
@@ -76,3 +79,9 @@ getFilteredData <- function(filename, filterColumns, vmNames, iterationsFilename
   steady <- selectIterationsAndInlining(data, iterationsFilename, iterationsColNames, numberOfIterations)
   steady
 }
+
+microBenchmarks <- c("Bounce", "List", "Mandelbrot", "NBody", "Permute", "Queens", "Sieve", "Storage", "Towers")
+macroBenchmarks <- c("CD", "DeltaBlue", "Havlak", "Json", "Richards")
+
+mtVMs <- c("SOMmt", "MATEmt")
+peVMs <- c("SOMpe", "SOMpe-Ent", "MATEpe", "MATEpe-Ent", "MATEpe-Ent-envInObj")
