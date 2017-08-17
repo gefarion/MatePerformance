@@ -18,6 +18,7 @@ load_and_install_if_necessary("memoise")
 load_and_install_if_necessary("RColorBrewer")   #Palette of colors for overview_language_boxplots
 load_and_install_if_necessary("knitr")
 load_and_install_if_necessary("xtable")
+load_and_install_if_necessary("kableExtra")
 
 # avoid scientific notation for numbers, it's more readable to me
 options(scipen=999)
