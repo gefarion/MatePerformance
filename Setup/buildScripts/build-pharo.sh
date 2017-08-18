@@ -15,8 +15,8 @@ if [ ! -x "$IMPLEMENTATIONS_PATH/pharo/pharo" ]; then
   INFO Get Pharo VM
   pushd $IMPLEMENTATIONS_PATH/pharo
   get_web_getter
-  $GET get.pharo.org/vm50 || $GET get.pharo.org/vm50
-  bash vm50
+  $GET get.pharo.org/vm60 || $GET get.pharo.org/vm60
+  bash vm60
   
   INFO Get Pharo Image
   $GET get.pharo.org/stable || $GET get.pharo.org/stable
