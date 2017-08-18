@@ -13,7 +13,8 @@ then
     ./runScripts/runDynMetrics.sh
 fi
 
-if [[ "$ALL" = true || "$@" == "AreWeFast"  ]]
+if [[ "$ALL" = true || "$@" == "AreWeFast" || "$@" == "Inherent" || "$@" == "IndividualActivations" ]]
 then
     ./runScripts/runBenchs.sh $@
 fi
+
