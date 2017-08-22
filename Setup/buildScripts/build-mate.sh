@@ -19,8 +19,8 @@ else
   make clean; make
   OK TruffleMATE Build Completed.
   popd > /dev/null
-  checkout $ROOT_PATH/Implementations/RTruffleMate/ "https://github.com/charig/RTruffleMATE.git" "meta-layout"
-  pushd $ROOT_PATH/Implementations/RTruffleMate/
+  checkout $ROOT_PATH/Implementations/RTruffleMate/Standard "https://github.com/charig/RTruffleMATE.git" "meta-layout"
+  pushd $ROOT_PATH/Implementations/RTruffleMate/Standard
   if [ ! -d "pypy" ]
   then
     find_and_link PYPY_DIR "pypy" "/home/guido/Documents/Projects/pypy"
