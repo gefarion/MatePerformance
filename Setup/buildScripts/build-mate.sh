@@ -19,7 +19,7 @@ else
   make clean; make
   OK TruffleMATE Build Completed.
   popd > /dev/null
-  checkout $ROOT_PATH/Implementations/RTruffleMate/ "https://github.com/charig/RTruffleMATE.git" "meta-level"
+  checkout $ROOT_PATH/Implementations/RTruffleMate/ "https://github.com/charig/RTruffleMATE.git" "meta-layout"
   pushd $ROOT_PATH/Implementations/RTruffleMate/
   if [ ! -d "pypy" ]
   then

@@ -20,5 +20,15 @@ else
   make clean; make
   OK TruffleMATE with Environments stored in Objects Build Completed.
   popd > /dev/null
+  checkout $ROOT_PATH/Implementations/RTruffleMate/EnvironmentInObject "https://github.com/charig/RTruffleMATE.git" "meta-cache"
+  pushd $ROOT_PATH/Implementations/RTruffleMate/EnvironmentInObject
+  if [ ! -d "pypy" ]
+  then
+    find_and_link PYPY_DIR "pypy" "/home/guido/Documents/Projects/pypy"
+  fi
+  INFO "Compiling RTruffleMATE in JIT mode (may take some time...)"
+  make clean; JIT=True make
+  OK RTruffleMATE Build Completed.
+  popd > /dev/null
 fi
 
