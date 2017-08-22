@@ -9,13 +9,12 @@ then
 else
     BIN=RTruffleSOM-no-jit
 fi
-if [ "$1" == "--envInObject" ]
+if [ "$1" == "--envInObject" | "$2" == "--envInObject" ]
 then
     DIR=$SCRIPT_PATH/RTruffleMate/EnvironmentInObject
     ARGS=$ARGS + 1
 else
-    DIR=$SCRIPT_PATH/RTruffleMate
+    DIR=$SCRIPT_PATH/RTruffleMate/Standard
 fi
 
-echo $DIR/$BIN ${@:$ARGS}
 exec $DIR/$BIN ${@:$ARGS}
