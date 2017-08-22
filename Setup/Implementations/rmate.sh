@@ -9,7 +9,7 @@ then
 else
     BIN=RTruffleSOM-no-jit
 fi
-if [ "$1" == "--envInObject" | "$2" == "--envInObject" ]
+if [ "$1" == "--envInObject" || "$2" == "--envInObject" ]
 then
     DIR=$SCRIPT_PATH/RTruffleMate/EnvironmentInObject
     ARGS=$ARGS + 1
