@@ -27,9 +27,11 @@ numberOfIterationsPerBenchmarks <- 50
 @
 <<InherentPerformance, child='Inherent/mate.Rnw', results='asis'>>=
 @
-<<LanguagesPerformance, child='Inherent/areWeFast.Rnw', results='asis'>>=
+<<LanguagesPerformance, child='AreWeFast/areWeFast.Rnw', results='asis'>>=
 @
 <<IndividualMetaOperationsPerformance, child='Individual/experiments.Rnw', results='asis'>>=
 @
 <<ReadonlyPerformance, child='Readonly/experiments.Rnw', results='asis'>>=
+@
+<<Changepoint, child='Warmups/Changepoint.Rnw', results='asis'>>=
 @
