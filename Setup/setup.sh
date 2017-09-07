@@ -14,6 +14,7 @@ check_for ruby2.3 "" "non-fatal"
 check_for ruby    "Please see https://www.ruby-lang.org/en/documentation/installation/" "non-fatal"
 check_for_graalvm "non-fatal"
 check_for_pypy  "non-fatal"
+check_for_ant   "non-fatal"
 
 #$SCRIPT_PATH/build-jruby.sh
 #$SCRIPT_PATH/build-som.sh
@@ -21,7 +22,7 @@ $BUILDSCRIPTS/build-mate.sh
 $BUILDSCRIPTS/build-mate-environmentInObject.sh
 #$SCRIPT_PATH/build-somns.sh
 #$SCRIPT_PATH/build-graal.sh
-$SCRIPT_PATH/build-pharo.sh
+$BUILDSCRIPTS/build-pharo.sh
 $BUILDSCRIPTS/build-benchmarks.sh
 
 

@@ -27,8 +27,9 @@ GRAAL_JIT_FLAGS="-server -XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI -XX:+
 BENCHMARKS_DIR=$ROOT_PATH/Benchmarks
 
 #set pypy and java wich jvmci enabled dirs manually
-PYPY_DIR=""
-JAVA_JVMCI_DIR=""
+PYPY_DIR="/home/guido/Documents/Projects/pypy"
+JAVA_JVMCI_DIR="/home/guido/Documents/Projects/java-jvmci-8"
+GRAAL_OFICIAL="/home/guido/Documents/Projects/graalvm-0.27"
 
 ## GraalVM Binary
 export GRAAL_VM_CMD=$IMPLEMENTATIONS_PATH/graalvm/bin/java

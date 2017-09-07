@@ -11,12 +11,14 @@ then
 else
   checkout $ROOT_PATH/Implementations/TruffleMate/EnvironmentInObject "https://github.com/charig/TruffleMATE.git" "EnvironmentInObject"
   pushd $ROOT_PATH/Implementations/TruffleMate/EnvironmentInObject
-  pushd libs/truffle
+  if [ ! -d "graal" ]
+  then
+    find_and_link GRAAL_OFICIAL graal "/home/guido/graal"
+  fi
   if [ ! -d "java-jvmci-8" ]
   then
     find_and_link JAVA_JVMCI_DIR "java-jvmci-8" "/home/guido/Documents/Projects/TruffleMATE/libs/truffle/java-jvmci-8/"
   fi
-  popd > /dev/null
   make clean; make
   OK TruffleMATE with Environments stored in Objects Build Completed.
   popd > /dev/null

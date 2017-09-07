@@ -4,10 +4,10 @@ source $SCRIPT_PATH/../buildScripts/config.inc
 ARGS=1
 if [ "$1" == "--jit" ]
 then
-    BIN=RTruffleSOM-jit
+    BIN=RTruffleMate-jit
     ARGS=$((ARGS + 1))
 else
-    BIN=RTruffleSOM-no-jit
+    BIN=RTruffleMate-no-jit
 fi
 if [[ "$1" == "--envInObject" || "$2" == "--envInObject" ]]
 then

@@ -15,15 +15,27 @@ else
   fi
   checkout $ROOT_PATH/Implementations/TruffleMate/Standard "https://github.com/charig/TruffleMATE.git" "reflectiveCompiler"
   pushd $ROOT_PATH/Implementations/TruffleMate/Standard
-  INFO Compiling TruffleMATE
+  if [ ! -d "graal" ]
+  then
+    find_and_link GRAAL_OFICIAL graal "/home/guido/graal"
+  fi
+  if [ ! -d "java-jvmci-8" ]
+  then
+    find_and_link JAVA_JVMCI_DIR "java-jvmci-8" "/home/guido/Documents/Projects/TruffleMATE/libs/truffle/java-jvmci-8/"
+  fi
+  INFO "Compiling TruffleMATE" 
   make clean; make
   OK TruffleMATE Build Completed.
   popd > /dev/null
+  if [ ! -d $ROOT_PATH/Implementations/RTruffleMate ]
+  then
+    mkdir $ROOT_PATH/Implementations/RTruffleMate
+  fi
   checkout $ROOT_PATH/Implementations/RTruffleMate/Standard "https://github.com/charig/RTruffleMATE.git" "meta-layout"
   pushd $ROOT_PATH/Implementations/RTruffleMate/Standard
   if [ ! -d "pypy" ]
   then
-    find_and_link PYPY_DIR "pypy" "/home/guido/Documents/Projects/pypy"
+    find_and_link PYPY_DIR "pypy" "/home/guido/pypy" 
   fi
   INFO "Compiling RTruffleMATE in JIT mode (may take some time...)"
   make clean; JIT=True make

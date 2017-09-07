@@ -81,6 +81,10 @@ function check_for_pypy() {
   check_for "pypy" "https://pypy.org/download.html" "$1"
 }
 
+function check_for_ant() {
+  check_for "ant" "http://ant.apache.org/bindownload.cgi" "$1"
+}
+
 function check_for_graalvm() {
   if [ ! -x "$SCRIPT_PATH/graalvm/bin/javao" ]
   then
@@ -154,11 +158,11 @@ function update_git_repo() {
 } 
 
 function find_and_link() {
-  dir=[${!1}]
   INFO "$2 is still not linked, linking..." 
+  dir=${!1}
   if [ -d $dir ]
   then
-    app_dir=$1    
+    app_dir=$dir    
   else
     INFO "${1} env variable not set in config.inc, let's try the $2 directories in your os"
     look_in_and_choose "$HOME" $2 $3
