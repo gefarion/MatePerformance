@@ -1,8 +1,11 @@
 <<LanguagesPerformance, echo=FALSE, message=FALSE>>=
 knitr::opts_chunk$set(fig.width=10, fig.height=5,
-                      echo=FALSE, warning=FALSE, message=FALSE, results="asis", cache=TRUE)
+                      echo=FALSE, warning=FALSE, message=FALSE, results="asis")
 
-steady <- getFilteredData("../../Data/areWeFast.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), vmNamesMap(), iterationsAndInliningFilename, iterationsAndInliningCols, numberOfIterationsPerBenchmarks)
+steady <- getWarmedupData("../../Data/areWeFast.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), 
+                          vmNamesMap(), numberOfIterationsPerBenchmark)
+
+steady <- droplevels(subset(steady, VM == "SOMpe-Ent" | VM == "SOMmt" | VM == "Java" | VM == "Pharo" | VM == "Node.js"))
 
 normalizedSteady <- ddply(steady, ~ Benchmark, transform,
                 RuntimeRatio = Value / mean(Value[VM == "Java"]))
@@ -25,8 +28,8 @@ names(vm_colors) <- vmNamesMap()
 
 @
 \def\LanguagesPerfComparisonPlot{%
-<<languages-perf-overview, fig.width=4, fig.height=2>>=
-print(overview_box_plot(summarizedPerBenchAndVM, c(1,12)))
+<<languages-perf-overview, fig.width=5, fig.height=2>>=
+print(overview_box_plot(summarizedPerBenchAndVM, c(1,18)))
 @
 }%
 \def\LanguagesTableSummary{%

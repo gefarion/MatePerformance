@@ -63,6 +63,7 @@ vmNamesMap <- function() {
                        "TruffleMate-graal" = "MATEpe",
                        "RTruffleSOM"       = "SOMmt",
                        "RTruffleMate"      = "MATEmt",
+                       "RTruffleMate-envInObj"      = "MATEmt-envInObj",
                        "TruffleSOM-graal-enterprise"  = "SOMpe-Ent",
                        "TruffleMate-graal-enterprise" = "MATEpe-Ent",
                        "TruffleMate-graal-enterprise-envInObj" = "MATEpe-Ent-envInObj",
@@ -80,8 +81,15 @@ getFilteredData <- function(filename, filterColumns, vmNames, iterationsFilename
   steady
 }
 
+getWarmedupData <- function(filename, filterColumns, vmNames, numberOfIterations) {
+  data <- getAndPrepareData(filename, filterColumns)
+  data <- change_names(data, vmNames, "VM")
+  steady <- selectWarmedupData(data, numberOfIterations)
+  steady
+}
+
 microBenchmarks <- c("Bounce", "List", "Mandelbrot", "NBody", "Permute", "Queens", "Sieve", "Storage", "Towers")
 macroBenchmarks <- c("CD", "DeltaBlue", "Havlak", "Json", "Richards")
 
-mtVMs <- c("SOMmt", "MATEmt")
+mtVMs <- c("SOMmt", "MATEmt", "MATEmt-envInObj")
 peVMs <- c("SOMpe", "SOMpe-Ent", "MATEpe", "MATEpe-Ent", "MATEpe-Ent-envInObj")

@@ -9,6 +9,18 @@ summarizeData <- function(dataset){
   stats
 }
 
+summarizeNotNormalizedData <- function(dataset){
+  stats <- ddply(dataset, ~ Benchmark + VM + Suite,
+                 summarise,
+                 Time.mean                 = mean(Value),
+                 Time.geomean              = geometric.mean(Value),
+                 Time.stddev               = sd(Value),
+                 Time.median               = median(Value),
+                 max = max(Value),
+                 min = min(Value))
+  stats
+}
+
 summarizeOverall <- function(dataset){
   overall <- ddply(dataset, ~ VM, summarise,
                    Geomean         = geometric.mean(RuntimeFactor),
@@ -48,6 +60,42 @@ selectIterationsAndInlining <- function(data, filename, rowNames, numberOfIterat
   resultSet
 }
 
+selectWarmedupData <- function(data, numberOfIterations) {
+  resultSet <- data
+  for (vm in unique(data$VM)){
+    warmups <- read.csv(paste("../Warmups/", warmupFilename(vm), sep=""), sep="\t", header = FALSE, skip=4)
+    for (b in unique(data$Benchmark)) {
+      row <- warmups[warmups$V1 == b,]
+      if (nrow(row) == 0) {
+        resultSet <- droplevels(subset(resultSet, Benchmark != b))
+      } else {
+        realValues <- suppressWarnings(as.numeric(row))
+        realValues <- realValues[!is.na(row)]
+        realValues <- realValues[realValues != '']
+        warmup <- tail(realValues, n=1)
+        if (!is.na(warmup)){
+          resultSet <- droplevels(subset(resultSet,(
+            (Benchmark != b) | (VM != vm) |
+              (Benchmark == b & VM == vm & Iteration >= warmup + 3 & Iteration < warmup + numberOfIterations))))  
+        } else {
+          #No automatic warmup. Look for a manual one.
+          warmups <- read.csv(paste("../Warmups/", "changePoint-manual.tsv", sep=""), sep="\t", header = FALSE, skip=2)
+          row <- warmups[warmups$V1 == vm & warmups$V2 == b,]
+          if (nrow(row) == 0) {
+            print (paste(paste("Missing manual warmup value for", vm), b))  
+          } else {
+            warmup <- suppressWarnings(tail(as.numeric(row), n=1))
+            resultSet <- droplevels(subset(resultSet,(
+              (Benchmark != b) | (VM != vm) |
+                (Benchmark == b & (VM == vm) & Iteration >= warmup + 3 & Iteration < warmup + numberOfIterations))))  
+          }  
+        }
+      }
+    }
+  }
+  return (resultSet)
+}
+
 boxplot <- function (data, axisYText, titleVertical) {
   p <- ggplot(data, aes(x = Benchmark, y = RuntimeRatio))
   p <- p + facet_grid(~VM, labeller = label_parsed)
@@ -77,13 +125,56 @@ overview_box_plot <- function(stats, yLimits) {
   plot <- plot +
     geom_boxplot(outlier.size = 0.5) + #fill=get_color(5, 7)
     theme_bw() + theme_simple(font_size = 12) +
-    theme(axis.text.x = element_text(angle= 90, vjust=0.5, hjust=1), legend.position="none", plot.title = element_text(hjust = 0.5), aspect.ratio=0.5) +
+    theme(axis.text.x = element_text(angle= 90, vjust=0.5, hjust=1), 
+          legend.position="none", 
+          plot.title = element_text(hjust = 0.5)) +
     #scale_y_log10(breaks=c(1,2,3,10,20,30,50,100,200,300,500,1000)) + #limit=c(0,30), breaks=seq(0,100,5), expand = c(0,0)
-    #+ coord_flip()
     #ggtitle("Runtime Factor, normalized to Java (lower is better)") + xlab("") +
     scale_fill_manual(values = col_values)
   if (!missing(yLimits)){
-    plot <- plot + coord_cartesian(ylim = yLimits)	
+    plot <- plot + coord_flip(ylim = yLimits)
+  } else {
+    plot <- plot + coord_flip()	
   }
+  
   plot
 }
+
+#Returns the first segment of at least size elements and which mean is not more than 
+#thresholdRatio de minimun value of the dataset
+segmentWithLengthAndMean <- function(ts, changepoints, size, iterations, thresholdRatio) {
+  if (length(changepoints) == 0){
+    #No changepoint
+    return("No Warmup because there are no changepoints")
+  }
+  cps <- c(changepoints, iterations)
+  segmentLengths <- diff(cps)
+  segments <- which(segmentLengths > size)
+  #only one changepoint > size?
+  if (length(segments) == 0) {
+      return("Warmup too late")
+  } else {
+    #Several changepoints > size
+    threshold <- min(ts) * thresholdRatio
+    for (i in 1:length(segments)){
+      #Select the first which mean is related with the min of the timeseries
+      bestFit <- c(1000000, 100000)
+      startSegment <- cps[segments[i]]
+      elements <- ts[(startSegment + 3):(startSegment + size - 2)]
+      if (mean(elements) <= threshold){
+        return(startSegment)
+      } else {
+        if (threshold - mean(elements) < bestFit[1]){
+          bestFit[1] <- threshold - mean(elements)
+          bestFit[2] <- startSegment
+        }
+      }
+    }
+    return(paste(paste(paste("No Warmup, best fit with mean difference", bestFit[1]), "at iteration"), bestFit[2])) 
+  }
+}
+
+warmupFilename <- function(vm) {
+  return (paste(paste("changePoint-",vm, sep=""),".tsv", sep=""))
+}
+  

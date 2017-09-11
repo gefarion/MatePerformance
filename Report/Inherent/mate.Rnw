@@ -12,7 +12,7 @@ steadyAWF <- droplevels(subset(steadyAWF, VM == "SOMpe-Ent" | VM == "MATEmt" | V
 steady <- rbind(steadyOwn, steadyAWF)
 
 micro <- droplevels(subset(steady, Suite == "classic-micro-steady" | (Suite == "are-we-fast-som" & Benchmark %in% microBenchmarks)))
-microWithoutRecursive <- droplevels(subset(micro, Benchmark != "Fibonacci" & Benchmark != "Recurse" & Benchmark != "Permute"))
+microWithoutRecursive <- droplevels(subset(micro, Benchmark != "Fibonacci" & Benchmark != "Recurse")) #& Benchmark != "Permute"
 macro <- droplevels(subset(steady, Suite == "classic-macro-steady" | (Suite == "are-we-fast-som" & Benchmark %in% macroBenchmarks)))
 
 steadyMT <- droplevels(subset(steady, VM %in% mtVMs))
@@ -53,22 +53,22 @@ overallSummaryMicroWithoutRecursive <- summarizeOverall(summarizedMicroWithoutRe
 overallSummaryMacro <- summarizeOverall(summarizedMacro)
 @
 \def\MicroPerfComparisonPlot{%
-<<perf-overview-micro>>=
+<<perf-overview-micro, fig.width=5, fig.height=2>>=
 print(boxplot(normalizedMicro, TRUE, "Run Time"))
 @
 }%
 \def\MicroWithoutRecursivePerfComparisonPlot{%
-<<perf-overview-micro-withoutRecursive>>=
+<<perf-overview-micro-withoutRecursive, fig.width=6, fig.height=2>>=
 print(boxplot(normalizedMicroWithoutRecursive, TRUE, "Run Time"))
 @
 }%
 \def\MacroPerfComparisonPlot{%
-<<perf-overview-macro>>=
+<<perf-overview-macro, fig.width=5, fig.height=2>>=
 print(boxplot(normalizedMacro, TRUE, "Run Time"))
 @
 }%
 \def\OverallPerfComparisonPlot{%
-<<perf-overview-overall>>=
+<<perf-overview-overall, fig.width=5, fig.height=2>>=
 print(boxplot(normalizedSteady, TRUE, "Run Time"))
 @
 }%
@@ -133,7 +133,7 @@ print(
        booktabs = T,
        format = "latex",
        digits = 2,
-       caption = "Overall Baseline Results")  %>%
+       caption = "Micro Benchmarks Inherent Performance Overheads")  %>%
        kable_styling(latex_options = c("repeat_header"), font_size = 8))
 @
 }
@@ -145,7 +145,7 @@ print(
        booktabs = T,
        format = "latex",
        digits = 2,
-       caption = "Overall Baseline Results")  %>%
+       caption = "Micro Benchmarks Inherent Performance Overheads")  %>%
        kable_styling(latex_options = c("repeat_header"), font_size = 8))
 @
 }
@@ -157,7 +157,7 @@ print(
        booktabs = T,
        format = "latex",
        digits = 2,
-       caption = "Overall Baseline Results")  %>%
+       caption = "Macro Benchmarks Inherent Performance Overheads")  %>%
        kable_styling(latex_options = c("repeat_header"), font_size = 8))
 @
 }
@@ -169,7 +169,7 @@ print(
        booktabs = T,
        format = "latex",
        digits = 2,
-       caption = "Overall Baseline Results")  %>%
+       caption = "Overall Inherent Performance Overheads")  %>%
        kable_styling(latex_options = c("repeat_header"), font_size = 8))
 @
 }

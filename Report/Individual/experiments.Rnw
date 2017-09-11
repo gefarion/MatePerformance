@@ -64,7 +64,7 @@ overallSummaryMega <- summarizeOverall(summarizedMega)
 
 @
 \def\IndividualMOPPerfComparisonPlot{%
-<<perf-overview-mop>>=
+<<perf-overview-mop, fig.width=5, fig.height=2>>=
 print(boxplot(mopNormalized, TRUE, "Run Time"))
 @
 }%
@@ -76,8 +76,15 @@ print(boxplot(megamorphicNormalized, TRUE, "Run Time"))
 }%
 
 \def\MopTableSummary{%
-<<perf-summary-table-mop, echo=FALSE, results="asis", cache=FALSE>>=
-print(xtable(arrange(summarizedMop, Benchmark), c("Mop")))
+<<perf-summary-table-mop, results="asis">>=
+print(
+  kable(arrange(summarizedMop, Benchmark), 
+       booktabs = T,
+       format = "latex",
+       longtable = T,
+       digits = 2)  %>%
+       kable_styling(latex_options = c("repeat_header"), font_size = 7)  %>%
+       collapse_rows(columns = 1:2))
 @
 }
 
@@ -88,8 +95,14 @@ print(xtable(arrange(summarizedMega, Benchmark), c("Mop summary")))
 }
 
 \def\MopTableOverall{%
-<<perf-mop-table-overall, echo=FALSE, results="asis", cache=FALSE>>=
-print(xtable(overallSummaryMop, c("Mop Overall")))
+<<perf-mop-table-overall, results="asis">>=
+print(
+   kable(arrange(overallSummaryMop, Geomean), 
+       booktabs = T,
+       format = "latex",
+       digits = 2,
+       caption = "Overall Inherent Performance Overheads")  %>%
+       kable_styling(latex_options = c("repeat_header"), font_size = 8))
 @
 }
 

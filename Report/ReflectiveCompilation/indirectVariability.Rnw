@@ -1,0 +1,48 @@
+<<IndirectPerformance, echo=FALSE, message=FALSE>>=
+knitr::opts_chunk$set(fig.width=3.6, fig.height=1.2,
+                      echo=FALSE, warning=FALSE, message=FALSE, results="asis", cache=TRUE)
+
+steady <- getWarmedupData("../../Data/reflectiveCompilation.data",
+  c("Value", "Benchmark", "VM", "Suite", "Iteration"), vmNamesMap(), numberOfIterationsPerBenchmark)
+
+name_map <- list(
+  "BasicToDo" = "Indirect",
+  "BasicToDoSplit" = "Indirect+Split"
+)
+
+steady <- change_names(steady, name_map, "Benchmark")
+steady <- ddply(steady, ~Benchmark, transform, xVal = Iteration - min(Iteration) + 1)
+stats <- summarizeNotNormalizedData(steady)
+
+@
+\def\indirectPerfComparisonPlot{%
+<<indirect-performance, fig.width=3, fig.height=1, echo=FALSE, results="asis", cache=FALSE>>=
+dataFiltered <- subset(steady, Benchmark == "Indirect" | Benchmark == "Indirect+Split")
+p <- ggplot(data=dataFiltered, aes(x=xVal, y=Value/1000, group = Benchmark, colour = Benchmark)) +
+    xlab("Iteration") + ylab("Run Time (seconds)") +
+    geom_line(size=0.3)  + 
+    theme_classic() +
+    theme(axis.title.x = element_text(size=7),
+          axis.title.y = element_text(size=7, hjust=1),
+          axis.text.x = element_text(size=7),
+          axis.text.y = element_text(size=7),
+          legend.text = element_text(size=6),
+          legend.title = element_blank(),
+          legend.key.height=unit(0.8,"line"))
+#    theme_bw() +
+#    theme(legend.position=c(.7, .4))           # Position legend inside # This must go after theme_bw
+print(p)  
+@
+}%
+
+\def\IndirectPerfMeanBaseline{%
+<<indirect-summary-bl, echo=FALSE, results="asis", cache=FALSE>>=
+cat ((round(stats[stats$Benchmark == "Indirect",]$Time.mean)[1]))
+@
+}%
+
+\def\IndirectPerfMeanSplit{%
+<<indirect-summary-split, echo=FALSE, results="asis", cache=FALSE>>=
+cat (round(stats[stats$Benchmark == "Indirect+Split",]$Time.mean))
+@
+}

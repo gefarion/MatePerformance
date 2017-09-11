@@ -22,8 +22,10 @@ source("Scripts/auxiliaryFunctions.R", chdir=TRUE)
 
 iterationsAndInliningFilename <- "../../Data/iterationsAndInlining.tsv"
 iterationsAndInliningCols <- c("Benchmark", "Iterations")
-numberOfIterationsPerBenchmarks <- 50
+numberOfIterationsPerBenchmark <- 50
 
+@
+<<Changepoint, child='Warmups/Changepoint.Rnw', results='asis'>>=
 @
 <<InherentPerformance, child='Inherent/mate.Rnw', results='asis'>>=
 @
@@ -33,5 +35,7 @@ numberOfIterationsPerBenchmarks <- 50
 @
 <<ReadonlyPerformance, child='Readonly/experiments.Rnw', results='asis'>>=
 @
-<<Changepoint, child='Warmups/Changepoint.Rnw', results='asis'>>=
+<<EphemeralPerformance, child='ReflectiveCompilation/instanceMigration.Rnw', results='asis'>>=
+@
+<<IndirectPerformance, child='ReflectiveCompilation/indirectVariability.Rnw', results='asis'>>=
 @

@@ -17,7 +17,7 @@ summarizedReadonly <- summarizeData(readonlyNormalized)
 @
 \def\ReadonlyPerfComparisonPlot{%
 <<perf-overview-readonly>>=
-print(boxplot(readonlyNormalized, TRUE, "Run Time"))
+print(boxplot(readonlyNormalized, TRUE, "Run Time", c(1,10)))
 @
 }%
 
