@@ -19,6 +19,7 @@ load_and_install_if_necessary("RColorBrewer")   #Palette of colors for overview_
 load_and_install_if_necessary("knitr")
 load_and_install_if_necessary("xtable")
 load_and_install_if_necessary("kableExtra")
+load_and_install_if_necessary("changepoint")
 
 # avoid scientific notation for numbers, it's more readable to me
 options(scipen=999)

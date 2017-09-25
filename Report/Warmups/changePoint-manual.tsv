@@ -1,0 +1,10 @@
+#This file contains manual warmup selections for those (vm,bench) whose values could not be determined automatically
+  
+Node.js	DeltaBlue	50
+Pharo	DeltaBlue	50
+Pharo	Havlak	50
+Pharo	Sieve	50
+Pharo	Storage	50
+MATEpe-Ent	DeltaBlue	1011
+MATEpe-Ent	Havlak	50
+SOMpe-Ent	DeltaBlue	1026
