@@ -3,7 +3,7 @@ writeLines("[INFO] Loading Libraries")
 load_and_install_if_necessary <- function(package_name) {
   if (!suppressPackageStartupMessages(library(package_name, character.only=TRUE, logical.return=TRUE))) {
     cat(paste0("Package ", package_name, " not found. Will install it."))
-    install.packages(package_name)
+    install.packages(package_name, repos = "http://cran.us.r-project.org")
     library(package_name, character.only=TRUE)
   }
 }
@@ -17,8 +17,9 @@ load_and_install_if_necessary("ggrepel")   # make sure labels don't overlap
 load_and_install_if_necessary("memoise")
 load_and_install_if_necessary("RColorBrewer")   #Palette of colors for overview_language_boxplots
 load_and_install_if_necessary("knitr")
-load_and_install_if_necessary("xtable")
-load_and_install_if_necessary("kableExtra")
+load_and_install_if_necessary("kableExtra") #tables  
+load_and_install_if_necessary("mratios")    #Confidence intervals for ratios
+load_and_install_if_necessary("Rmisc")      #Confidence intervals for geometric means
 load_and_install_if_necessary("changepoint")
 
 # avoid scientific notation for numbers, it's more readable to me
