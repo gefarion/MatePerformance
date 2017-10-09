@@ -1,7 +1,7 @@
 <<performance, echo=FALSE, include=FALSE>>=
 if (Sys.getenv("RSTUDIO") == "1") { 
-  setwd("/Users/guidochari/Documents/Projects/MatePerformance/Report") 
-  #setwd("/home/guido/Documents/Writings/Research/Towards Meta Optimization/Experiments/")
+  #setwd("/Users/guidochari/Documents/Projects/MatePerformance/Report") 
+  setwd("/home/guido/Documents/Projects/MatePerformance/Report")
 }
 
 root_path <- getwd()
