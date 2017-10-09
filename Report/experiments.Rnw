@@ -25,7 +25,7 @@ iterationsAndInliningCols <- c("Benchmark", "Iterations")
 numberOfIterationsPerBenchmark <- 50
 
 @
-<<Changepoint, child='Warmups/Changepoint.Rnw', results='asis'>>=
+<<Changepoint, child='Warmups/changepoint.Rnw', results='asis'>>=
 @
 <<InherentPerformance, child='Inherent/mate.Rnw', results='asis'>>=
 @
