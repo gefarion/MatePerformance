@@ -21,20 +21,43 @@ summarizeNotNormalizedData <- function(dataset){
   stats
 }
 
-summarizeOverall <- function(dataset){
-  overall <- ddply(dataset, ~ VM, summarise,
-                   Geomean         = geometric.mean(RuntimeFactor),
+summarizeOverall <- function(dataset, grouping){
+  overall <- ddply(dataset, grouping, summarise,
+                   Geomean         = tryCatch({
+                     exp(CI(log(RuntimeFactor), ci=0.95))[2]
+                   }, error = function(e) {
+                     RuntimeFactor
+                   }),  
+                   Confidence      = tryCatch({
+                     paste(
+                       paste("<", round(exp(CI(log(RuntimeFactor), ci=0.95))[3], digits = 2), sep=""),
+                       paste(round(exp(CI(log(RuntimeFactor), ci=0.95))[1], digits = 2), ">", sep=""),
+                       sep=" - ")
+                   }, error = function(e) {
+                     "Too few values"
+                   }),
                    Sd              = sd(RuntimeFactor),
                    Min             = min(RuntimeFactor),
                    Max             = max(RuntimeFactor),
                    Median          = median(RuntimeFactor))
-  overall
+  return(overall)
 }
 
-normalizeData <- function (dataset, keepBaseline) {
+normalizeData <- function (dataset, grouping, baseline, keepBaseline) {
   # normalize for each benchmark separately to the baseline
-    norm <- ddply(dataset, ~ Benchmark, transform,
-                  RuntimeRatio = Value / mean(Value[grepl("SOM", VM)]))
+  baseNormalization <<- baseline
+  norm <- ddply(dataset, grouping, transform,
+                  RuntimeRatio = Value / mean(Value[VM == baseNormalization]))
+  if (!keepBaseline){
+    norm <- droplevels(subset(norm, VM != baseNormalization))  
+  }
+  return (norm)
+}
+
+normalizePerIteration <- function (dataset, keepBaseline) {
+  # normalize for each benchmark separately to the baseline
+  norm <- ddply(dataset, ~ Benchmark, transform,
+                RuntimeRatio = Value / Value[grepl("SOM", VM) & Iteration==Iteration])
   if (!keepBaseline){
     norm <- droplevels(subset(norm, !grepl("SOM", VM)))  
   }
@@ -61,6 +84,14 @@ selectIterationsAndInlining <- function(data, filename, rowNames, numberOfIterat
 }
 
 selectWarmedupData <- function(data, numberOfIterations) {
+  return (selectData(data, numberOfIterations, TRUE))
+}
+
+selectWarmupData <- function(data, numberOfIterations) {
+  return (selectData(data, 0, FALSE))
+}
+
+selectData <- function(data, numberOfIterations, warmedup) {
   resultSet <- data
   for (vm in unique(data$VM)){
     warmups <- read.csv(paste("../Warmups/", warmupFilename(vm), sep=""), sep="\t", header = FALSE, skip=4)
@@ -74,9 +105,15 @@ selectWarmedupData <- function(data, numberOfIterations) {
         realValues <- realValues[realValues != '']
         warmup <- tail(realValues, n=1)
         if (!is.na(warmup)){
-          resultSet <- droplevels(subset(resultSet,(
-            (Benchmark != b) | (VM != vm) |
-              (Benchmark == b & VM == vm & Iteration >= warmup + 3 & Iteration < warmup + numberOfIterations))))  
+          if (warmedup){
+            resultSet <- droplevels(subset(resultSet,(
+              (Benchmark != b) | (VM != vm) |
+                (Benchmark == b & VM == vm & Iteration >= warmup + 3 & Iteration < warmup + numberOfIterations))))
+          } else {
+            resultSet <- droplevels(subset(resultSet,(
+              (Benchmark != b) | (VM != vm) |
+                (Benchmark == b & VM == vm & Iteration <= warmup + 2))))
+          }
         } else {
           #No automatic warmup. Look for a manual one.
           warmups <- read.csv(paste("../Warmups/", "changePoint-manual.tsv", sep=""), sep="\t", header = FALSE, skip=2)
@@ -85,9 +122,15 @@ selectWarmedupData <- function(data, numberOfIterations) {
             print (paste(paste("Missing manual warmup value for", vm), b))  
           } else {
             warmup <- suppressWarnings(tail(as.numeric(row), n=1))
-            resultSet <- droplevels(subset(resultSet,(
-              (Benchmark != b) | (VM != vm) |
-                (Benchmark == b & (VM == vm) & Iteration >= warmup + 3 & Iteration < warmup + numberOfIterations))))  
+            if (warmedup){
+              resultSet <- droplevels(subset(resultSet,(
+                (Benchmark != b) | (VM != vm) |
+                  (Benchmark == b & (VM == vm) & Iteration >= warmup + 3 & Iteration < warmup + numberOfIterations))))
+            } else {
+              resultSet <- droplevels(subset(resultSet,(
+                (Benchmark != b) | (VM != vm) |
+                  (Benchmark == b & (VM == vm) & Iteration <= warmup + 2))))
+            }
           }  
         }
       }
@@ -98,7 +141,7 @@ selectWarmedupData <- function(data, numberOfIterations) {
 
 boxplot <- function (data, axisYText, titleVertical) {
   p <- ggplot(data, aes(x = Benchmark, y = RuntimeRatio))
-  p <- p + facet_grid(~VM, labeller = label_parsed)
+#  p <- p + facet_grid(~VM, labeller = label_parsed)
   p <- p + geom_hline(yintercept = 1, linetype = "dashed")
   p <- p + geom_boxplot(outlier.size = 0.9) + theme_simple()
   p <- p + scale_y_continuous(name=titleVertical) + 
@@ -106,16 +149,16 @@ boxplot <- function (data, axisYText, titleVertical) {
           plot.margin=unit(x=c(0.4,0,0,0),units="mm"),
           text = element_text(size = 8))
   if (axisYText){
-  p <- p + theme (axis.text.x = element_text(angle = 90, hjust = 1, vjust=0.5))
+    p <- p + theme (axis.text.x = element_text(angle = 90, hjust = 1, vjust=0.5))
   } else {
-  p <- p + theme (axis.text.x = element_blank())
+    p <- p + theme (axis.text.x = element_blank())
   }
   #p <- p + ggtitle(titleHorizontal)	
   p
 }
 
 overview_box_plot <- function(stats, yLimits) {
-  stats$VM <- reorder(stats$VM, X=-stats$Geomean)
+  stats$VM <- reorder(stats$VM, X=-stats$RuntimeFactor)
   
   breaks <- levels(droplevels(stats)$VM)
   col_values <- sapply(breaks, function(x) vm_colors[[x]])
@@ -125,7 +168,10 @@ overview_box_plot <- function(stats, yLimits) {
   plot <- plot +
     geom_boxplot(outlier.size = 0.5) + #fill=get_color(5, 7)
     theme_bw() + theme_simple(font_size = 12) +
-    theme(axis.text.x = element_text(angle= 90, vjust=0.5, hjust=1), 
+    labs(x="") +
+    theme(
+          axis.title.x = element_blank(),
+          axis.text.x = element_text(angle= 90, vjust=0.5, hjust=1), 
           legend.position="none", 
           plot.title = element_text(hjust = 0.5)) +
     #scale_y_log10(breaks=c(1,2,3,10,20,30,50,100,200,300,500,1000)) + #limit=c(0,30), breaks=seq(0,100,5), expand = c(0,0)
@@ -136,7 +182,6 @@ overview_box_plot <- function(stats, yLimits) {
   } else {
     plot <- plot + coord_flip()	
   }
-  
   plot
 }
 
@@ -177,4 +222,52 @@ segmentWithLengthAndMean <- function(ts, changepoints, size, iterations, thresho
 warmupFilename <- function(vm) {
   return (paste(paste("changePoint-",vm, sep=""),".tsv", sep=""))
 }
-  
+
+summarizedPerBenchmark <- function(data, iterations, baseline, baselineName) {
+  data <- droplevels(subset(data, Iteration >= iterations[1] & Iteration <= iterations[2])) 
+  #make it global to use it in ddply
+  baselineGlobal <<- droplevels(subset(baseline, Iteration >= iterations[1] & Iteration <= iterations[2])) 
+  normalized <- normalizeData(data, ~ Benchmark, baselineName, FALSE)
+  normalized <- droplevels(subset(normalized, Iteration >= iterations[1] & Iteration <= iterations[2]))
+  return (ddply(normalized, ~ VM + Benchmark, summarise, 
+                                   RuntimeFactor = 
+                                     tryCatch({
+                                       t.test.ratio(Value, baselineGlobal[baselineGlobal$Benchmark == Benchmark,]$Value)$estimate[3]
+                                     }, error = function(e) {
+                                       mean(Value) / mean(baselineGlobal[baselineGlobal$Benchmark == Benchmark,]$Value)
+                                     }),
+                                   Confidence    = 
+                                     tryCatch({
+                                        paste(
+                                        paste("<", 
+                                          round(t.test.ratio(Value, baselineGlobal[baselineGlobal$Benchmark == Benchmark,]$Value)$conf.int[1], digits = 2), sep=""),
+                                        paste(
+                                          round(t.test.ratio(Value, baselineGlobal[baselineGlobal$Benchmark == Benchmark,]$Value)$conf.int[2], digits = 2), ">", sep=""),
+                                        sep=" - ")
+                                     }, error = function(e) {
+                                        "Too few values"
+                                     }),
+                                   Sd            = sd(RuntimeRatio),
+                                   Median        = median(RuntimeRatio),
+                                   Min           = min(RuntimeRatio),
+                                   Max           = max(RuntimeRatio)))
+}
+
+summarizedTable <- function(data, columns) {  
+  tableData <- data[,columns]
+  return(
+    kable(arrange(tableData, Benchmark), 
+          booktabs = T,
+          format = "latex",
+          longtable = T,
+          digits = 2)  %>%
+      kable_styling(latex_options = c("repeat_header"), font_size = 7)  %>%
+      collapse_rows(columns = 1:2))
+}  
+
+intervalToNumbers <- function(confidenceString){
+  separatorPosition <- regexpr('-', confidenceString)
+  low <- as.numeric(substring(confidenceString, 2, separatorPosition - 2))
+  high <- as.numeric(substring(confidenceString, separatorPosition + 2, nchar(confidenceString) - 1))
+  return (c(low, high))
+}

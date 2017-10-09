@@ -74,17 +74,28 @@ vmNamesMap <- function() {
   name_map
 }
 
-getFilteredData <- function(filename, filterColumns, vmNames, iterationsFilename, iterationsColNames, numberOfIterations) {
+getRawData <- function(filename, filterColumns, vmNames, keepVMs) {
   data <- getAndPrepareData(filename, filterColumns)
   data <- change_names(data, vmNames, "VM")
+  data <- droplevels(subset(data, VM %in% keepVMs))
+  return(data)
+}
+
+getFilteredData <- function(filename, filterColumns, vmNames, keepVms, iterationsFilename, iterationsColNames, numberOfIterations) {
+  data <- getRawData(filename, filterColumns, vmNames, keepVms)
   steady <- selectIterationsAndInlining(data, iterationsFilename, iterationsColNames, numberOfIterations)
   steady
 }
 
-getWarmedupData <- function(filename, filterColumns, vmNames, numberOfIterations) {
-  data <- getAndPrepareData(filename, filterColumns)
-  data <- change_names(data, vmNames, "VM")
+getWarmedupData <- function(filename, filterColumns, vmNames, keepVms, numberOfIterations) {
+  data <- getRawData(filename, filterColumns, vmNames, keepVms)
   steady <- selectWarmedupData(data, numberOfIterations)
+  steady
+}
+
+getWarmupData <- function(filename, filterColumns, vmNames, keepVms, numberOfIterations) {
+  data <- getRawData(filename, filterColumns, vmNames, keepVms)
+  steady <- selectWarmupData(data, numberOfIterations)
   steady
 }
 
