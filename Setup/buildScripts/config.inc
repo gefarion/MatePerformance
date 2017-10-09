@@ -44,18 +44,17 @@ then
 elif [ -x /usr/sbin/update-java-alternatives ]
 then
   export OS=linux
-  jvm_info=(`/usr/sbin/update-java-alternatives -l | grep java-8`)
-
-## Needed if using openjdk
-  if [ -z "${jvm_info[2]}" ]
+  if [ ! -z `/usr/sbin/update-java-alternatives -l | grep java-8` ]
   then
-   jvm_info=(`/usr/sbin/update-java-alternatives -l | grep java-1.8`)
+    export JVM_INFO=(`/usr/sbin/update-java-alternatives -l | grep java-8`)
+  else
+   JVM_INFO=(`/usr/sbin/update-java-alternatives -l | grep java-1.8 | sed 's/ /\n/g'`)
   fi
-
-  export JAVA8_HOME=${jvm_info[2]}
+  export JAVA8_HOME=${JVM_INFO[2]}
 else
   WARN Java directories could not be guessed, please check config.inc
 fi
+
 if [ ! -d "$JAVA8_HOME" ]
 then
   ERR "Java 8 was not found. Please check config.inc file"

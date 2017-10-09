@@ -13,7 +13,7 @@ then
     ./runScripts/runDynMetrics.sh
 fi
 
-if [[ "$ALL" = true || "$@" == "AreWeFast" || "$@" == "Inherent" || "$@" == "IndividualActivations" || "$@" == "Readonly" || "$@" == "Tracing" ]]
+if [[ "$ALL" = true || "$@" == "AreWeFast" || "$@" == "Inherent" || "$@" == "IndividualActivations" || "$@" == "Readonly" || "$@" == "Tracing" || "$@" == "ReflectiveCompilation" ]]
 then
     ./runScripts/runBenchs.sh $@
 fi

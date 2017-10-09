@@ -137,6 +137,7 @@ function update_git_repo() {
     remote="origin"
   fi
 
+  echo $1
   if [ -d $1 ]
   then
     pushd $1
@@ -150,7 +151,7 @@ function update_git_repo() {
     if [ -f Makefile ]
     then
       INFO Compiling
-      make clean; make
+      JIT=1 make clean; JIT=1 make
     fi
     popd > /dev/null
     OK done
