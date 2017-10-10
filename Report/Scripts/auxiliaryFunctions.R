@@ -139,9 +139,17 @@ selectData <- function(data, numberOfIterations, warmedup) {
   return (resultSet)
 }
 
-boxplot <- function (data, axisYText, titleVertical) {
-  p <- ggplot(data, aes(x = Benchmark, y = RuntimeRatio))
-#  p <- p + facet_grid(~VM, labeller = label_parsed)
+boxplot <- function (data, axisYText, titleVertical, baselineNames, fill = FALSE) {
+  normalizedOverall <- data.frame(matrix(NA, nrow = 0, ncol = length(data[[1]])))
+  colnames(normalizedOverall) <- colnames(data[[1]])
+  for (i in 1:length(data)) {
+    normalized <- normalizeData(data[[i]], ~ Benchmark, baselineNames[[i]], FALSE)
+    normalizedOverall <- rbind(normalizedOverall, normalized)
+  }
+  p <- ggplot(normalizedOverall, aes(x = Benchmark, y = RuntimeRatio))
+  if (fill){
+    p <- p + facet_grid(~VM, labeller = label_parsed)
+  }
   p <- p + geom_hline(yintercept = 1, linetype = "dashed")
   p <- p + geom_boxplot(outlier.size = 0.9) + theme_simple()
   p <- p + scale_y_continuous(name=titleVertical) + 
@@ -226,9 +234,8 @@ warmupFilename <- function(vm) {
 summarizedPerBenchmark <- function(data, iterations, baseline, baselineName) {
   data <- droplevels(subset(data, Iteration >= iterations[1] & Iteration <= iterations[2])) 
   #make it global to use it in ddply
-  baselineGlobal <<- droplevels(subset(baseline, Iteration >= iterations[1] & Iteration <= iterations[2])) 
+  baselineGlobal <<- droplevels(subset(baseline, Iteration >= iterations[1] & Iteration <= iterations[2] & Benchmark %in% levels(factor(data$Benchmark))))
   normalized <- normalizeData(data, ~ Benchmark, baselineName, FALSE)
-  normalized <- droplevels(subset(normalized, Iteration >= iterations[1] & Iteration <= iterations[2]))
   return (ddply(normalized, ~ VM + Benchmark, summarise, 
                                    RuntimeFactor = 
                                      tryCatch({
