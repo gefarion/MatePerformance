@@ -4,15 +4,12 @@ knitr::opts_chunk$set(fig.width=10, fig.height=5,
 
 steady <- getWarmedupData("../../Data/areWeFast.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), 
                           vmNamesMap(), 
-                          c("SOMpe-Ent", "MATEpe-Ent", "SOMmt", "MATEmt", "Java", "Pharo", "Node.js"),
+                          c("SOMpe-Ent", "SOMmt", "Java", "Pharo", "Node.js"),
                           numberOfIterationsPerBenchmark)
 
 vmNames <- list("Node.js"     = "Node", 
                 "SOMpe-Ent"   = "SOMpe",
-                "MATEpe-Ent"  = "MATEpe",
-                "SOMpe-Ent"   = "SOMpe",
                 "SOMmt"       = "SOMmt",
-                "MATEmt"      = "MATEmt",
                 "Pharo"       = "Pharo",
                 "Java"        = "Java")
 
