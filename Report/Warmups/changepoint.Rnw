@@ -21,7 +21,6 @@ for (vm in unique(raw$VM)){
   
 ", file=filename)
   for (bench in unique(raw$Benchmark)){
-    print (bench)
     data <- subset(raw, Benchmark == bench & VM == vm)
     if (nrow(data) > 0) {
       pelt <- cpt.meanvar(log(data[,"Value"]), penalty="Manual", pen.value="15*log(n)", test.stat = "Normal", method="PELT")
