@@ -8,13 +8,15 @@ awf <- getAndPrepareData("../../Data/areWeFast.data",
 inherent <- getAndPrepareData("../../Data/inherent.data",
   c("Value", "Benchmark", "VM", "Suite", "Iteration"))
 
+individual <- getAndPrepareData("../../Data/individualActivations.data",
+  c("Value", "Benchmark", "VM", "Suite", "Iteration"))
+
 reflectiveCompilation <- getAndPrepareData("../../Data/reflectiveCompilation.data",
   c("Value", "Benchmark", "VM", "Suite", "Iteration"))
 
 
 
-raw <- rbind(awf, inherent)
-raw <- rbind(raw, reflectiveCompilation)
+raw <- rbind(awf, inherent, individual, reflectiveCompilation)
 
 raw <- change_names(raw, vmNamesMap(), "VM")
 

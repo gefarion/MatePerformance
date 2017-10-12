@@ -2,7 +2,10 @@
 knitr::opts_chunk$set(fig.width=10, fig.height=5,
                       echo=FALSE, warning=FALSE, message=FALSE, results="asis", cache=TRUE)
 
-mop <- getFilteredData("../../Data/individualActivations.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), vmNamesMap(), iterationsAndInliningFilename, iterationsAndInliningCols, numberOfIterationsPerBenchmarks)
+mop <- getWarmedupData("../../Data/individualActivations.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), 
+                          vmNamesMap(), 
+                          c("MATEpe-Ent", "MATEmt", "MATEpe-Ent-NoOpt"),
+                          numberOfIterationsPerBenchmark)
 
 allOperations <- droplevels(subset(mop, (
 				(Suite == "mop-operations-steady" & Benchmark != "VMReflectiveFieldRead" & Benchmark != "VMReflectiveFieldWrite"))))
@@ -27,9 +30,6 @@ allOperations$Benchmark <- factor(allOperations$Benchmark)
 
 allOperations <- droplevels(subset(allOperations, Benchmark != "VMReflectiveReturn"))
 
-allOperationsNormalized <- ddply(allOperations, ~ Benchmark + VM, transform,
-                   RuntimeRatio = Value / mean(Value[Var == FALSE]))
-
 name_map <- list(
 	"LayoutFieldRead"		 = "FieldRead",
 	"LayoutFieldWrite"	 = "FieldWrite",
@@ -45,40 +45,78 @@ name_map <- list(
 	"SeveralObjectsFieldReadOneMO2" = "Mono"
 )
 
+allOperations <- change_names(allOperations, name_map, "Benchmark")
 
-allOperationsNormalized <- change_names(allOperationsNormalized, name_map, "Benchmark")
+allOperationNaive <- droplevels(subset(allOperations, VM == "MATEpe-Ent" | VM == "MATEpe-Ent-NoOpt"))
+allOperations <- droplevels(subset(allOperations, VM != "MATEpe-Ent-NoOpt"))
+
+allOperationsNormalized <- ddply(allOperations, ~ Benchmark + VM, transform,
+                   RuntimeRatio = Value / mean(Value[Var == FALSE]))
+
+allOperationsNaiveNormalized <- ddply(allOperationNaive, ~ Benchmark, transform,
+                   RuntimeRatio = Value / mean(Value[Var == FALSE & VM == "MATEpe-Ent"]))
 
 mopNormalized <- droplevels(subset(
     allOperationsNormalized, (Var == TRUE & Benchmark != "Mega" & Benchmark != "Mono" & Benchmark != "Mega2" & Benchmark != "Mono2")))
+
+mopNaiveNormalized <- droplevels(subset(
+    allOperationsNaiveNormalized, (Var == TRUE & Benchmark != "Mega" & Benchmark != "Mono" & Benchmark != "Mega2" & Benchmark != "Mono2" & VM == "MATEpe-Ent-NoOpt")))
 
 megamorphicNormalized <- droplevels(subset(
 #    allOperationsNormalized, (Var == TRUE & (Benchmark == "Mono" | Benchmark == "Mega" | Benchmark == "Mono2" | Benchmark == "Mega2"))))
     allOperationsNormalized, (Var == TRUE & (Benchmark == "Mono" | Benchmark == "Mega"))))
 
-
-summarizedMop <- summarizeData(mopNormalized)
-summarizedMega <- summarizeData(megamorphicNormalized)
-
-overallSummaryMop <- summarizeOverall(summarizedMop)
-overallSummaryMega <- summarizeOverall(summarizedMega)
-
+megamorphicNaiveNormalized <- droplevels(subset(
+#    allOperationsNormalized, (Var == TRUE & (Benchmark == "Mono" | Benchmark == "Mega" | Benchmark == "Mono2" | Benchmark == "Mega2"))))
+    allOperationsNaiveNormalized, (Var == TRUE & (Benchmark == "Mono" | Benchmark == "Mega") & VM == "MATEpe-Ent-NoOpt")))
 @
 \def\IndividualMOPPerfComparisonPlot{%
-<<perf-overview-mop, fig.width=5, fig.height=2>>=
-print(boxplot(mopNormalized, TRUE, "Run Time"))
+<<perf-overview-mop, fig.width=5, fig.height=2, fig.align='center'>>=
+print(boxplot(list(mopNormalized), TRUE, "Run Time", list(), fill = TRUE))
+@
+}%
+
+\def\IndividualMOPNaivePerfComparisonPlot{%
+<<perf-overview-mop-naive, fig.width=5, fig.height=2, fig.align='center'>>=
+invididualMOPNaiveBoxplot <- boxplot(list(mopNaiveNormalized), TRUE, "Run Time", list(), fill = TRUE)
+print(invididualMOPNaiveBoxplot)
 @
 }%
 
 \def\MegaMorphicPerfComparisonPlot{%
-<<perf-overview-mega>>=
-print(boxplot(megamorphicNormalized, TRUE, "Run Time"))
+<<perf-overview-mega, fig.width=2, fig.height=2, fig.align='center'>>=
+print(boxplot(list(megamorphicNormalized), TRUE, "Run Time", list(), fill = TRUE))
 @
 }%
 
+\def\MegaMorphicNaivePerfComparisonPlot{%
+<<perf-overview-mega-naive, fig.width=2, fig.height=2, fig.align='center'>>=
+megamorphicNaiveBoxplot <- boxplot(list(megamorphicNaiveNormalized), TRUE, "Run Time", list(), fill = TRUE)
+print(megamorphicNaiveBoxplot)
+@
+}%
+
+\def\IndividualNaiveAggregatedPlot{
+<<perf-overview-individual-aggregated-naive, fig.width=7, fig.height=2, fig.cap='???', fig.align='center'>>=
+multiplot(plotlist = list(invididualMOPNaiveBoxplot, megamorphicNaiveBoxplot), cols = 2)
+@
+}
+
 \def\MopTableSummary{%
 <<perf-summary-table-mop, results="asis">>=
+mopNormalizedMT <- droplevels(subset(mopNormalized, VM %in% mtVMs))
+mopNormalizedPE <- droplevels(subset(mopNormalized, VM %in% peVMs))
+mopBaselineMT <- droplevels(subset(
+    allOperationsNormalized, (Var == FALSE & VM %in% mtVMs & Benchmark != "Mega" & Benchmark != "Mono" & Benchmark != "Mega2" & Benchmark != "Mono2")))
+mopBaselinePE <- droplevels(subset(
+    allOperationsNormalized, (Var == FALSE & VM %in% peVMs & Benchmark != "Mega" & Benchmark != "Mono" & Benchmark != "Mega2" & Benchmark != "Mono2")))
+
+summarizedMopMT <- summarizedPerBenchmark(mopNormalizedMT, c(0,10000), mopBaselineMT, "", normalized = TRUE) 
+summarizedMopPE <- summarizedPerBenchmark(rbind(mopNormalizedPE, mopNaiveNormalized), c(0,10000), mopBaselinePE, "", normalized = TRUE)
+
+summaryDataMop <- rbind(summarizedMopMT, summarizedMopPE)[,c(2,1,7,8,3:6)]
 print(
-  kable(arrange(summarizedMop, Benchmark), 
+  kable(arrange(summaryDataMop, Benchmark), 
        booktabs = T,
        format = "latex",
        longtable = T,
@@ -90,24 +128,51 @@ print(
 
 \def\MegamorphicTableSummary{%
 <<perf-summary-table-mega, echo=FALSE, results="asis", cache=FALSE>>=
-print(xtable(arrange(summarizedMega, Benchmark), c("Mop summary")))
+megamorphicNormalizedMT <- droplevels(subset(megamorphicNormalized, VM %in% mtVMs))
+megamorphicNormalizedPE <- droplevels(subset(megamorphicNormalized, VM %in% peVMs))
+
+megamorphicBaselineMT <- droplevels(subset(
+#    allOperationsNormalized, (Var == TRUE & (Benchmark == "Mono" | Benchmark == "Mega" | Benchmark == "Mono2" | Benchmark == "Mega2"))))
+    allOperationsNormalized, (Var == FALSE & VM %in% mtVMs & (Benchmark == "Mono" | Benchmark == "Mega"))))
+megamorphicBaselinePE <- droplevels(subset(
+#    allOperationsNormalized, (Var == TRUE & (Benchmark == "Mono" | Benchmark == "Mega" | Benchmark == "Mono2" | Benchmark == "Mega2"))))
+    allOperationsNormalized, (Var == FALSE & VM %in% peVMs & (Benchmark == "Mono" | Benchmark == "Mega"))))
+
+summarizedMegamorphicMT <- summarizedPerBenchmark(megamorphicNormalizedMT, c(0,10000), megamorphicBaselineMT, "", normalized = TRUE) 
+summarizedMegamorphicPE <- summarizedPerBenchmark(rbind(megamorphicNormalizedPE, megamorphicNaiveNormalized), c(0,10000), megamorphicBaselinePE, "", normalized = TRUE)
+
+summaryDataMegamorphic <- rbind(summarizedMegamorphicMT, summarizedMegamorphicPE)[,c(2,1,7,8,3:6)]
+print(
+  kable(arrange(summaryDataMegamorphic, Benchmark), 
+       booktabs = T,
+       format = "latex",
+       longtable = T,
+       digits = 2)  %>%
+       kable_styling(latex_options = c("repeat_header"), font_size = 7)  %>%
+       collapse_rows(columns = 1:2))
 @
 }
 
-\def\MopTableOverall{%
-<<perf-mop-table-overall, results="asis">>=
-print(
-   kable(arrange(overallSummaryMop, Geomean), 
+\def\IndividualTableOverall{%
+<<individual-overall-table>>=
+overallMop <- arrange(summarizeOverall(summaryDataMop, ~ VM), Geomean)
+overallMega <- arrange(summarizeOverall(summaryDataMegamorphic, ~ VM), Geomean)
+#summarizedAll <- rbind(summaryDataMop, summaryDataMegamorphic)
+#overallAll <- arrange(summarizeOverall(summarizedAll, ~ VM), Geomean)
+#overallAggregated <- rbind(overallMop, overallMega, overallAll)[,c(2,1,7,3:6)]
+
+overallAggregated <- rbind(overallMop, overallMega)
+
+colnames <- c("Runtime", "Mean","CI-95%","Sd.", "Min","Max", "Median")
+kable(overallAggregated, 
        booktabs = T,
        format = "latex",
        digits = 2,
-       caption = "Overall Inherent Performance Overheads")  %>%
-       kable_styling(latex_options = c("repeat_header"), font_size = 8))
-@
-}
-
-\def\MegaTableOverall{%
-<<perf-mega-table-overall, echo=FALSE, results="asis", cache=FALSE>>=
-print(xtable(overallSummaryMega))
+       caption = "Overall Individual Results",
+       col.names=colnames
+      )  %>%
+       kable_styling(latex_options = c("repeat_header"), font_size = 8) %>%
+group_rows("Invidivual Operations", 1, 3) %>%
+group_rows("Morphicness", 4, 6)
 @
 }

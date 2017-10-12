@@ -99,6 +99,8 @@ selectData <- function(data, numberOfIterations, warmedup) {
       row <- warmups[warmups$V1 == b,]
       if (nrow(row) == 0) {
         print ("Benchmark removed because there is no row for it in the changepoint file")
+        print (vm)
+        print (b)
         resultSet <- droplevels(subset(resultSet, Benchmark != b))
       } else {
         realValues <- suppressWarnings(as.numeric(row))
@@ -144,7 +146,11 @@ boxplot <- function (data, axisYText, titleVertical, baselineNames, fill = FALSE
   normalizedOverall <- data.frame(matrix(NA, nrow = 0, ncol = length(data[[1]])))
   colnames(normalizedOverall) <- colnames(data[[1]])
   for (i in 1:length(data)) {
-    normalized <- normalizeData(data[[i]], ~ Benchmark, baselineNames[[i]], FALSE)
+    if (length(baselineNames) == length(data)){
+      normalized <- normalizeData(data[[i]], ~ Benchmark, baselineNames[[i]], FALSE)
+    } else {
+      normalized <- data[[i]]
+    }
     normalizedOverall <- rbind(normalizedOverall, normalized)
   }
   p <- ggplot(normalizedOverall, aes(x = Benchmark, y = RuntimeRatio))
@@ -232,9 +238,13 @@ warmupFilename <- function(vm) {
   return (paste(paste("changePoint-",vm, sep=""),".tsv", sep=""))
 }
 
-summarizedPerBenchmark <- function(data, iterations, baseline, baselineName) {
+summarizedPerBenchmark <- function(data, iterations, baseline, baselineName, normalized = FALSE) {
   data <- droplevels(subset(data, Iteration >= iterations[1] & Iteration <= iterations[2])) 
-  normalized <- normalizeData(data, ~ Benchmark, baselineName, FALSE)
+  if (!normalized){
+    normalized <- normalizeData(data, ~ Benchmark, baselineName, FALSE)
+  } else {
+    normalized <- data
+  }
   #make it global to use it in ddply
   baselineGlobal <<- droplevels(subset(baseline, Iteration >= iterations[1] & Iteration <= iterations[2] & Benchmark %in% levels(factor(normalized$Benchmark))))
   return (ddply(normalized, ~ VM + Benchmark, summarise, 
