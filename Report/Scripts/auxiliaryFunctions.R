@@ -94,10 +94,11 @@ selectWarmupData <- function(data, numberOfIterations) {
 selectData <- function(data, numberOfIterations, warmedup) {
   resultSet <- data
   for (vm in unique(data$VM)){
-    warmups <- read.csv(paste("../Warmups/", warmupFilename(vm), sep=""), sep="\t", header = FALSE, skip=4)
+    warmups <- read.delim(paste("../Warmups/", warmupFilename(vm), sep=""), header = FALSE, skip=0)
     for (b in unique(data$Benchmark)) {
       row <- warmups[warmups$V1 == b,]
       if (nrow(row) == 0) {
+        print ("Benchmark removed because there is no row for it in the changepoint file")
         resultSet <- droplevels(subset(resultSet, Benchmark != b))
       } else {
         realValues <- suppressWarnings(as.numeric(row))
@@ -194,7 +195,7 @@ overview_box_plot <- function(stats, yLimits) {
 }
 
 #Returns the first segment of at least size elements and which mean is not more than 
-#thresholdRatio de minimun value of the dataset
+#thresholdRatio the minimun value of the dataset
 segmentWithLengthAndMean <- function(ts, changepoints, size, iterations, thresholdRatio) {
   if (length(changepoints) == 0){
     #No changepoint
@@ -214,7 +215,7 @@ segmentWithLengthAndMean <- function(ts, changepoints, size, iterations, thresho
       bestFit <- c(1000000, 100000)
       startSegment <- cps[segments[i]]
       elements <- ts[(startSegment + 3):(startSegment + size - 2)]
-      if (mean(elements) <= threshold){
+      if (mean(elements) <= threshold & (startSegment + size - 2) <= iterations){
         return(startSegment)
       } else {
         if (threshold - mean(elements) < bestFit[1]){
@@ -233,31 +234,31 @@ warmupFilename <- function(vm) {
 
 summarizedPerBenchmark <- function(data, iterations, baseline, baselineName) {
   data <- droplevels(subset(data, Iteration >= iterations[1] & Iteration <= iterations[2])) 
-  #make it global to use it in ddply
-  baselineGlobal <<- droplevels(subset(baseline, Iteration >= iterations[1] & Iteration <= iterations[2] & Benchmark %in% levels(factor(data$Benchmark))))
   normalized <- normalizeData(data, ~ Benchmark, baselineName, FALSE)
+  #make it global to use it in ddply
+  baselineGlobal <<- droplevels(subset(baseline, Iteration >= iterations[1] & Iteration <= iterations[2] & Benchmark %in% levels(factor(normalized$Benchmark))))
   return (ddply(normalized, ~ VM + Benchmark, summarise, 
-                                   RuntimeFactor = 
-                                     tryCatch({
-                                       t.test.ratio(Value, baselineGlobal[baselineGlobal$Benchmark == Benchmark,]$Value)$estimate[3]
-                                     }, error = function(e) {
-                                       mean(Value) / mean(baselineGlobal[baselineGlobal$Benchmark == Benchmark,]$Value)
-                                     }),
-                                   Confidence    = 
-                                     tryCatch({
-                                        paste(
-                                        paste("<", 
-                                          round(t.test.ratio(Value, baselineGlobal[baselineGlobal$Benchmark == Benchmark,]$Value)$conf.int[1], digits = 2), sep=""),
-                                        paste(
-                                          round(t.test.ratio(Value, baselineGlobal[baselineGlobal$Benchmark == Benchmark,]$Value)$conf.int[2], digits = 2), ">", sep=""),
-                                        sep=" - ")
-                                     }, error = function(e) {
-                                        "Too few values"
-                                     }),
-                                   Sd            = sd(RuntimeRatio),
-                                   Median        = median(RuntimeRatio),
-                                   Min           = min(RuntimeRatio),
-                                   Max           = max(RuntimeRatio)))
+                     RuntimeFactor = 
+                       tryCatch({
+                         t.test.ratio(Value, baselineGlobal[baselineGlobal$Benchmark == Benchmark,]$Value)$estimate[3]
+                       }, error = function(e) {
+                         mean(Value) / mean(baselineGlobal[baselineGlobal$Benchmark == Benchmark,]$Value)
+                       }),
+                     Confidence    = 
+                       tryCatch({
+                          paste(
+                          paste("<", 
+                            round(t.test.ratio(Value, baselineGlobal[baselineGlobal$Benchmark == Benchmark,]$Value)$conf.int[1], digits = 2), sep=""),
+                          paste(
+                            round(t.test.ratio(Value, baselineGlobal[baselineGlobal$Benchmark == Benchmark,]$Value)$conf.int[2], digits = 2), ">", sep=""),
+                          sep=" - ")
+                       }, error = function(e) {
+                          "Too few values"
+                       }),
+                     Sd            = sd(RuntimeRatio),
+                     Median        = median(RuntimeRatio),
+                     Min           = min(RuntimeRatio),
+                     Max           = max(RuntimeRatio)))
 }
 
 summarizedTable <- function(data, columns) {  
