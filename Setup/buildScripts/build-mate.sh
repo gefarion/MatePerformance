@@ -31,7 +31,7 @@ else
   then
     mkdir $ROOT_PATH/Implementations/RTruffleMate
   fi
-  checkout $ROOT_PATH/Implementations/RTruffleMate/Standard "https://github.com/charig/RTruffleMATE.git" "meta-shape"
+  checkout $ROOT_PATH/Implementations/RTruffleMate/Standard "https://github.com/charig/RTruffleMATE.git" "meta-mop-in-shape"
   pushd $ROOT_PATH/Implementations/RTruffleMate/Standard
   if [ ! -d "pypy" ]
   then

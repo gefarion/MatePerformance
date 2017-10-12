@@ -22,7 +22,7 @@ else
   make clean; make
   OK TruffleMATE with Environments stored in Objects Build Completed.
   popd > /dev/null
-  checkout $ROOT_PATH/Implementations/RTruffleMate/EnvironmentInObject "https://github.com/charig/RTruffleMATE.git" "meta-cache"
+  checkout $ROOT_PATH/Implementations/RTruffleMate/EnvironmentInObject "https://github.com/charig/RTruffleMATE.git" "meta-mop-in-obj"
   pushd $ROOT_PATH/Implementations/RTruffleMate/EnvironmentInObject
   if [ ! -d "pypy" ]
   then
