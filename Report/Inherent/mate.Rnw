@@ -4,27 +4,37 @@ knitr::opts_chunk$set(fig.width=10, fig.height=5,
 
 steady <- getWarmedupData("../../Data/inherent.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), 
                           vmNamesMap(), 
-                          c("SOMpe-Ent", "SOMmt", "MATEpe-Ent", "MATEmt"),
-                          numberOfIterationsPerBenchmark)
-
-steadyAWF <- getWarmedupData("../../Data/areWeFast.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), 
-                          vmNamesMap(), 
-                          c("SOMpe-Ent", "SOMmt", "MATEpe-Ent", "MATEmt"),
+                          c("SOMpe-Ent", "SOMmt", "MATEpe-Ent", "MATEmt", "MATEpe-Ent-NoOpt"),
                           numberOfIterationsPerBenchmark)
 
 steadyOwn <- droplevels(subset(steady, VM == "SOMpe-Ent" | VM == "MATEmt" | VM== "SOMmt" | VM == "MATEpe-Ent")) 
 # | VM == "MATEpe-Ent-envInObj" | VM == "SOMpe"))
+steadyOwnNaive <- droplevels(subset(steady, VM == "SOMpe-Ent" | VM == "MATEpe-Ent-NoOpt")) 
 
-steadyAWF <- droplevels(subset(steadyAWF, VM == "SOMpe-Ent" | VM == "MATEmt" | VM == "SOMmt" | VM == "MATEpe-Ent")) # | VM == "MATEpe-Ent-envInObj"  | VM=="SOMpe"))
+steady <- getWarmedupData("../../Data/areWeFast.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), 
+                          vmNamesMap(), 
+                          c("SOMpe-Ent", "SOMmt", "MATEpe-Ent", "MATEmt", "MATEpe-Ent-NoOpt"),
+                          numberOfIterationsPerBenchmark)
+
+steadyAWF <- droplevels(subset(steady, VM == "SOMpe-Ent" | VM == "MATEmt" | VM == "SOMmt" | VM == "MATEpe-Ent")) 
+# | VM == "MATEpe-Ent-envInObj"  | VM=="SOMpe"))
+steadyAWFNaive <- droplevels(subset(steady, VM == "SOMpe-Ent" | VM == "MATEpe-Ent-NoOpt"))
 
 steady <- rbind(steadyOwn, steadyAWF)
+steadyNaive <- rbind(steadyOwnNaive, steadyAWFNaive)
 
 sompeSteady <- steady[steady$VM == "SOMpe-Ent",]
 sommtSteady <- steady[steady$VM == "SOMmt",]
 
-micro <- droplevels(subset(steady, Suite == "classic-micro-steady" | (Suite == "are-we-fast-som" & Benchmark %in% microBenchmarks)))
+micro <- droplevels(subset(steady, Suite == "classic-micro-steady" | Benchmark %in% microBenchmarks))
 microWithoutRecursive <- droplevels(subset(micro, Benchmark != "Fibonacci" & Benchmark != "Recurse")) #& Benchmark != "Permute"
-macro <- droplevels(subset(steady, Suite == "classic-macro-steady" | (Suite == "are-we-fast-som" & Benchmark %in% macroBenchmarks)))
+macro <- droplevels(subset(steady, Suite == "classic-macro-steady" | Benchmark %in% macroBenchmarks))
+
+microNaive <- droplevels(subset(steadyNaive, Suite == "classic-micro-steady" | Benchmark %in% microBenchmarks))
+macroNaive <- droplevels(subset(steadyNaive, Suite == "classic-macro-steady" | Benchmark %in% macroBenchmarks))
+
+naiveMicroSummary <- summarizedPerBenchmark(microNaive, c(0,10000), sompeSteady, "SOMpe-Ent")
+naiveMacroSummary <- summarizedPerBenchmark(macroNaive, c(0,10000), sompeSteady, "SOMpe-Ent")
 
 steadyMT <- droplevels(subset(steady, VM %in% mtVMs))
 steadyPE <- droplevels(subset(steady, VM %in% peVMs))
@@ -62,17 +72,51 @@ macroPESummary <- summarizedPerBenchmark(macroPE, c(0,10000), sompeSteady, "SOMp
 #overallSummaryMicroWithoutRecursive <- summarizeOverall(summarizedMicroWithoutRecursive)
 #overallSummaryMacro <- summarizeOverall(summarizedMacro)
 @
+
+\def\NaivePerfComparisonPlot{
+<<perf-overview-naive, fig.width=5, fig.height=2, fig.cap='Overhead of MATEpe normalized to SOMpe when optimizations at the VM-level are not enabled. The results are clustered by micro (left) and macro (right) benchmarks', fig.align='center'>>=
+boxplotMicroNaive <- boxplot(list(microNaive), TRUE, "Run Time", list('SOMpe-Ent'), fill = FALSE)
+boxplotMacroNaive <- boxplot(list(macroNaive), TRUE, "", list('SOMpe-Ent'), fill = FALSE)
+multiplot(plotlist = list(boxplotMicroNaive, boxplotMacroNaive), cols = 2)
+@
+}
+
+\def\NaiveTableOverall{%
+<<naive-overall-table>>=
+overallMicro <- arrange(summarizeOverall(naiveMicroSummary, ~ VM), Geomean)
+overallMacro <- arrange(summarizeOverall(naiveMacroSummary, ~ VM), Geomean)
+summarizedAll <- rbind(naiveMicroSummary, naiveMacroSummary)[,c(2,1,7,8,3:6)]
+overallAll <- arrange(summarizeOverall(summarizedAll, ~ VM), Geomean)
+
+overallAggregated <- rbind(overallMicro, overallMacro, overallAll)
+
+colnames <- c("Runtime", "Mean","CI-95%","Sd.", "Min","Max", "Median")
+kable(overallAggregated, 
+       booktabs = T,
+       format = "latex",
+       digits = 2,
+       caption = "Overall results when the optimizations for the metalevel are not enabled",
+       col.names=colnames
+      )  %>%
+       kable_styling(latex_options = c("repeat_header"), font_size = 8) %>%
+group_rows("MicroBenchmarks", 1, 1) %>%
+group_rows("MacroBenchmarks", 2, 2) %>%
+group_rows("Aggregated", 3, 3) 
+@
+}
+
 \def\MicroPerfComparisonPlot{
 <<perf-overview-micro, fig.width=5, fig.height=2, fig.cap='Overhead of TruffleMate normalized to TruffleSOM, clustered by micro and macro benchmarks, without (above) and with (below) optimizations', ,fig.align='center'>>=
-print(boxplot(list(microMT, microPE), TRUE, "Run Time", list('SOMmt', 'SOMpe-Ent'), fill = TRUE))
+boxplotMicro <- boxplot(list(microMT, microPE), TRUE, "Run Time", list('SOMmt', 'SOMpe-Ent'), fill = TRUE)
+print(boxplotMicro)
 @
 }
 
 \def\MicroTableSummary{%
 <<micro-summary-table>>=
-summaryData <- rbind(microMTSummary, microPESummary)[,c(2,1,7,8,3:6)]
+summaryDataMicro <- rbind(microMTSummary, microPESummary)[,c(2,1,7,8,3:6)]
 print(
-  kable(arrange(summaryData, Benchmark), 
+  kable(arrange(summaryDataMicro, Benchmark), 
        booktabs = T,
        format = "latex",
        longtable = T,
@@ -84,7 +128,7 @@ print(
 
 \def\MicroTableOverall{%
 <<micro-overall-table>>=
-overallData <- summarizeOverall(summaryData, ~ VM)
+overallData <- summarizeOverall(summaryDataMicro, ~ VM)
 colnames <- c("Runtime", "Mean","CI-95%","Sd.", "Min","Max", "Median")
 kable(arrange(overallData, Geomean), 
        booktabs = T,
@@ -99,15 +143,16 @@ kable(arrange(overallData, Geomean),
 
 \def\MacroPerfComparisonPlot{
 <<perf-overview-macro, fig.width=5, fig.height=2, fig.cap='Overhead of TruffleMate normalized to TruffleSOM, clustered by micro and macro benchmarks, without (above) and with (below) optimizations', ,fig.align='center'>>=
-print(boxplot(list(macroMT, macroPE), TRUE, "Run Time", list('SOMmt', 'SOMpe-Ent'), fill = TRUE))
+boxplotMacro <- boxplot(list(macroMT, macroPE), TRUE, "Run Time", list('SOMmt', 'SOMpe-Ent'), fill = TRUE)
+print(boxplotMacro)
 @
 }
 
 \def\MacroTableSummary{%
 <<macro-summary-table>>=
-summaryData <- rbind(macroMTSummary, macroPESummary)[,c(2,1,7,8,3:6)]
+summaryDataMacro <- rbind(macroMTSummary, macroPESummary)[,c(2,1,7,8,3:6)]
 print(
-  kable(arrange(summaryData, Benchmark), 
+  kable(arrange(summaryDataMacro, Benchmark), 
        booktabs = T,
        format = "latex",
        longtable = T,
@@ -119,7 +164,7 @@ print(
 
 \def\MacroTableOverall{%
 <<macro-overall-table>>=
-overallData <- summarizeOverall(summaryData, ~ VM)
+overallData <- summarizeOverall(summaryDataMacro, ~ VM)
 colnames <- c("Runtime", "Mean","CI-95%","Sd.", "Min","Max", "Median")
 kable(arrange(overallData, Geomean), 
        booktabs = T,
@@ -134,16 +179,30 @@ kable(arrange(overallData, Geomean),
 
 \def\OverallTableOverall{%
 <<inherent-overall-table>>=
-summarizedSteady <- rbind(microMTSummary, microPESummary, macroMTSummary, macroPESummary)[,c(2,1,7,8,3:6)]
-overallData <- summarizeOverall(summarizedSteady, ~ VM)
+overallMicro <- arrange(summarizeOverall(summaryDataMicro, ~ VM), Geomean)
+overallMacro <- arrange(summarizeOverall(summaryDataMacro, ~ VM), Geomean)
+summarizedAll <- rbind(microMTSummary, microPESummary, macroMTSummary, macroPESummary)[,c(2,1,7,8,3:6)]
+overallAll <- arrange(summarizeOverall(summarizedAll, ~ VM), Geomean)
+
+overallAggregated <- rbind(overallMicro, overallMacro, overallAll)
+
 colnames <- c("Runtime", "Mean","CI-95%","Sd.", "Min","Max", "Median")
-kable(arrange(overallData, Geomean), 
+kable(overallAggregated, 
        booktabs = T,
        format = "latex",
        digits = 2,
        caption = "Overall Inherent Results",
        col.names=colnames
       )  %>%
-       kable_styling(latex_options = c("repeat_header"), font_size = 8)
+       kable_styling(latex_options = c("repeat_header"), font_size = 8) %>%
+group_rows("MicroBenchmarks", 1, 2) %>%
+group_rows("MacroBenchmarks", 3, 4) %>%
+group_rows("Aggregated", 5, 6) 
+@
+}
+
+\def\InherentAggregatedPlot{
+<<perf-overview-inherent-aggregated, fig.width=6, fig.height=6, fig.cap='Overhead of MATEpe normalized to SOMpe when optimizations at the VM-level are enabled. The results are clustered by micro (top) and macro (bottom) benchmarks', fig.align='center'>>=
+multiplot(plotlist = list(boxplotMicro, boxplotMacro), rows = 2)
 @
 }

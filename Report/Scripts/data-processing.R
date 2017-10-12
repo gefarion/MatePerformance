@@ -59,13 +59,14 @@ vmNamesMap <- function() {
                        #                       "JRubyTruffle"          = "Ruby, JRuby+Truffle, truffle head (basic)",
                        #                       "JRubyTruffleEnterprise" = "Ruby, JRuby+Truffle", # , truffle head
                        
-                       "TruffleSOM-graal"  = "SOMpe",
-                       "TruffleMate-graal" = "MATEpe",
-                       "RTruffleSOM"       = "SOMmt",
-                       "RTruffleMate"      = "MATEmt",
-                       "RTruffleMate-envInObj"      = "MATEmt-envInObj",
-                       "TruffleSOM-graal-enterprise"  = "SOMpe-Ent",
-                       "TruffleMate-graal-enterprise" = "MATEpe-Ent",
+                       "TruffleSOM-graal"                      = "SOMpe",
+                       "TruffleMate-graal"                     = "MATEpe",
+                       "RTruffleSOM"                           = "SOMmt",
+                       "RTruffleMate"                          = "MATEmt",
+                       "RTruffleMate-envInObj"                 = "MATEmt-envInObj",
+                       "TruffleSOM-graal-enterprise"           = "SOMpe-Ent",
+                       "TruffleMate-graal-enterprise"          = "MATEpe-Ent",
+                       "TruffleMate-graal-enterprise-naive"    = "MATEpe-Ent-NoOpt",
                        "TruffleMate-graal-enterprise-envInObj" = "MATEpe-Ent-envInObj",
                        "Pharo"                  = "Pharo")
   #                       "TruffleSOM-graal-no-split" = "TruffleSOM.ns",
