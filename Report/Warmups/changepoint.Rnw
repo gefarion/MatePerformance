@@ -11,6 +11,9 @@ inherent <- getAndPrepareData("../../Data/inherent.data",
 individual <- getAndPrepareData("../../Data/individualActivations.data",
   c("Value", "Benchmark", "VM", "Suite", "Iteration"))
 
+readonly <- getAndPrepareData("../../Data/readonly.data",
+  c("Value", "Benchmark", "VM", "Suite", "Iteration"))
+
 reflectiveCompilation <- getAndPrepareData("../../Data/reflectiveCompilation.data",
   c("Value", "Benchmark", "VM", "Suite", "Iteration"))
 

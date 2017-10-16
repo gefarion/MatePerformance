@@ -2,27 +2,66 @@
 knitr::opts_chunk$set(fig.width=10, fig.height=5,
                       echo=FALSE, warning=FALSE, message=FALSE, results="asis", cache=TRUE)
 
-steady <- getFilteredData("../../Data/readonly.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), vmNamesMap(), iterationsAndInliningFilename, iterationsAndInliningCols, numberOfIterationsPerBenchmarks)
+steady <- getWarmedupData("../../Data/readonly.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), 
+                          vmNamesMap(), 
+                          c("MATEpe-Ent", "MATEmt", "MATEpe-Ent-NoOpt"),
+                          numberOfIterationsPerBenchmark)
 
-readonly <- droplevels(subset(steady, (VM == "TruffleMate" & (Benchmark == "DelegationProxiesSumKeys" | Benchmark == "ReadonlySumKeys"))))
+readonly <- droplevels(subset(steady, Benchmark == "DelegationProxiesSumKeys" | Benchmark == "ReadonlySumKeys"))
+
+readonly <- change_names(readonly, list("DelegationProxiesSumKeys" = "Proxies", "ReadonlySumKeys"	 = "MOP"), "Benchmark")
+
+
+readonlyMT <- droplevels(subset(readonly, VM %in% mtVMs))
+readonlyPE <- droplevels(subset(readonly, VM %in% peVMs))
+
 baseline <- droplevels(subset(steady, (Benchmark == "SumKeys" & VM == "TruffleMate")))
+baselineMT <- droplevels(subset(readonly, VM %in% mtVMs))
+baselinePE <- droplevels(subset(readonly, VM %in% peVMs))
 
-baseline_mean <- mean(baseline$Value)
+baselineMT_mean <- mean(baselineMT$Value)
+baselinePE_mean <- mean(baselinePE$Value)
 
-readonlyNormalized <- ddply(readonly, ~ Benchmark, transform, RuntimeRatio = Value / baseline_mean)
+readonlyNormalizedMT <- ddply(readonlyMT, ~ Benchmark, transform, RuntimeRatio = Value / baselineMT_mean)
+readonlyNormalizedPE <- ddply(readonlyPE, ~ Benchmark, transform, RuntimeRatio = Value / baselinePE_mean)
 
-readonlyNormalized <- change_names(readonlyNormalized, list("DelegationProxiesSumKeys" = "Proxies", "ReadonlySumKeys" = "MOP"),"Benchmark")
-
-summarizedReadonly <- summarizeData(readonlyNormalized)
+#summarizedReadonly <- summarizeData(readonlyNormalized)
 @
 \def\ReadonlyPerfComparisonPlot{%
 <<perf-overview-readonly>>=
-print(boxplot(readonlyNormalized, TRUE, "Run Time", c(1,10)))
+readonly <- boxplot(list(rbind(readonlyNormalizedMT, readonlyNormalizedPE)), TRUE, "Run Time", list(), fill = TRUE)
+print(readonly)
 @
 }%
 
 \def\ReadonlyTableSummary{%
 <<perf-summary-table-readonly, echo=FALSE, results="asis", cache=FALSE>>=
-print(xtable(arrange(summarizedReadonly, Benchmark), c("Readonly")))
+readonlySummaryMT <- summarizedPerBenchmark(readonlyNormalizedMT, c(0,10000), baselineMT, "", normalized = TRUE)
+readonlySummaryPE <- summarizedPerBenchmark(readonlyNormalizedPE, c(0,10000), baselinePE, "", normalized = TRUE)
+#summaryData <- rbind(readonlySummaryMT, readonlySummaryPE)[,c(2,1,7,8,3:6)]
+summaryData <- readonlySummaryPE[,c(2,1,3:5,7,8,6)]
+print(
+  kable(arrange(summaryData, Benchmark), 
+       booktabs = T,
+       format = "latex",
+       longtable = T,
+       digits = 2)  %>%
+       kable_styling(latex_options = c("repeat_header"), font_size = 7)  %>%
+       collapse_rows(columns = 1:2))
+@
+}
+
+\def\ReadonlyTableOverall{%
+<<readonly-overall-table>>=
+overall <- arrange(summarizeOverall(summaryData, ~ VM), Geomean)
+colnames <- c("Runtime", "Mean","CI-95%","Sd.", "Min","Max", "Median")
+kable(overall, 
+       booktabs = T,
+       format = "latex",
+       digits = 2,
+       caption = "Overall Inherent Results",
+       col.names=colnames
+      )  %>%
+       kable_styling(latex_options = c("repeat_header"), font_size = 8)
 @
 }
