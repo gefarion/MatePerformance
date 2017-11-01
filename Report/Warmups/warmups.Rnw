@@ -1,0 +1,203 @@
+<<Warmups, echo=FALSE, message=FALSE>>=
+knitr::opts_chunk$set(fig.width=4, fig.height=2,
+                      echo=FALSE, warning=FALSE, message=FALSE, results="asis")
+
+#AWF + Inherent
+rawAWF <- getRawData("../../Data/areWeFast.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), 
+                          vmNamesMap(), c("MATEpe-Ent", "SOMpe-Ent", "MATEmt", "SOMmt"), maxIteration = 99)
+
+rawInherent <- getRawData("../../Data/inherent.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), 
+                          vmNamesMap(), c("MATEpe-Ent", "SOMpe-Ent", "MATEmt", "SOMmt"), maxIteration = 99)
+
+rawStandard <- rbind(rawAWF, rawInherent)
+rawStandard <-droplevels(subset(rawStandard, Benchmark != "Fibonacci" & Benchmark != "Recurse"))
+
+rawStandardNormalized <- normalizePerIteration(rawStandard,
+                                               filterVMs,
+                                               list(c("MATEpe-Ent","SOMpe-Ent"), c("MATEmt","SOMmt")),
+                                               c("SOMpe-Ent", "SOMmt"), 
+                                               FALSE)
+#Individual
+mop <- getWarmedupData("../../Data/individualActivations.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), 
+                          vmNamesMap(), 
+                          c("MATEpe-Ent", "MATEmt"),
+                          numberOfIterationsPerBenchmark)
+
+allOperationsMop <- droplevels(subset(mop, (
+				(Suite == "mop-operations-steady" & Benchmark != "VMReflectiveFieldRead" & Benchmark != "VMReflectiveFieldWrite"))))
+
+duplicatedOps <- droplevels(subset(mop, Benchmark == "FieldRead" | Benchmark == "SeveralObjectsFieldRead" | Benchmark == "SeveralObjectsFieldRead2" | Benchmark == "FieldWrite" | Benchmark == "MessageSend"))
+
+duplicatedOps <- change_names(duplicatedOps, list("FieldRead" = "LayoutFieldRead", "SeveralObjectsFieldRead" = "SeveralObjectsFieldReadOneMO", "SeveralObjectsFieldRead2" = "SeveralObjectsFieldReadOneMO2", "FieldWrite"	= "LayoutFieldWrite", "MessageSend"	= "MethodActivation"), "Benchmark")
+
+allOperationsMop <- rbind(allOperationsMop, duplicatedOps)
+
+duplicatedOps <- droplevels(subset(mop, Benchmark == "FieldRead"))
+duplicatedOps <- change_names(duplicatedOps, list("FieldRead" = "Return"), "Benchmark")
+
+allOperationsMop <- rbind(allOperationsMop, duplicatedOps)
+
+allOperationsMop <- ddply(allOperationsMop, ~ Benchmark + VM , transform, 
+	Var = grepl("Reflective", Benchmark),
+	Benchmark = gsub("VMReflective", "", Benchmark))
+
+levels(allOperationsMop$VM) <- c(levels(allOperationsMop$VM), "MATEpe-baseline", "MATEmt-baseline") 
+allOperationsMop$VM[allOperationsMop$Var == TRUE & allOperationsMop$VM == "MATEpe-Ent"] <- "MATEpe-baseline"
+allOperationsMop$VM[allOperationsMop$Var == TRUE & allOperationsMop$VM == "MATEmt"] <- "MATEmt-baseline"
+
+allOperationsMop$Benchmark <- droplevels(factor(allOperations$Benchmark))
+
+name_map <- list(
+	"LayoutFieldRead"		 = "FieldRead",
+	"LayoutFieldWrite"	 = "FieldWrite",
+	"ArgumentRead"	     = "ArgRead",
+	"LocalVariableRead"	 = "LocalRead",
+	"LocalVariableWrite" = "LocalWrite",
+	"MessageSend"			   = "Send",
+	"MethodActivation" 	 = "Activation",
+	"AllOperations" 		 = "All",
+	"SeveralObjectsFieldRead" 	= "Mega2",
+	"SeveralObjectsFieldReadOneMO" 	= "Mono2",
+	"SeveralObjectsFieldRead2" 	= "Mega",
+	"SeveralObjectsFieldReadOneMO2" = "Mono"
+)
+
+allOperationsMop <- change_names(allOperationsMop, name_map, "Benchmark")
+
+allOperationsMop <- subset(allOperationsMop, Benchmark != "Mega" & Benchmark != "Mega2")
+
+allOperationsMopNormalized <- normalizePerIteration(allOperationsMop,
+                                               filterVMs,
+                                               list(c("MATEpe-Ent","MATEpe-baseline"), c("MATEmt","MATEmt-baseline")),
+                                               c("MATEpe-baseline", "MATEmt-baseline"), 
+                                               FALSE)
+
+#Readonly
+rawRO <- getRawData("../../Data/readonly.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), 
+                          vmNamesMap(), c("MATEpe-Ent", "MATEmt"), maxIteration = 99)
+
+levels(rawRO$VM) <- c(levels(rawRO$VM), "MATEpe-baseline", "MATEmt-baseline") 
+rawRO$VM[rawRO$Benchmark == "ReadonlySumKeys" & rawRO$VM == "MATEpe-Ent"] <- "MATEpe-baseline"
+rawRO$VM[rawRO$Benchmark == "ReadonlySumKeys" & rawRO$VM == "MATEmt"] <- "MATEmt-baseline"
+rawRO$Benchmark[rawRO$Benchmark == "ReadonlySumKeys"] <- "SumKeys"
+rawRO <- droplevels(subset(rawRO, Benchmark != "DelegationProxiesSumKeys")) 
+
+#rawRO$Benchmark[rawRO$Benchmark == "SumKeys"] <- "Readonly"
+
+rawRONormalized <- normalizePerIteration(rawRO,
+                                               filterVMs,
+                                               list(c("MATEpe-Ent","MATEpe-baseline"), c("MATEmt","MATEmt-baseline")),
+                                               c("MATEpe-baseline", "MATEmt-baseline"), 
+                                               FALSE)
+
+rawRONormalized <- change_names(rawRONormalized, list("SumKeys"	 = "Readonly"), "Benchmark")
+
+warmups <- rbind(rawStandardNormalized, rawRONormalized, allOperationsMopNormalized, summaryDataMop, summaryDataMegamorphic)
+
+#Our transformation function
+scaleFUN <- function(x) sprintf("%.1f", x)
+@
+
+\def\WarmupsPlot{
+<<warmups, fig.width=15, fig.height=4, fig.cap='The first 100 iterations of a representative subset of the benchmarks in MATEpe and MATEmt normalized to their corresponding SOM versions.', fig.env='figure*'>>=
+is.even <- function(x) x %% 2 == 0
+plotsforPaper <- c("DeltaBlue", "Havlak", "Json", "Readonly", "Richards", "NBody","Mandelbrot", "Bounce", "CD", "FieldRead")
+
+readonlySummary <- change_names(summaryDataRO, list("MOP" = "Readonly"), "Benchmark")
+#summaries <- rbind(summaryDataMicro, summaryDataMacro, readonlySummary)
+
+summaries <- rbind(summaryDataMicro, summaryDataMacro, readonlySummary)
+
+i = 0
+plots <- list()
+dir.create("Plots", showWarnings = FALSE)
+for (b in levels(warmups$Benchmark)) {
+  data_b <- droplevels(subset(warmups, Benchmark == b))
+  ci <- ciForVM(summaries, b, c("MATEmt", "MATEpe-Ent"))
+  print (b)
+  plot <- warmup_plot(data_b, b, is.even(i), ci, titleSize = 10)
+  pdf(paste(paste("Plots/WU-", b, sep=""), ".pdf", sep=""))
+  print(plot)
+  dev.off()
+  if (b %in% plotsforPaper){
+    i = i + 1
+    plots[[i]] <- plot
+  }
+}
+multiplot(plotlist = plots, cols = 4)
+@
+}
+
+\def\WarmupsTableSummary{
+<<warmups-summary-table>>=
+iterations <- c(1,5,20,40)
+warmups   <- data.frame()
+warmupsRO <- data.frame()
+
+for (i in iterations){
+  summarized <- summarizedPerBenchmark(rawStandard, c(0,i - 1), rawAWFSOM, "SOMpe-Ent")
+  iter <- list(i)
+  summarized <- cbind(summarized, iter)
+  colnames(summarized)[ncol(summarized)] <- "Iterations"
+  warmups <- rbind(warmups, summarized)
+  
+  baselineRO <- droplevels(subset(rawRO, (Benchmark == "SumKeys" & Iteration >= 0 & Iteration <= i - 1)))
+  baselineRO_mean <- mean(baselineRO$Value)
+  readonlyNormalized <- ddply(rawRO, ~ Benchmark, transform, RuntimeRatio = Value / baselineRO_mean)
+
+  normalized <- droplevels(subset(readonlyNormalized, Iteration >= 0 & Iteration <= i - 1))
+  
+  summaryRO <- ddply(normalized, ~ VM + Benchmark, summarise, 
+                                   RuntimeFactor = 
+                                     tryCatch({
+                                       t.test.ratio(Value, normalized[normalized$Benchmark == "SumKeys",]$Value)$estimate[3]
+                                     }, error = function(e) {
+                                       mean(Value) / mean(normalized[normalized$Benchmark == "SumKeys",]$Value)
+                                     }),
+                                   Confidence    = 
+                                     tryCatch({
+                                        paste(
+                                        paste("<", 
+                                              round(t.test.ratio(Value, normalized[normalized$Benchmark == "SumKeys",]$Value)$conf.int[1], digits = 2), sep=""),
+                                        paste(
+                                          round(t.test.ratio(Value, normalized[normalized$Benchmark == "SumKeys",]$Value)$conf.int[2], digits = 2), ">", sep=""),
+                                        sep=" - ")
+                                     }, error = function(e) {
+                                        " - "
+                                     }),
+                                   Sd            = sd(RuntimeRatio),
+                                   Min           = min(RuntimeRatio),
+                                   Max           = max(RuntimeRatio),
+                                   Median        = median(RuntimeRatio))
+  iter <- list(i)
+  summaryRO <- cbind(summaryRO, iter)
+  colnames(summaryRO)[ncol(summarized)] <- "Iterations"
+  warmupsRO <- rbind(warmupsRO, summaryRO)
+}
+@
+}
+
+\def\WarmupsTableOverall{%
+<<warmups-overall-table>>=
+summarizedOverall <- summarizeOverall(warmups, ~ VM + Iterations)
+tableData <- summarizedOverall[,c(2:ncol(summarizedOverall))]
+
+summarizedOverallRO <- subset(warmupsRO, Benchmark == "ReadonlySumKeys")
+
+tableDataRO <- summarizedOverallRO[,c(ncol(summarizedOverallRO), 4:ncol(summarizedOverallRO)-1)]
+colnames(tableDataRO) <- colnames(tableData)
+
+columnNames <- c("Iterations", "Mean","CI-95%","Sd.", "Min", "Max", "Median")
+
+kable(rbind(arrange(tableData, Iterations), arrange(tableDataRO, Iterations)), 
+       booktabs = T,
+       format = "latex",
+       digits = 2,
+       caption = "Overall warmup overhead factor until n iterations for standard benchmarks and readonly",
+       col.names=columnNames
+      ) %>%
+kable_styling(latex_options = c("repeat_header"), font_size = 8) %>%
+group_rows("Standard", 1, 4) %>%
+  group_rows("Readonly", 5, 8) 
+@
+}

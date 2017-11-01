@@ -14,12 +14,13 @@ individual <- getAndPrepareData("../../Data/individualActivations.data",
 readonly <- getAndPrepareData("../../Data/readonly.data",
   c("Value", "Benchmark", "VM", "Suite", "Iteration"))
 
+tracing <- getAndPrepareData("../../Data/tracing.data",
+  c("Value", "Benchmark", "VM", "Suite", "Iteration"))
+
 reflectiveCompilation <- getAndPrepareData("../../Data/reflectiveCompilation.data",
   c("Value", "Benchmark", "VM", "Suite", "Iteration"))
 
-
-
-raw <- rbind(awf, inherent, individual, reflectiveCompilation)
+raw <- rbind(awf, inherent, individual, readonly, tracing, reflectiveCompilation)
 
 raw <- change_names(raw, vmNamesMap(), "VM")
 
@@ -28,20 +29,25 @@ for (vm in unique(raw$VM)){
   #output <- rbind(output, "#It is a tab generated file with each line containing the changepoint analysis for a different benchmarks under the same VM. ")
   #output <- rbind(output,"#The semantics of each line are, first the benchmark name, then all the changepoints, and the last value indicates the iteration at which the warmup has finished or, in case there is no warmup, the reason. For the semantics of the warmup itearation selected refer to changepoint.Rnw")
   output <- data.frame()
+  output2 <- data.frame(bench = c(), vm = c(), warmup = c())
   for (bench in unique(raw$Benchmark)){
     data <- subset(raw, Benchmark == bench & VM == vm)
-    
     if (nrow(data) > 0) {
       pelt <- cpt.meanvar(log(data[,"Value"]), penalty="Manual", pen.value="15*log(n)", test.stat = "Normal", method="PELT")
       #Selects a segment of at least numberOfIterationsPerBenchmarks elements and which mean 
       #is not more than 10% de minimun value of the dataset
-      if (bench %in% microBenchmarks){
-        iterations <- 800
-      } else {
+      if (bench %in% macroBenchmarks){
         iterations <- 1500
+      } else {
+        iterations <- 800
       }
       warmup <- segmentWithLengthAndMean(data[,"Value"], cpts(pelt), numberOfIterationsPerBenchmark, iterations, 1.1)
-      vector <- c(bench, cpts(pelt), warmup)
+      if (is.numeric(warmup))
+        vector <- c(bench, cpts(pelt), warmup)
+      else {
+        vector <- c(bench, cpts(pelt), -1)
+        output2 <- rbind(data.frame(matrix(c(bench, vm, warmup), nrow = 1, ncol = 3)))
+      }  
       vector <- data.frame(matrix(vector, nrow = 1, ncol = length(vector)))
       output <- rbind.fill(output, vector)
       dir.create("CPS", showWarnings = FALSE)
@@ -50,5 +56,6 @@ for (vm in unique(raw$VM)){
       dev.off()
     }
   }
-  write.table(output, file = warmupFilename(vm), sep = "\t", row.names=FALSE, col.names = FALSE, quote=TRUE)
+  write.table(output, file = warmupFilename(vm), sep = "\t", row.names=FALSE, col.names = FALSE)
+  write.table(output2, file = missingWarmupFilename(vm), sep = "\t", row.names=FALSE, col.names = FALSE, quote=FALSE)
 }

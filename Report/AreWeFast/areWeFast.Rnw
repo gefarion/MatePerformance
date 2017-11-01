@@ -29,7 +29,7 @@ names(vm_colors) <- vmNames
 
 @
 \def\LanguagesPerfComparisonPlot{%
-<<languages-perf-overview, fig.width=5, fig.height=2, fig.cap='Overhead factor for different language implementations compared to Java.'>>=
+<<languages-perf-overview, fig.width=5, fig.height=2, fig.cap='Overhead factor of different dynamic programming language implementations normalized to Java. Benchmarks were selected from Marr et al.\\ in~\\cite{Marr:2016:AWFY}. The suite was designed for cross-comparing language implementations', out.width = "0.8\\textwidth", fig.align="center">>=
 overview_box_plot(summarizedPerBenchAndVM, c(1,18))
 @
 }%
@@ -47,6 +47,7 @@ print(
        collapse_rows(columns = 1:2))
 @
 }
+
 \def\LanguagesTableOverall{%
 <<languages-overall-table>>=
 awfOverall <- summarizeOverall(awfTableData, ~ VM)
@@ -59,5 +60,29 @@ kable(arrange(awfOverall, Geomean),
        col.names=colnames
       )  %>%
        kable_styling(latex_options = c("repeat_header"), font_size = 8)
+@
+}
+
+\def\SomPEMean{
+<<languages-summary-sompeMean>>=
+cat(round(awfOverall$Geomean[awfOverall$VM == "SOMpe"], digits=2))
+@
+}
+
+\def\SomMTMean{
+<<languages-summary-sommtMean>>=
+cat(round(awfOverall$Geomean[awfOverall$VM == "SOMmt"], digits=2))
+@
+}
+
+\def\NodeMean{
+<<languages-summary-nodeMean>>=
+cat(round(awfOverall$Geomean[awfOverall$VM == "Node"], digits=2))
+@
+}
+
+\def\PharoMean{
+<<languages-summary-pharoMean>>=
+cat(round(awfOverall$Geomean[awfOverall$VM == "Pharo"], digits=2))
 @
 }

@@ -75,10 +75,13 @@ vmNamesMap <- function() {
   name_map
 }
 
-getRawData <- function(filename, filterColumns, vmNames, keepVMs) {
+getRawData <- function(filename, filterColumns, vmNames, keepVMs, maxIteration = 0) {
   data <- getAndPrepareData(filename, filterColumns)
   data <- change_names(data, vmNames, "VM")
-  data <- droplevels(subset(data, VM %in% keepVMs))
+  data <- droplevels(subset(data, VM %in% keepVMs))  
+  if (maxIteration != 0){
+    data <- droplevels(subset(data, Iteration <= maxIteration))  
+  }
   return(data)
 }
 
@@ -100,8 +103,74 @@ getWarmupData <- function(filename, filterColumns, vmNames, keepVms, numberOfIte
   steady
 }
 
-microBenchmarks <- c("Bounce", "List", "Mandelbrot", "NBody", "Permute", "Queens", "Sieve", "Storage", "Towers")
+selectWarmedupData <- function(data, numberOfIterations) {
+  return (selectData(data, numberOfIterations, TRUE))
+}
+
+selectWarmupData <- function(data, numberOfIterations) {
+  return (selectData(data, 0, FALSE))
+}
+
+selectData <- function(data, numberOfIterations, warmedup) {
+  resultSet <- data
+  for (vm in unique(data$VM)){
+    filename <- paste("../Warmups/", warmupFilename(vm), sep="")
+    warmups <- read.delim(paste("../Warmups/", warmupFilename(vm), sep=""), header = FALSE, skip=0)
+    for (b in unique(data$Benchmark)) {
+      row <- warmups[warmups$V1 == b,]
+      if (nrow(row) == 0) {
+        if (b != "CD"){
+          "This because CD do not run in Pharo"
+          print ("Benchmark removed because there is no row for it in the changepoint file")
+          print (b)
+          print (vm)
+          resultSet <- droplevels(subset(resultSet, Benchmark != b))
+        }
+      } else {
+        realValues <- suppressWarnings(as.numeric(row))
+        realValues <- realValues[!is.na(row)]
+        realValues <- realValues[realValues != '']
+        warmup <- tail(realValues, n=1)
+        if (warmup != -1){
+          if (warmedup){
+            resultSet <- droplevels(subset(resultSet,(
+              (Benchmark != b) | (VM != vm) |
+                (Benchmark == b & VM == vm & Iteration >= warmup + 3 & Iteration < warmup + numberOfIterations))))
+          } else {
+            resultSet <- droplevels(subset(resultSet,(
+              (Benchmark != b) | (VM != vm) |
+                (Benchmark == b & VM == vm & Iteration <= warmup + 2))))
+          }
+        } else {
+          #No automatic warmup. Look for a manual one.
+          warmupsManual <- read.delim(paste("../Warmups/", "changePoint-manual.tsv", sep=""), sep="\t", header = FALSE, skip=2)
+          row <- warmupsManual[warmupsManual$V1 == vm & warmupsManual$V2 == b,]
+          if (nrow(row) == 0) {
+            print (paste(paste("Missing manual warmup value for", vm), b))  
+          } else {
+            warmup <- suppressWarnings(tail(as.numeric(row), n=1))
+            if (warmedup){
+              resultSet <- droplevels(subset(resultSet,(
+                (Benchmark != b) | (VM != vm) |
+                  (Benchmark == b & (VM == vm) & Iteration >= warmup + 3 & Iteration < warmup + numberOfIterations))))
+            } else {
+              resultSet <- droplevels(subset(resultSet,(
+                (Benchmark != b) | (VM != vm) |
+                  (Benchmark == b & (VM == vm) & Iteration <= warmup + 2))))
+            }
+          }  
+        }
+      }
+    }
+  }
+  return (resultSet)
+}
+
+
+microBenchmarks <- c("Bounce", "List", "Mandelbrot", "NBody", "Permute", "Queens", "Sieve", "Storage", "Towers", "Fibonacci", "Recurse")
 macroBenchmarks <- c("CD", "DeltaBlue", "Havlak", "Json", "Richards")
 
 mtVMs <- c("SOMmt", "MATEmt", "MATEmt-envInObj")
 peVMs <- c("SOMpe", "SOMpe-Ent", "MATEpe", "MATEpe-Ent", "MATEpe-Ent-envInObj")
+
+tracingBenchmarks <- c("QuickSort", "NBody", "DeltaBlue", "JsonBig")
