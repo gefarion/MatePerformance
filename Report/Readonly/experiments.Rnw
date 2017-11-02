@@ -57,6 +57,7 @@ print(
        booktabs = T,
        format = "latex",
        longtable = T,
+       caption = "Overall Results for the Morphicness Benchmarks",
        digits = 2)  %>%
        kable_styling(latex_options = c("repeat_header"), font_size = 7)  %>%
        collapse_rows(columns = 1:2))

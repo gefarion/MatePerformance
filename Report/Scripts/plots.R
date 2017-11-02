@@ -22,11 +22,12 @@ element90 <- function() { element_text(angle = 90, hjust = 1, vjust=0.5) }
 warmup_plot <- function (data, title, xAxis, hLines = c(), titleSize = 8, group = "VM") {
   p <- ggplot(data)
   p <- p + geom_line(aes_string(x="Iteration", y="RuntimeRatio", colour = group))
-  p <- p + scale_color_manual(values=c("blue", "green"))
+  p <- p + scale_color_manual(values=c("MATEpe-Ent"="blue", "MATEmt"="green"))
   p <- p + ggtitle(title)
   p <- p + theme_simple()
   p <- p + theme(legend.position = "none", axis.title.y=element_blank(),
-                 plot.title = element_text(size = titleSize, hjust = 0.5))
+                 plot.title = element_text(size = titleSize, hjust = 0.5),
+                 plot.margin = unit(c(0.1,0.1,0.1,0.1), "lines"))
   if (!xAxis){
     p <- p + theme(axis.text.x=element_blank())
   }

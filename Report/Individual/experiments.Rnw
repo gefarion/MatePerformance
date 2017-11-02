@@ -4,8 +4,11 @@ knitr::opts_chunk$set(fig.width=10, fig.height=5,
 
 mop <- getWarmedupData("../../Data/individualActivations.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), 
                           vmNamesMap(), 
-                          c("MATEpe-Ent", "MATEmt", "MATEpe-Ent-NoOpt"),
+#                          c("MATEpe-Ent", "MATEmt", "MATEpe-Ent-NoOpt"),
+                          c("MATEpe-Ent", "MATEmt"),
                           numberOfIterationsPerBenchmark)
+
+includeNaive <- FALSE
 
 allOperations <- droplevels(subset(mop, (
 				(Suite == "mop-operations-steady" & Benchmark != "VMReflectiveFieldRead" & Benchmark != "VMReflectiveFieldWrite"))))
@@ -46,28 +49,29 @@ name_map <- list(
 
 allOperations <- change_names(allOperations, name_map, "Benchmark")
 
-allOperationNaive <- droplevels(subset(allOperations, VM == "MATEpe-Ent" | VM == "MATEpe-Ent-NoOpt"))
 allOperations <- droplevels(subset(allOperations, VM != "MATEpe-Ent-NoOpt"))
 
 allOperationsNormalized <- ddply(allOperations, ~ Benchmark + VM, transform,
                    RuntimeRatio = Value / mean(Value[Var == FALSE]))
 
-allOperationsNaiveNormalized <- ddply(allOperationNaive, ~ Benchmark, transform,
-                   RuntimeRatio = Value / mean(Value[Var == FALSE & VM == "MATEpe-Ent"]))
-
 mopNormalized <- droplevels(subset(
     allOperationsNormalized, (Var == TRUE & Benchmark != "Mega" & Benchmark != "Mono" & Benchmark != "Mega2" & Benchmark != "Mono2")))
 
-mopNaiveNormalized <- droplevels(subset(
-    allOperationsNaiveNormalized, (Var == TRUE & Benchmark != "Mega" & Benchmark != "Mono" & Benchmark != "Mega2" & Benchmark != "Mono2" & VM == "MATEpe-Ent-NoOpt")))
+if (includeNaive){
+  allOperationNaive <- droplevels(subset(allOperations, VM == "MATEpe-Ent" | VM == "MATEpe-Ent-NoOpt"))
+  allOperationsNaiveNormalized <- ddply(allOperationNaive, ~ Benchmark, transform,
+                   RuntimeRatio = Value / mean(Value[Var == FALSE & VM == "MATEpe-Ent"]))
+  mopNaiveNormalized <- droplevels(subset(
+      allOperationsNaiveNormalized, (Var == TRUE & Benchmark != "Mega" & Benchmark != "Mono" & Benchmark != "Mega2" & Benchmark != "Mono2" & VM == "MATEpe-Ent-NoOpt")))
+megamorphicNaiveNormalized <- droplevels(subset(
+#    allOperationsNormalized, (Var == TRUE & (Benchmark == "Mono" | Benchmark == "Mega" | Benchmark == "Mono2" | Benchmark == "Mega2"))))
+    allOperationsNaiveNormalized, (Var == TRUE & (Benchmark == "Mono" | Benchmark == "Mega") & VM == "MATEpe-Ent-NoOpt")))
+}
 
 megamorphicNormalized <- droplevels(subset(
 #    allOperationsNormalized, (Var == TRUE & (Benchmark == "Mono" | Benchmark == "Mega" | Benchmark == "Mono2" | Benchmark == "Mega2"))))
     allOperationsNormalized, (Var == TRUE & (Benchmark == "Mono" | Benchmark == "Mega"))))
 
-megamorphicNaiveNormalized <- droplevels(subset(
-#    allOperationsNormalized, (Var == TRUE & (Benchmark == "Mono" | Benchmark == "Mega" | Benchmark == "Mono2" | Benchmark == "Mega2"))))
-    allOperationsNaiveNormalized, (Var == TRUE & (Benchmark == "Mono" | Benchmark == "Mega") & VM == "MATEpe-Ent-NoOpt")))
 @
 \def\IndividualMOPPerfComparisonPlot{%
 <<perf-overview-mop, fig.width=5, fig.height=2, fig.align='center', fig.cap='Overhead factor for redefining VM operations at the language-level. The baseline for each bench, is the execution of the same benchmark in the same VM but without redefining the corresponding VM operation.', fig.pos = 'H'>>=
@@ -77,27 +81,33 @@ print(boxplot(list(mopNormalized), TRUE, "Overhead Factor", list(), fill = TRUE)
 
 \def\IndividualMOPNaivePerfComparisonPlot{%
 <<perf-overview-mop-naive, fig.width=5, fig.height=2, fig.align='center'>>=
-invididualMOPNaiveBoxplot <- boxplot(list(mopNaiveNormalized), TRUE, "Run Time", list(), fill = TRUE)
-print(invididualMOPNaiveBoxplot)
+if (includeNaive){
+  invididualMOPNaiveBoxplot <- boxplot(list(mopNaiveNormalized), TRUE, "Run Time", list(), fill = TRUE)
+  print(invididualMOPNaiveBoxplot)
+}
 @
 }%
 
 \def\MegaMorphicPerfComparisonPlot{%
-<<perf-overview-mega, fig.width=2, fig.height=2, fig.align='center'>>=
-print(boxplot(list(megamorphicNormalized), TRUE, "Run Time", list(), fill = TRUE))
+<<perf-overview-mega, fig.width=4, fig.height=2, fig.align='center', fig.cap='Overhead factor a monomorphic versus a megamorphic IH site.', fig.pos = 'H'>>=
+print(boxplot(list(megamorphicNormalized), TRUE, "OF", list(), fill = TRUE))
 @
 }%
 
 \def\MegaMorphicNaivePerfComparisonPlot{%
 <<perf-overview-mega-naive, fig.width=2, fig.height=2, fig.align='center'>>=
-megamorphicNaiveBoxplot <- boxplot(list(megamorphicNaiveNormalized), TRUE, "Run Time", list(), fill = TRUE)
-print(megamorphicNaiveBoxplot)
+if (includeNaive){
+  megamorphicNaiveBoxplot <- boxplot(list(megamorphicNaiveNormalized), TRUE, "Run Time", list(), fill = TRUE)
+  print(megamorphicNaiveBoxplot)
+}
 @
 }%
 
 \def\IndividualNaiveAggregatedPlot{
 <<perf-overview-individual-aggregated-naive, fig.width=7, fig.height=2, fig.cap='???', fig.align='center'>>=
-multiplot(plotlist = list(invididualMOPNaiveBoxplot, megamorphicNaiveBoxplot), cols = 2)
+if (includeNaive){
+  multiplot(plotlist = list(invididualMOPNaiveBoxplot, megamorphicNaiveBoxplot), cols = 2)
+}
 @
 }
 
@@ -111,7 +121,7 @@ mopBaselinePE <- droplevels(subset(
     allOperationsNormalized, (Var == FALSE & VM %in% peVMs & Benchmark != "Mega" & Benchmark != "Mono" & Benchmark != "Mega2" & Benchmark != "Mono2")))
 
 summarizedMopMT <- summarizedPerBenchmark(mopNormalizedMT, c(0,10000), mopBaselineMT, "", normalized = TRUE) 
-summarizedMopPE <- summarizedPerBenchmark(rbind(mopNormalizedPE, mopNaiveNormalized), c(0,10000), mopBaselinePE, "", normalized = TRUE)
+summarizedMopPE <- summarizedPerBenchmark(rbind(mopNormalizedPE), c(0,10000), mopBaselinePE, "", normalized = TRUE)
 
 summaryDataMop <- rbind(summarizedMopMT, summarizedMopPE)[,c(2,1,7,8,3:6)]
 print(
@@ -119,6 +129,7 @@ print(
        booktabs = T,
        format = "latex",
        longtable = T,
+       caption = "Overall Results for the Individual Operations",
        digits = 2)  %>%
        kable_styling(latex_options = c("repeat_header"), font_size = 7)  %>%
        collapse_rows(columns = 1:2))
@@ -138,7 +149,7 @@ megamorphicBaselinePE <- droplevels(subset(
     allOperationsNormalized, (Var == FALSE & VM %in% peVMs & (Benchmark == "Mono" | Benchmark == "Mega"))))
 
 summarizedMegamorphicMT <- summarizedPerBenchmark(megamorphicNormalizedMT, c(0,10000), megamorphicBaselineMT, "", normalized = TRUE) 
-summarizedMegamorphicPE <- summarizedPerBenchmark(rbind(megamorphicNormalizedPE, megamorphicNaiveNormalized), c(0,10000), megamorphicBaselinePE, "", normalized = TRUE)
+summarizedMegamorphicPE <- summarizedPerBenchmark(rbind(megamorphicNormalizedPE), c(0,10000), megamorphicBaselinePE, "", normalized = TRUE)
 
 summaryDataMegamorphic <- rbind(summarizedMegamorphicMT, summarizedMegamorphicPE)[,c(2,1,7,8,3:6)]
 print(
@@ -146,6 +157,7 @@ print(
        booktabs = T,
        format = "latex",
        longtable = T,
+       caption = "Overall Results for the Morphicness Benchmarks",
        digits = 2)  %>%
        kable_styling(latex_options = c("repeat_header"), font_size = 7)  %>%
        collapse_rows(columns = 1:2))

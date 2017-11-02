@@ -131,6 +131,30 @@ missingWarmupFilename <- function(vm) {
   return (paste(paste("missingChangePoint-",vm, sep=""),".tsv", sep=""))
 }
 
+
+overheadFactors <- function(data, baseline, iterations){
+  data <- droplevels(subset(data, Iteration >= iterations[1] & Iteration <= iterations[2])) 
+  baselineGlobal <<- droplevels(subset(baseline, Iteration >= iterations[1] & Iteration <= iterations[2]))
+  return (ddply(data, ~ VM + Benchmark, summarise, 
+                     RuntimeFactor = 
+                       tryCatch({
+                         t.test.ratio(Value, baselineGlobal[baselineGlobal$Benchmark == Benchmark,]$Value)$estimate[3]
+                       }, error = function(e) {
+                         mean(Value) / mean(baselineGlobal[baselineGlobal$Benchmark == Benchmark,]$Value)
+                       }),
+                     Confidence    = 
+                       tryCatch({
+                         paste(
+                           paste("<", 
+                                 round(t.test.ratio(Value, baselineGlobal[baselineGlobal$Benchmark == Benchmark,]$Value)$conf.int[1], digits = 2), sep=""),
+                           paste(
+                             round(t.test.ratio(Value, baselineGlobal[baselineGlobal$Benchmark == Benchmark,]$Value)$conf.int[2], digits = 2), ">", sep=""),
+                           sep=" - ")
+                       }, error = function(e) {
+                         " - "
+                       })))
+  
+}
 summarizedPerBenchmark <- function(data, iterations, baseline, baselineName, normalized = FALSE) {
   data <- droplevels(subset(data, Iteration >= iterations[1] & Iteration <= iterations[2])) 
   if (!normalized){

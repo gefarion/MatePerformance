@@ -16,6 +16,7 @@
 "SOMmt"	"Dispatch"	"2"
 "MATEmt"	"PageRank"	"700"
 "MATEmt"	"VMReflectiveMessageSend"	"14"
+"MATEmt"	"DeltaBlue"	"15"
 "SOMpe-Ent"	"Fibonacci"	"700"
 "SOMpe-Ent"	"PageRank"	"700"
 "SOMpe-Ent"	"DeltaBlue"	"1026"
