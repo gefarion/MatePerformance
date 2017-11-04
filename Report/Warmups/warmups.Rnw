@@ -4,22 +4,22 @@ knitr::opts_chunk$set(fig.width=4, fig.height=2,
 
 #AWF + Inherent
 rawAWF <- getRawData("../../Data/areWeFast.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), 
-                          vmNamesMap(), c("MATEpe-Ent", "SOMpe-Ent", "MATEmt", "SOMmt"), maxIteration = 99)
+                          vmNamesMap(), c("MATEpe", "SOMpe", "MATEmt", "SOMmt"), maxIteration = 99)
 
 rawInherent <- getRawData("../../Data/inherent.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), 
-                          vmNamesMap(), c("MATEpe-Ent", "SOMpe-Ent", "MATEmt", "SOMmt"), maxIteration = 99)
+                          vmNamesMap(), c("MATEpe", "SOMpe", "MATEmt", "SOMmt"), maxIteration = 99)
 
 rawStandard <- rbind(rawAWF, rawInherent)
 rawStandard <-droplevels(subset(rawStandard, Benchmark != "Fibonacci" & Benchmark != "Recurse"))
 
 rawStandardNormalized <- normalizePerIteration(rawStandard,
                                                filterVMs,
-                                               list(c("MATEpe-Ent","SOMpe-Ent"), c("MATEmt","SOMmt")),
-                                               c("SOMpe-Ent", "SOMmt"), 
+                                               list(c("MATEpe","SOMpe"), c("MATEmt","SOMmt")),
+                                               c("SOMpe", "SOMmt"), 
                                                FALSE)
 #Individual
 mop <- getRawData("../../Data/individualActivations.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), 
-                          vmNamesMap(), c("MATEpe-Ent", "MATEmt"), maxIteration = 99)
+                          vmNamesMap(), c("MATEpe", "MATEmt"), maxIteration = 99)
 
 allOperationsMop <- droplevels(subset(mop, (
 				(Suite == "mop-operations-steady" & Benchmark != "VMReflectiveFieldRead" & Benchmark != "VMReflectiveFieldWrite"))))
@@ -40,7 +40,7 @@ allOperationsMop <- ddply(allOperationsMop, ~ Benchmark + VM , transform,
 	Benchmark = gsub("VMReflective", "", Benchmark))
 
 levels(allOperationsMop$VM) <- c(levels(allOperationsMop$VM), "MATEpe-baseline", "MATEmt-baseline") 
-allOperationsMop$VM[allOperationsMop$Var == TRUE & allOperationsMop$VM == "MATEpe-Ent"] <- "MATEpe-baseline"
+allOperationsMop$VM[allOperationsMop$Var == TRUE & allOperationsMop$VM == "MATEpe"] <- "MATEpe-baseline"
 allOperationsMop$VM[allOperationsMop$Var == TRUE & allOperationsMop$VM == "MATEmt"] <- "MATEmt-baseline"
 
 allOperationsMop$Benchmark <- droplevels(factor(allOperationsMop$Benchmark))
@@ -62,21 +62,21 @@ name_map <- list(
 
 allOperationsMop <- change_names(allOperationsMop, name_map, "Benchmark")
 
-allOperationsMop <- droplevels(subset(allOperationsMop, Benchmark != "Mega" & Benchmark != "Mega2" & Benchmark != "Mono" & Benchmark != "Mono2"))
+allOperationsMop <- droplevels(subset(allOperationsMop, Benchmark != "Mega" & Benchmark != "Mega2" & Benchmark != "Mono" & Benchmark != "Mono2" & Benchmark != "LocalWrite"))
 
 allOperationsMopNormalized <- normalizePerIteration(allOperationsMop,
                                                filterVMs,
-                                               list(c("MATEpe-Ent","MATEpe-baseline"), c("MATEmt","MATEmt-baseline")),
+                                               list(c("MATEpe","MATEpe-baseline"), c("MATEmt","MATEmt-baseline")),
                                                c("MATEpe-baseline", "MATEmt-baseline"), 
                                                FALSE)
 allOperationsMopNormalized$Var <- NULL
 
 #Readonly
 rawRO <- getRawData("../../Data/readonly.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), 
-                          vmNamesMap(), c("MATEpe-Ent", "MATEmt"), maxIteration = 99)
+                          vmNamesMap(), c("MATEpe", "MATEmt"), maxIteration = 99)
 
 levels(rawRO$VM) <- c(levels(rawRO$VM), "MATEpe-baseline", "MATEmt-baseline") 
-rawRO$VM[rawRO$Benchmark == "SumKeys" & rawRO$VM == "MATEpe-Ent"] <- "MATEpe-baseline"
+rawRO$VM[rawRO$Benchmark == "SumKeys" & rawRO$VM == "MATEpe"] <- "MATEpe-baseline"
 rawRO$VM[rawRO$Benchmark == "SumKeys" & rawRO$VM == "MATEmt"] <- "MATEmt-baseline"
 rawRO$Benchmark[rawRO$Benchmark == "ReadonlySumKeys"] <- "SumKeys"
 rawRO <- droplevels(subset(rawRO, Benchmark != "DelegationProxiesSumKeys")) 
@@ -85,7 +85,7 @@ rawRO <- droplevels(subset(rawRO, Benchmark != "DelegationProxiesSumKeys"))
 
 rawRONormalized <- normalizePerIteration(rawRO,
                                                filterVMs,
-                                               list(c("MATEpe-Ent","MATEpe-baseline"), c("MATEmt","MATEmt-baseline")),
+                                               list(c("MATEpe","MATEpe-baseline"), c("MATEmt","MATEmt-baseline")),
                                                c("MATEpe-baseline", "MATEmt-baseline"), 
                                                FALSE)
 
@@ -93,14 +93,14 @@ rawRONormalized <- change_names(rawRONormalized, list("SumKeys"	 = "Readonly"), 
 
 #Tracing
 rawTracing <- getRawData("../../Data/tracing.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), 
-                          vmNamesMap(), c("MATEpe-Ent", "MATEmt"), maxIteration = 99)
+                          vmNamesMap(), c("MATEpe", "MATEmt"), maxIteration = 99)
 
 rawTracing <- ddply(rawTracing, ~ Benchmark + VM , transform, 
 	Var = grepl("Trace", Benchmark),
 	Benchmark = gsub("Trace|Big|Instrumented", "", Benchmark))
 
 levels(rawTracing$VM) <- c(levels(rawTracing$VM), "MATEpe-baseline", "MATEmt-baseline") 
-rawTracing$VM[rawTracing$Var == FALSE & rawTracing$VM == "MATEpe-Ent"] <- "MATEpe-baseline"
+rawTracing$VM[rawTracing$Var == FALSE & rawTracing$VM == "MATEpe"] <- "MATEpe-baseline"
 rawTracing$VM[rawTracing$Var == FALSE & rawTracing$VM == "MATEmt"] <- "MATEmt-baseline"
 
 rawTracing$Benchmark[rawTracing$Benchmark == "CD"] <- "CDT"
@@ -110,7 +110,7 @@ rawTracing$Benchmark[rawTracing$Benchmark == "QuickSort"] <- "QuickSortT"
 
 tracingNormalized <- normalizePerIteration(rawTracing,
                                                filterVMs,
-                                               list(c("MATEpe-Ent","MATEpe-baseline"), c("MATEmt","MATEmt-baseline")),
+                                               list(c("MATEpe","MATEpe-baseline"), c("MATEmt","MATEmt-baseline")),
                                                c("MATEpe-baseline", "MATEmt-baseline"), 
                                                FALSE)
 
@@ -125,7 +125,7 @@ scaleFUN <- function(x) sprintf("%.1f", x)
 \def\WarmupsPlot{
 <<warmups, fig.width=8, fig.height=7, fig.cap='The first 100 iterations of a subset of the benchmarks in MATEpe and MATEmt normalized (per iteration) to their corresponding SOM versions.', fig.env='figure*'>>=
 is.even <- function(x) x %% 2 == 0
-plotsforPaper <- c("DeltaBlue", "Havlak", "Json", "Readonly", "Richards", "NBody","Mandelbrot", "Bounce", "CD", "FieldRead", "Activation", "All", "CDT", "LocalWrite", "JsonT")
+plotsforPaper <- c("DeltaBlue", "Havlak", "Json", "Readonly", "Richards", "NBody","Mandelbrot", "Bounce", "CD", "FieldRead", "Activation", "All", "CDT", "FieldWrite", "JsonT")
 
 readonlySummary <- change_names(summaryDataRO, list("MOP" = "Readonly"), "Benchmark")
 #summaries <- rbind(summaryDataMicro, summaryDataMacro, readonlySummary)
@@ -134,7 +134,6 @@ tracingSummary$Benchmark[tracingSummary$Benchmark == "CD"] <- "CDT"
 tracingSummary$Benchmark[tracingSummary$Benchmark == "Json"] <- "JsonT"
 tracingSummary$Benchmark[tracingSummary$Benchmark == "DeltaBlue"] <- "DeltaBlueT"
 tracingSummary$Benchmark[tracingSummary$Benchmark == "QuickSort"] <- "QuickSortT"
-
 
 summaries <- rbind(summaryDataMicro, summaryDataMacro, readonlySummary, summaryDataMop, tracingSummary)
 
@@ -145,7 +144,7 @@ plotsAppendix <- list()
 dir.create("Plots", showWarnings = FALSE)
 for (b in levels(warmups$Benchmark)) {
   data_b <- droplevels(subset(warmups, Benchmark == b))
-  ci <- ciForVM(summaries, b, c("MATEpe-Ent", "MATEmt"))
+  ci <- ciForVM(summaries, b, c("MATEpe", "MATEmt"))
   plot <- warmup_plot(data_b, b, is.even(i), ci, titleSize = 10)
   pdf(paste(paste("Plots/WU-", b, sep=""), ".pdf", sep=""))
   dev.off()
@@ -186,7 +185,7 @@ warmupsTracing <- data.frame()
 for (i in iterations){
   # AWF + Inherent
   iterRange <- c(0,i)
-  summarizedPE <- overheadFactors(subset(rawAWF, VM == "MATEpe-Ent"), subset(rawAWF, VM == "SOMpe-Ent"), iterRange)
+  summarizedPE <- overheadFactors(subset(rawAWF, VM == "MATEpe"), subset(rawAWF, VM == "SOMpe"), iterRange)
   summarizedMT <- overheadFactors(subset(rawAWF, VM == "MATEmt"), subset(rawAWF, VM == "SOMmt"), iterRange)  
   warmupsIter <- rbind(summarizedPE, summarizedMT)
   
@@ -196,9 +195,9 @@ for (i in iterations){
   warmups <- rbind(warmups, warmupsIter)
   
   # Individual
-  summaryIndividualPE <- overheadFactors(subset(allOperationsMop, VM == "MATEpe-Ent" & Benchmark != "FieldWrite"), subset(allOperationsMop, VM == "MATEpe-baseline" & Benchmark != "FieldWrite"), iterRange)
+  summaryIndividualPE <- overheadFactors(subset(allOperationsMop, VM == "MATEpe" & Benchmark != "LocalWrite"), subset(allOperationsMop, VM == "MATEpe-baseline" & Benchmark != "LocalWrite"), iterRange)
   
-  summaryIndividualMT <- overheadFactors(subset(allOperationsMop, VM == "MATEmt" & Benchmark != "FieldWrite"), subset(allOperationsMop, VM == "MATEmt-baseline" & Benchmark != "FieldWrite"), iterRange)  
+  summaryIndividualMT <- overheadFactors(subset(allOperationsMop, VM == "MATEmt" & Benchmark != "LocalWrite"), subset(allOperationsMop, VM == "MATEmt-baseline" & Benchmark != "LocalWrite"), iterRange)  
   
   summaryIndividualIter <- rbind(summaryIndividualPE, summaryIndividualMT)
   
@@ -207,7 +206,7 @@ for (i in iterations){
   warmupsIndividual <- rbind(warmupsIndividual, summaryIndividualIter)
   
   # Readonly
-  summaryROPE <- overheadFactors(subset(rawRO, VM == "MATEpe-Ent"), subset(rawRO, VM == "MATEpe-baseline"), iterRange)
+  summaryROPE <- overheadFactors(subset(rawRO, VM == "MATEpe"), subset(rawRO, VM == "MATEpe-baseline"), iterRange)
   summaryROMT <- overheadFactors(subset(rawRO, VM == "MATEmt"), subset(rawRO, VM == "MATEmt-baseline"), iterRange)
   summaryROIter <- rbind(summaryROPE, summaryROMT)
   
@@ -216,7 +215,7 @@ for (i in iterations){
   warmupsRO <- rbind(warmupsRO, summaryROIter)
   
   # Tracing 
-  summaryTracingPE <- overheadFactors(subset(rawTracing, VM == "MATEpe-Ent"), subset(rawTracing, VM == "MATEpe-baseline"), iterRange)
+  summaryTracingPE <- overheadFactors(subset(rawTracing, VM == "MATEpe"), subset(rawTracing, VM == "MATEpe-baseline"), iterRange)
   summaryTracingMT <- overheadFactors(subset(rawTracing, VM == "MATEmt"), subset(rawTracing, VM == "MATEmt-baseline"), iterRange)
   summaryTracingIter <- rbind(summaryTracingPE, summaryTracingMT)
   
@@ -226,11 +225,14 @@ for (i in iterations){
 }
 
 summaryAll <- rbind(warmups, warmupsIndividual, warmupsRO, warmupsTracing)[,c(2,1,5,3,4)]
+colnames(summaryAll)[4] <- "OF"
+
 print(
   kable(arrange(summaryAll, Benchmark), 
        booktabs = T,
        format = "latex",
        longtable = T,
+       caption = "Overall Warmup Results",
        digits = 2)  %>%
        kable_styling(latex_options = c("repeat_header"), font_size = 7)  %>%
        collapse_rows(columns = 1:3))
@@ -239,17 +241,21 @@ print(
 
 \def\WarmupsTableOverall{%
 <<warmups-overall-table>>=
+colnames(warmups)[3] <- "OF"
 summarizedOverall <- summarizeOverall(warmups, ~ VM + Iterations)
 #tableData <- summarizedOverall[,c(2:ncol(summarizedOverall))]
 
+colnames(warmupsIndividual)[3] <- "OF"
 summarizedIndividual <- summarizeOverall(warmupsIndividual, ~ VM + Iterations)
 #tableDataIndividual <- summarizedOverall[,c(2:ncol(summarizedOverall))]
 
+colnames(warmupsRO)[3] <- "OF"
 summarizedRO <- summarizeOverall(warmupsRO, ~ VM + Iterations)
 
+colnames(warmupsTracing)[3] <- "OF"
 summarizedTracing <- summarizeOverall(warmupsTracing, ~ VM + Iterations)
 
-columnNames <- c("Iterations", "VM", "Mean","CI-95%","Sd.", "Min", "Max", "Median")
+columnNames <- c("Iterations", "VM", "OF","CI-95%","Sd.", "Min", "Max", "Median")
 
 kable(rbind(arrange(summarizedOverall, Iterations), arrange(summarizedIndividual, Iterations), arrange(summarizedRO, Iterations), arrange(summarizedTracing, Iterations)), 
        booktabs = T,

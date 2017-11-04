@@ -4,11 +4,12 @@ knitr::opts_chunk$set(fig.width=10, fig.height=5,
 
 steady <- getWarmedupData("../../Data/areWeFast.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), 
                           vmNamesMap(), 
-                          c("SOMpe-Ent", "SOMmt", "Java", "Pharo", "Node.js"),
+                          c("SOMpe", "SOMmt", "Java", "Pharo", "Node.js"),
                           numberOfIterationsPerBenchmark)
 
 vmNames <- list("Node.js"     = "Node", 
                 "SOMpe-Ent"   = "SOMpe",
+                "SOMpe"       = "SOMpe",
                 "SOMmt"       = "SOMmt",
                 "Pharo"       = "Pharo",
                 "Java"        = "Java")
@@ -36,12 +37,13 @@ overview_box_plot(summarizedPerBenchAndVM, c(1,18))
 
 \def\LanguagesTableSummary{%
 <<languages-summary-table>>=
-awfTableData <- summarizedPerBenchAndVM[,c(2,1,7,8,3:6)]
+awfTableData <- summarizedPerBenchAndVM[,c(2,1,3,4:8)]
 print(
   kable(arrange(awfTableData, Benchmark), 
        booktabs = T,
        format = "latex",
        longtable = T,
+       caption = "Baseline Results",
        digits = 2)  %>%
        kable_styling(latex_options = c("repeat_header"), font_size = 7)  %>%
        collapse_rows(columns = 1:2))
@@ -51,12 +53,12 @@ print(
 \def\LanguagesTableOverall{%
 <<languages-overall-table>>=
 awfOverall <- summarizeOverall(awfTableData, ~ VM)
-colnames <- c("Runtime", "Mean","CI-95%","Sd.", "Min","Max", "Median")
+colnames <- c("Runtime", "OF","CI-95%","Sd.", "Min","Max", "Median")
 kable(arrange(awfOverall, Geomean), 
        booktabs = T,
        format = "latex",
        digits = 2,
-       caption = "Overall Inherent Results",
+       caption = "Overall Baseline Results",
        col.names=colnames
       )  %>%
        kable_styling(latex_options = c("repeat_header"), font_size = 8)

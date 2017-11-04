@@ -4,7 +4,7 @@ knitr::opts_chunk$set(fig.width=10, fig.height=5,
 
 tracing <- getWarmedupData("../../Data/tracing.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), 
                           vmNamesMap(), 
-                          c("MATEpe-Ent", "MATEmt"),
+                          c("MATEpe", "MATEmt"),
                           numberOfIterationsPerBenchmark)
 
 tracing <- ddply(tracing, ~ Benchmark + VM , transform, 
@@ -12,7 +12,7 @@ tracing <- ddply(tracing, ~ Benchmark + VM , transform,
 	Benchmark = gsub("Trace|Big|Instrumented", "", Benchmark))
 
 levels(tracing$VM) <- c(levels(tracing$VM), "MATEpe-baseline", "MATEmt-baseline") 
-tracing$VM[tracing$Var == FALSE & tracing$VM == "MATEpe-Ent"] <- "MATEpe-baseline"
+tracing$VM[tracing$Var == FALSE & tracing$VM == "MATEpe"] <- "MATEpe-baseline"
 tracing$VM[tracing$Var == FALSE & tracing$VM == "MATEmt"] <- "MATEmt-baseline"
 
 tracingMT <- droplevels(subset(tracing, VM %in% mtVMs | VM == "MATEmt-baseline"))
@@ -23,7 +23,7 @@ baselinePE <- droplevels(subset(tracing, VM == "MATEpe-baseline"))
 @
 \def\TracingPerfComparisonPlot{%
 <<perf-overview-tracing, fig.width=4, fig.height=2, fig.cap='Overhead factors of profiling the amount of method activations in a set of benchmarks.', fig.align='center', out.width = "0.7\\textwidth", fig.pos="H">>=
-tracingPlot <- boxplot(list(tracingMT, tracingPE), TRUE, "Run Time", list('MATEmt-baseline', 'MATEpe-baseline'), fill = TRUE)
+tracingPlot <- boxplot(list(tracingMT, tracingPE), TRUE, "OF", list('MATEmt-baseline', 'MATEpe-baseline'), fill = TRUE)
 print(tracingPlot)
 @
 }%
@@ -32,7 +32,7 @@ print(tracingPlot)
 <<perf-summary-table-tracing>>=
 tracingSummaryPE <- summarizedPerBenchmark(tracingPE, c(0,10000), baselinePE, "MATEpe-baseline")
 tracingSummaryMT <- summarizedPerBenchmark(tracingMT, c(0,10000), baselineMT, "MATEmt-baseline")
-tracingSummary <- rbind(tracingSummaryPE, tracingSummaryMT)[,c(2,1,7,8,3:6)]
+tracingSummary <- rbind(tracingSummaryPE, tracingSummaryMT)[,c(2,1,3,4:8)]
 print(
   kable(arrange(tracingSummary, Benchmark), 
        booktabs = T,

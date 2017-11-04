@@ -22,7 +22,7 @@ element90 <- function() { element_text(angle = 90, hjust = 1, vjust=0.5) }
 warmup_plot <- function (data, title, xAxis, hLines = c(), titleSize = 8, group = "VM") {
   p <- ggplot(data)
   p <- p + geom_line(aes_string(x="Iteration", y="RuntimeRatio", colour = group))
-  p <- p + scale_color_manual(values=c("MATEpe-Ent"="blue", "MATEmt"="green"))
+  p <- p + scale_color_manual(values=c("MATEpe"="blue", "MATEmt"="green"))
   p <- p + ggtitle(title)
   p <- p + theme_simple()
   p <- p + theme(legend.position = "none", axis.title.y=element_blank(),
@@ -75,12 +75,12 @@ boxplot <- function (data, axisYText, titleVertical, baselineNames, fill = FALSE
 }
 
 overview_box_plot <- function(stats, yLimits) {
-  stats$VM <- reorder(stats$VM, X=-stats$RuntimeFactor)
+  stats$VM <- reorder(stats$VM, X=-stats$OF)
   
   breaks <- levels(droplevels(stats)$VM)
   col_values <- sapply(breaks, function(x) vm_colors[[x]])
   
-  plot <- ggplot(stats, aes(x=VM, y=RuntimeFactor, fill = VM))
+  plot <- ggplot(stats, aes(x=VM, y=OF, fill = VM))
   
   plot <- plot +
     geom_boxplot(outlier.size = 0.5) + #fill=get_color(5, 7)

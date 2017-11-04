@@ -64,10 +64,10 @@ vmNamesMap <- function() {
                        "RTruffleSOM"                           = "SOMmt",
                        "RTruffleMate"                          = "MATEmt",
                        "RTruffleMate-envInObj"                 = "MATEmt-envInObj",
-                       "TruffleSOM-graal-enterprise"           = "SOMpe-Ent",
-                       "TruffleMate-graal-enterprise"          = "MATEpe-Ent",
-                       "TruffleMate-graal-enterprise-naive"    = "MATEpe-Ent-NoOpt",
-                       "TruffleMate-graal-enterprise-envInObj" = "MATEpe-Ent-envInObj",
+                       "TruffleSOM-graal-enterprise"           = "SOMpe",
+                       "TruffleMate-graal-enterprise"          = "MATEpe",
+                       "TruffleMate-graal-enterprise-naive"    = "MATEpe-NoOpt",
+                       "TruffleMate-graal-enterprise-envInObj" = "MATEpe-envInObj",
                        "Pharo"                  = "Pharo")
   #                       "TruffleSOM-graal-no-split" = "TruffleSOM.ns",
   #                       "SOMpp"                 = "SOM++")
@@ -171,6 +171,6 @@ microBenchmarks <- c("Bounce", "List", "Mandelbrot", "NBody", "Permute", "Queens
 macroBenchmarks <- c("CD", "DeltaBlue", "Havlak", "Json", "Richards")
 
 mtVMs <- c("SOMmt", "MATEmt", "MATEmt-envInObj")
-peVMs <- c("SOMpe", "SOMpe-Ent", "MATEpe", "MATEpe-Ent", "MATEpe-Ent-envInObj")
+peVMs <- c("SOMpe", "SOMpe-Ent", "MATEpe", "MATEpe-envInObj")
 
 tracingBenchmarks <- c("QuickSort", "NBody", "DeltaBlue", "JsonBig")

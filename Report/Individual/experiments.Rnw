@@ -4,8 +4,8 @@ knitr::opts_chunk$set(fig.width=10, fig.height=5,
 
 mop <- getWarmedupData("../../Data/individualActivations.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), 
                           vmNamesMap(), 
-#                          c("MATEpe-Ent", "MATEmt", "MATEpe-Ent-NoOpt"),
-                          c("MATEpe-Ent", "MATEmt"),
+#                          c("MATEpe", "MATEmt", "MATEpe-NoOpt"),
+                          c("MATEpe", "MATEmt"),
                           numberOfIterationsPerBenchmark)
 
 includeNaive <- FALSE
@@ -49,7 +49,7 @@ name_map <- list(
 
 allOperations <- change_names(allOperations, name_map, "Benchmark")
 
-allOperations <- droplevels(subset(allOperations, VM != "MATEpe-Ent-NoOpt"))
+allOperations <- droplevels(subset(allOperations, VM != "MATEpe-NoOpt" & Benchmark != "LocalWrite"))
 
 allOperationsNormalized <- ddply(allOperations, ~ Benchmark + VM, transform,
                    RuntimeRatio = Value / mean(Value[Var == FALSE]))
@@ -58,14 +58,14 @@ mopNormalized <- droplevels(subset(
     allOperationsNormalized, (Var == TRUE & Benchmark != "Mega" & Benchmark != "Mono" & Benchmark != "Mega2" & Benchmark != "Mono2")))
 
 if (includeNaive){
-  allOperationNaive <- droplevels(subset(allOperations, VM == "MATEpe-Ent" | VM == "MATEpe-Ent-NoOpt"))
+  allOperationNaive <- droplevels(subset(allOperations, VM == "MATEpe" | VM == "MATEpe-NoOpt"))
   allOperationsNaiveNormalized <- ddply(allOperationNaive, ~ Benchmark, transform,
-                   RuntimeRatio = Value / mean(Value[Var == FALSE & VM == "MATEpe-Ent"]))
+                   RuntimeRatio = Value / mean(Value[Var == FALSE & VM == "MATEpe"]))
   mopNaiveNormalized <- droplevels(subset(
-      allOperationsNaiveNormalized, (Var == TRUE & Benchmark != "Mega" & Benchmark != "Mono" & Benchmark != "Mega2" & Benchmark != "Mono2" & VM == "MATEpe-Ent-NoOpt")))
+      allOperationsNaiveNormalized, (Var == TRUE & Benchmark != "Mega" & Benchmark != "Mono" & Benchmark != "Mega2" & Benchmark != "Mono2" & VM == "MATEpe-NoOpt")))
 megamorphicNaiveNormalized <- droplevels(subset(
 #    allOperationsNormalized, (Var == TRUE & (Benchmark == "Mono" | Benchmark == "Mega" | Benchmark == "Mono2" | Benchmark == "Mega2"))))
-    allOperationsNaiveNormalized, (Var == TRUE & (Benchmark == "Mono" | Benchmark == "Mega") & VM == "MATEpe-Ent-NoOpt")))
+    allOperationsNaiveNormalized, (Var == TRUE & (Benchmark == "Mono" | Benchmark == "Mega") & VM == "MATEpe-NoOpt")))
 }
 
 megamorphicNormalized <- droplevels(subset(
@@ -75,7 +75,7 @@ megamorphicNormalized <- droplevels(subset(
 @
 \def\IndividualMOPPerfComparisonPlot{%
 <<perf-overview-mop, fig.width=5, fig.height=2, fig.align='center', fig.cap='Overhead factor for redefining VM operations at the language-level. The baseline for each bench, is the execution of the same benchmark in the same VM but without redefining the corresponding VM operation.', fig.pos = 'H'>>=
-print(boxplot(list(mopNormalized), TRUE, "Overhead Factor", list(), fill = TRUE))
+print(boxplot(list(mopNormalized), TRUE, "OF", list(), fill = TRUE))
 @
 }%
 
@@ -123,7 +123,7 @@ mopBaselinePE <- droplevels(subset(
 summarizedMopMT <- summarizedPerBenchmark(mopNormalizedMT, c(0,10000), mopBaselineMT, "", normalized = TRUE) 
 summarizedMopPE <- summarizedPerBenchmark(rbind(mopNormalizedPE), c(0,10000), mopBaselinePE, "", normalized = TRUE)
 
-summaryDataMop <- rbind(summarizedMopMT, summarizedMopPE)[,c(2,1,7,8,3:6)]
+summaryDataMop <- rbind(summarizedMopMT, summarizedMopPE)[,c(2,1,3,4:8)]
 print(
   kable(arrange(summaryDataMop, Benchmark), 
        booktabs = T,
@@ -151,7 +151,7 @@ megamorphicBaselinePE <- droplevels(subset(
 summarizedMegamorphicMT <- summarizedPerBenchmark(megamorphicNormalizedMT, c(0,10000), megamorphicBaselineMT, "", normalized = TRUE) 
 summarizedMegamorphicPE <- summarizedPerBenchmark(rbind(megamorphicNormalizedPE), c(0,10000), megamorphicBaselinePE, "", normalized = TRUE)
 
-summaryDataMegamorphic <- rbind(summarizedMegamorphicMT, summarizedMegamorphicPE)[,c(2,1,7,8,3:6)]
+summaryDataMegamorphic <- rbind(summarizedMegamorphicMT, summarizedMegamorphicPE)[,c(2,1,3,4:8)]
 print(
   kable(arrange(summaryDataMegamorphic, Benchmark), 
        booktabs = T,
@@ -174,7 +174,7 @@ overallMega <- arrange(summarizeOverall(summaryDataMegamorphic, ~ VM), Geomean)
 
 overallAggregated <- rbind(overallMop, overallMega)
 
-colnames <- c("Runtime", "Mean","CI-95%","Sd.", "Min","Max", "Median")
+colnames <- c("Runtime", "OF","CI-95%","Sd.", "Min","Max", "Median")
 kable(overallAggregated, 
        booktabs = T,
        format = "latex",

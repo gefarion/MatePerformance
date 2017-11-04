@@ -1,7 +1,7 @@
 <<performance, echo=FALSE, include=FALSE>>=
 if (Sys.getenv("RSTUDIO") == "1") { 
-  #setwd("/Users/guidochari/Documents/Projects/MatePerformance/Report") 
-  setwd("/home/guido/Documents/Projects/MatePerformance/Report")
+  setwd("/Users/guidochari/Documents/Projects/MatePerformance/Report") 
+  #setwd("/home/guido/Documents/Projects/MatePerformance/Report")
 }
 
 root_path <- getwd()
@@ -35,7 +35,11 @@ numberOfIterationsPerBenchmark <- 50
 @
 <<ReadonlyPerformance, child='Readonly/experiments.Rnw', results='asis'>>=
 @
-<<EphemeralPerformance, child='ReflectiveCompilation/instanceMigration.Rnw', results='asis'>>=
+<<TracingPerformance, child='Tracing/experiments.Rnw', results='asis'>>=
 @
-<<IndirectPerformance, child='ReflectiveCompilation/indirectVariability.Rnw', results='asis'>>=
+<<ReflectiveCompilation, child='ReflectiveCompilation/instanceMigration.Rnw', results='asis'>>=
+@
+<<ReflectiveCompilation2, child='ReflectiveCompilation/indirectVariability.Rnw', results='asis'>>=
+@
+<<Warmups, child='Warmups/warmups.Rnw', results='asis'>>=
 @

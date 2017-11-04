@@ -24,22 +24,22 @@ summarizeNotNormalizedData <- function(dataset){
 summarizeOverall <- function(dataset, grouping){
   overall <- ddply(dataset, grouping, summarise,
                    Geomean         = tryCatch({
-                     exp(CI(log(RuntimeFactor), ci=0.95))[2]
+                     exp(CI(log(OF), ci=0.95))[2]
                    }, error = function(e) {
-                     RuntimeFactor
+                     OF
                    }),  
                    Confidence      = tryCatch({
                      paste(
-                       paste("<", round(exp(CI(log(RuntimeFactor), ci=0.95))[3], digits = 2), sep=""),
-                       paste(round(exp(CI(log(RuntimeFactor), ci=0.95))[1], digits = 2), ">", sep=""),
+                       paste("<", round(exp(CI(log(OF), ci=0.95))[3], digits = 2), sep=""),
+                       paste(round(exp(CI(log(OF), ci=0.95))[1], digits = 2), ">", sep=""),
                        sep=" - ")
                    }, error = function(e) {
                      "Too few values"
                    }),
-                   Sd              = sd(RuntimeFactor),
-                   Min             = min(RuntimeFactor),
-                   Max             = max(RuntimeFactor),
-                   Median          = median(RuntimeFactor))
+                   Sd              = sd(OF),
+                   Min             = min(OF),
+                   Max             = max(OF),
+                   Median          = median(OF))
   return(overall)
 }
 
@@ -165,7 +165,7 @@ summarizedPerBenchmark <- function(data, iterations, baseline, baselineName, nor
   #make it global to use it in ddply
   baselineGlobal <<- droplevels(subset(baseline, Iteration >= iterations[1] & Iteration <= iterations[2] & Benchmark %in% levels(factor(normalized$Benchmark))))
   return (ddply(normalized, ~ VM + Benchmark, summarise, 
-                     RuntimeFactor = 
+                     OF = 
                        tryCatch({
                          t.test.ratio(Value, baselineGlobal[baselineGlobal$Benchmark == Benchmark,]$Value)$estimate[3]
                        }, error = function(e) {
@@ -204,8 +204,8 @@ ciForVM <- function(data, bench, vms){
   lines <- list()
   i <- 1
   for (vm in vms){
-    ci <- intervalToNumbers(summaries[summaries$Benchmark == b & summaries$VM == vm,]$Confidence)
-    lines[[i]] <- c(summaries[summaries$Benchmark == b & summaries$VM == vm,]$RuntimeFactor,
+    ci <- intervalToNumbers(summaries[summaries$Benchmark == bench & summaries$VM == vm,]$Confidence)
+    lines[[i]] <- c(summaries[summaries$Benchmark == bench & summaries$VM == vm,]$OF,
                     ci[1],
                     ci[2])
     i <- i + 1
