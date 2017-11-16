@@ -11,7 +11,7 @@ Instructions for Running the Experiments
 
 To checkout the code:
 
-    git clone -b papers/ThesisPhd https://github.com/charig/MatePerformance.git directoryName
+    git clone -b papers/phdThesis https://github.com/charig/MatePerformance.git directoryName
     cd directoryName
     
 To build all the implementations needed for running all the experiments by yourself:
