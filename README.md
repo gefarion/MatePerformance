@@ -24,11 +24,10 @@ For [Graal](http://www.oracle.com/technetwork/oracle-labs/program-languages/down
 
 After building, for running the experiments just execute:
 
-    cd ..
     ./runExperiments.sh
 
 Finally, to produce all the images, tables, and data:
 
-    cd Report
+    cd ../Report
     ./compile.sh experiments.Rnw
 
