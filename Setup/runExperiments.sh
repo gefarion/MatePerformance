@@ -8,7 +8,7 @@ then
     ALL=true
 fi
 
-if [[ "$ALL" = true || "$@" == "dynMetrics"  ]]
+if [[ "$@" == "dynMetrics"  ]]
 then
     ./runScripts/runDynMetrics.sh
 fi
