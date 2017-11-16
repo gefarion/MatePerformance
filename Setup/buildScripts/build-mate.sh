@@ -15,13 +15,13 @@ else
   fi
   checkout $ROOT_PATH/Implementations/TruffleMate/Standard "https://github.com/charig/TruffleMATE.git" "reflectiveCompiler"
   pushd $ROOT_PATH/Implementations/TruffleMate/Standard
-  if [ ! -d "graal" ]
+  if [ ! -e "$PWD/graal" ]
   then
-    find_and_link GRAAL_OFICIAL graal "/home/guido/graal"
+    find_and_link GRAAL_OFICIAL "graal" "~/graal"
   fi
-  if [ ! -d "java-jvmci-8" ]
+  if [ ! -e "$PWD/java-jvmci-8" ]
   then
-    find_and_link JAVA_JVMCI_DIR "java-jvmci-8" "/home/guido/Documents/Projects/TruffleMATE/libs/truffle/java-jvmci-8/"
+    find_and_link JAVA_JVMCI_DIR "java-jvmci-8" "~/Documents/Projects/TruffleMATE/libs/truffle/java-jvmci-8/"
   fi
   INFO "Compiling TruffleMATE" 
   make clean; make
