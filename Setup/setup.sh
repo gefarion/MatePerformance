@@ -16,7 +16,7 @@ check_for_graalvm $GRAAL_OFICIAL
 check_for_pypy  "non-fatal"
 
 $BUILDSCRIPTS/build-mate.sh
-#$BUILDSCRIPTS/build-pharo.sh
-#$BUILDSCRIPTS/build-benchmarks.sh
+$BUILDSCRIPTS/build-pharo.sh
+$BUILDSCRIPTS/build-benchmarks.sh
 
 OK done.

@@ -27,19 +27,5 @@ else
   make clean; make
   OK TruffleMATE Build Completed.
   popd > /dev/null
-  if [ ! -d $ROOT_PATH/Implementations/RTruffleMate ]
-  then
-    mkdir $ROOT_PATH/Implementations/RTruffleMate
-  fi
-  checkout $ROOT_PATH/Implementations/RTruffleMate/Standard "https://github.com/charig/RTruffleMATE.git" "meta-mop-in-shape"
-  pushd $ROOT_PATH/Implementations/RTruffleMate/Standard
-  if [ ! -d "pypy" ]
-  then
-    find_and_link PYPY_DIR "pypy" "/home/guido/pypy" 
-  fi
-  INFO "Compiling RTruffleMATE in JIT mode (may take some time...)"
-  make clean; JIT=True make
-  OK RTruffleMATE Build Completed.
-  popd > /dev/null
 fi
 OK MATE Build Completed.
