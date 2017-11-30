@@ -11,7 +11,7 @@ Instructions for Running the Experiments
 
 To checkout the code:
 
-    git clone -b papers/phdThesis https://github.com/charig/MatePerformance.git directoryName
+    git clone -b papers/TSE2017 https://github.com/charig/MatePerformance.git directoryName
     cd directoryName
     
 To build all the implementations needed for running all the experiments by yourself:
@@ -20,7 +20,7 @@ To build all the implementations needed for running all the experiments by yours
     ./setup.sh
     
 *Note that the experimental setup has many dependencies: git, ant, make, mv, rebench, cc, c++, graalvm, pypy. 
-For [Graal](http://www.oracle.com/technetwork/oracle-labs/program-languages/downloads/index.html) and [PyPy](https://pypy.org/download.html), they must be downloaded and then their corresponding downloaded dir set in [config.inc](Setup/buildScripts/config.inc)*
+Besides, [Graal](http://www.oracle.com/technetwork/oracle-labs/program-languages/downloads/index.html) must be manually downloaded and its corresponding downloaded dir set in [config.inc](Setup/buildScripts/config.inc)*
 
 After building, for running the experiments just execute:
 
