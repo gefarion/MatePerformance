@@ -16,7 +16,7 @@ cp experiments.tex $PAPER_PATH/sections/experiments.tex
 SUBS="\/"
 SCRIPT_PATH_ESCAPED=${SCRIPT_PATH////$SUBS}
 
-IMAGES_PATH="$SCRIPT_PATH_ESCAPED\/Report\/images"
-PAPER_IMAGES_PATH="\.\.\/Images"
+IMAGES_PATH="$SCRIPT_PATH_ESCAPED\/images"
+PAPER_IMAGES_PATH="Images"
 
 sed -i -e "s/$IMAGES_PATH/$PAPER_IMAGES_PATH/g" $PAPER_PATH/sections/experiments.tex
