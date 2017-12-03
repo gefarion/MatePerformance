@@ -5,26 +5,18 @@ popd > /dev/null
 
 if [ -d $SCRIPT_PATH/../../Writing ]
 then
-    TESIS_PATH=$SCRIPT_PATH/../../Writing/Research/TesisPhd
-    PAPER_PATH=$SCRIPT_PATH/../../Writing/Research/optimizing-reflective-execution-environments
+    PAPER_PATH=$SCRIPT_PATH/../../Writing/Research/mateonwards/
 else
-    TESIS_PATH=$SCRIPT_PATH/../../Escritos/Research/TesisPhd
-    PAPER_PATH=$SCRIPT_PATH/../../Escritos/Research/optimizing-reflective-execution-environments/
+    PAPER_PATH=$SCRIPT_PATH/../../../Escritos/Research/mateonwards/
 fi
 
-
-cp Report/images/*.pdf $PAPER_PATH/images/
-cp Report/images/*.pdf $TESIS_PATH/Imagenes/
-cp Report/experiments.tex $PAPER_PATH/sections/experiments.tex
-cp Report/experiments.tex $TESIS_PATH/Secciones/experiments.tex
+cp images/*.pdf $PAPER_PATH/images/
+cp experiments.tex $PAPER_PATH/sections/experiments.tex
 
 SUBS="\/"
 SCRIPT_PATH_ESCAPED=${SCRIPT_PATH////$SUBS}
 
 IMAGES_PATH="$SCRIPT_PATH_ESCAPED\/Report\/images"
-PAPER_IMAGES_PATH="\.\.\/images"
-#TESIS_IMAGES_PATH="\.\.\/Imagenes"
-TESIS_IMAGES_PATH="Imagenes"
+PAPER_IMAGES_PATH="\.\.\/Images"
 
 sed -i -e "s/$IMAGES_PATH/$PAPER_IMAGES_PATH/g" $PAPER_PATH/sections/experiments.tex
-sed -i -e "s/$IMAGES_PATH/$TESIS_IMAGES_PATH/g" $TESIS_PATH/Secciones/experiments.tex

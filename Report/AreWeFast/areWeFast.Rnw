@@ -2,15 +2,14 @@
 knitr::opts_chunk$set(fig.width=10, fig.height=5,
                       echo=FALSE, warning=FALSE, message=FALSE, results="asis")
 
-steady <- getWarmedupData("../../Data/areWeFast.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), 
-                          vmNamesMap(), 
-                          c("SOMpe", "SOMmt", "Java", "Pharo", "Node.js"),
-                          numberOfIterationsPerBenchmark)
-
+steady <- getFilteredData("../../Data/areWeFast.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), vmNamesMap(), 
+                          c("SOMpe", "MATEpe", "Java", "Pharo", "Node.js"),
+                          iterationsAndInliningFilename, iterationsAndInliningCols, numberOfIterationsPerBenchmark)
+  
+  
 vmNames <- list("Node.js"     = "Node", 
-                "SOMpe-Ent"   = "SOMpe",
-                "SOMpe"       = "SOMpe",
-                "SOMmt"       = "SOMmt",
+                "MATEpe"      = "Mate",
+                "SOMpe"       = "SOM",
                 "Pharo"       = "Pharo",
                 "Java"        = "Java")
 
@@ -30,7 +29,7 @@ names(vm_colors) <- vmNames
 
 @
 \def\LanguagesPerfComparisonPlot{%
-<<languages-perf-overview, fig.width=5, fig.height=2, fig.cap='Overhead factor of different dynamic programming language implementations normalized to Java. Benchmarks were selected from Marr et al.\\ in~\\cite{Marr:2016:AWFY}. The suite was designed for cross-comparing language implementations', out.width = "0.8\\textwidth", fig.align="center">>=
+<<languages-perf-overview, fig.width=5, fig.height=2, fig.cap='Overhead factor of different dynamic programming language implementations normalized to Java. Benchmarks were selected from Marr et al.\\ in~\\cite{Marr:2016:AWFY}. The suite was designed for cross-comparing language implementations.', out.width = "1\\columnwidth", fig.align="center">>=
 overview_box_plot(summarizedPerBenchAndVM, c(1,18))
 @
 }%

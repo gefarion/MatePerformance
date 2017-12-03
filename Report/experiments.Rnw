@@ -25,21 +25,7 @@ iterationsAndInliningCols <- c("Benchmark", "Iterations")
 numberOfIterationsPerBenchmark <- 50
 
 @
-<<Changepoint, child='Warmups/changepoint.Rnw', results='asis'>>=
-@
-<<InherentPerformance, child='Inherent/mate.Rnw', results='asis'>>=
-@
 <<LanguagesPerformance, child='AreWeFast/areWeFast.Rnw', results='asis'>>=
 @
-<<IndividualMetaOperationsPerformance, child='Individual/experiments.Rnw', results='asis'>>=
-@
 <<ReadonlyPerformance, child='Readonly/experiments.Rnw', results='asis'>>=
-@
-<<TracingPerformance, child='Tracing/experiments.Rnw', results='asis'>>=
-@
-<<ReflectiveCompilation, child='ReflectiveCompilation/instanceMigration.Rnw', results='asis'>>=
-@
-<<ReflectiveCompilation2, child='ReflectiveCompilation/indirectVariability.Rnw', results='asis'>>=
-@
-<<Warmups, child='Warmups/warmups.Rnw', results='asis'>>=
 @
