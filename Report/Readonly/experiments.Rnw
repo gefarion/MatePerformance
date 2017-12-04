@@ -20,7 +20,7 @@ readonlyNormalized <- ddply(readonly, ~ Benchmark, transform, RuntimeRatio = Val
 @
 \def\ReadonlyPerfComparisonPlot{%
 <<perf-overview-readonly, fig.width=3, fig.height=2, fig.cap='Overhead factors of implementing read-only reference using Handles with Mate (MOP) and using delegation proxies (Proxies).', fig.align='center', out.width = "0.8\\columnwidth", fig.pos="H">>=
-readonly <- boxplot(list(readonlyNormalized), TRUE, "OF", list(), fill = TRUE)
+readonly <- boxplot(list(readonlyNormalized), TRUE, "OF", list(), fill = FALSE)
 print(readonly)
 @
 }%
