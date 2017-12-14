@@ -1,5 +1,6 @@
 # MatePerformance
-This repository contains the experimental setting for assessing the performance of reflective VMs.  
+This repository contains the experimental setting for assessing the performance of our reflective VMs: [TruffleMATE](https://github.com/charig/TruffleMATE/tree/papers/phdThesis) and [RTruffleMATE](https://github.com/charig/rtrufflemate/tree/papers/phdThesis).
+
 The repository is organized in the following way:
 
 * The [Data](Data) directory contains a compressed file with all the fresh data of our complete last run for the experiments. 
