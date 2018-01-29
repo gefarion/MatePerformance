@@ -5,18 +5,18 @@ popd > /dev/null
 
 if [ -d $SCRIPT_PATH/../../Writing ]
 then
-    TESIS_PATH=$SCRIPT_PATH/../../Writing/Research/TesisPhd
-    PAPER_PATH=$SCRIPT_PATH/../../Writing/Research/optimizing-reflective-execution-environments
+    TESIS_PATH=$SCRIPT_PATH/../../../Writing/Research/TesisPhd
+    PAPER_PATH=$SCRIPT_PATH/../../../Writing/Research/optimizing-reflective-execution-environments
 else
-    TESIS_PATH=$SCRIPT_PATH/../../Escritos/Research/TesisPhd
-    PAPER_PATH=$SCRIPT_PATH/../../Escritos/Research/optimizing-reflective-execution-environments/
+    TESIS_PATH=$SCRIPT_PATH/../../../Escritos/Research/TesisPhd
+    PAPER_PATH=$SCRIPT_PATH/../../../Escritos/Research/optimizing-reflective-execution-environments/
 fi
 
 
-cp Report/images/*.pdf $PAPER_PATH/images/
-cp Report/images/*.pdf $TESIS_PATH/Imagenes/
-cp Report/experiments.tex $PAPER_PATH/sections/experiments.tex
-cp Report/experiments.tex $TESIS_PATH/Secciones/experiments.tex
+cp images/*.pdf $PAPER_PATH/images/
+cp images/*.pdf $TESIS_PATH/Imagenes/
+cp experiments.tex $PAPER_PATH/sections/experiments.tex
+cp experiments.tex $TESIS_PATH/Secciones/experiments.tex
 
 SUBS="\/"
 SCRIPT_PATH_ESCAPED=${SCRIPT_PATH////$SUBS}
