@@ -23,20 +23,19 @@ summarizeNotNormalizedData <- function(dataset){
 
 summarizeOverall <- function(dataset, grouping){
   overall <- ddply(dataset, grouping, summarise,
-                   Geomean         = tryCatch({
-                     exp(CI(log(OF), ci=0.95))[2]
+                   OF2 = tryCatch({
+                     round(CI(OF, ci=0.95)[2], digits = 2)  
                    }, error = function(e) {
-                     OF
+                     mean(OF)
                    }),  
                    Confidence      = tryCatch({
-                     paste(
-                       paste("<", round(exp(CI(log(OF), ci=0.95))[3], digits = 2), sep=""),
-                       paste(round(exp(CI(log(OF), ci=0.95))[1], digits = 2), ">", sep=""),
-                       sep=" - ")
+                     paste("\\pm",
+                           round(CI(OF, ci=0.95)[1] - CI(OF, ci=0.95)[2], digits = 2),
+                           sep="")  
                    }, error = function(e) {
                      "Too few values"
                    }),
-                   Sd              = sd(OF),
+                   Sd              = ifelse(!is.na(sd(OF)),sd(OF),"-"),
                    Min             = min(OF),
                    Max             = max(OF),
                    Median          = median(OF))
@@ -131,30 +130,37 @@ missingWarmupFilename <- function(vm) {
   return (paste(paste("missingChangePoint-",vm, sep=""),".tsv", sep=""))
 }
 
-
 overheadFactors <- function(data, baseline, iterations){
   data <- droplevels(subset(data, Iteration >= iterations[1] & Iteration <= iterations[2])) 
   baselineGlobal <<- droplevels(subset(baseline, Iteration >= iterations[1] & Iteration <= iterations[2]))
   return (ddply(data, ~ VM + Benchmark, summarise, 
-                     RuntimeFactor = 
-                       tryCatch({
-                         t.test.ratio(Value, baselineGlobal[baselineGlobal$Benchmark == Benchmark,]$Value)$estimate[3]
-                       }, error = function(e) {
-                         mean(Value) / mean(baselineGlobal[baselineGlobal$Benchmark == Benchmark,]$Value)
-                       }),
-                     Confidence    = 
-                       tryCatch({
-                         paste(
-                           paste("<", 
-                                 round(t.test.ratio(Value, baselineGlobal[baselineGlobal$Benchmark == Benchmark,]$Value)$conf.int[1], digits = 2), sep=""),
-                           paste(
-                             round(t.test.ratio(Value, baselineGlobal[baselineGlobal$Benchmark == Benchmark,]$Value)$conf.int[2], digits = 2), ">", sep=""),
-                           sep=" - ")
-                       }, error = function(e) {
-                         " - "
-                       })))
+                OF = 
+                  tryCatch({
+                    paste(t.test.ratio(Value, baselineGlobal[baselineGlobal$Benchmark == Benchmark,]$Value)$estimate[3],
+                        t.test.ratio(Value, baselineGlobal[baselineGlobal$Benchmark == Benchmark,]$Value)$estimate[2] - 
+                        t.test.ratio(Value, baselineGlobal[baselineGlobal$Benchmark == Benchmark,]$Value)$estimate[3],
+                        sep="\\pm")  
+                  }, error = function(e) {
+                    mean(Value) / mean(baselineGlobal[baselineGlobal$Benchmark == Benchmark,]$Value)
+                  }),
+                Confidence    = 
+                  tryCatch({
+                    paste(
+                      paste("<", 
+                            round(t.test.ratio(Value, baselineGlobal[baselineGlobal$Benchmark == Benchmark,]$Value)$conf.int[1], digits = 2), sep=""),
+                      paste(
+                        round(t.test.ratio(Value, baselineGlobal[baselineGlobal$Benchmark == Benchmark,]$Value)$conf.int[2], digits = 2), ">", sep=""),
+                      sep=" - ")
+                  }, error = function(e) {
+                    " - "
+                  }),
+                Sd            = ifelse(!is.na(sd(Value)),round(sd(Value), digits = 2),"-"),
+                Min           = min(Value),
+                Max           = max(Value),
+                Median        = median(Value)))
   
 }
+
 summarizedPerBenchmark <- function(data, iterations, baseline, baselineName, normalized = FALSE) {
   data <- droplevels(subset(data, Iteration >= iterations[1] & Iteration <= iterations[2])) 
   if (!normalized){
@@ -173,12 +179,10 @@ summarizedPerBenchmark <- function(data, iterations, baseline, baselineName, nor
                        }),
                      Confidence    = 
                        tryCatch({
-                          paste(
-                          paste("<", 
-                            round(t.test.ratio(Value, baselineGlobal[baselineGlobal$Benchmark == Benchmark,]$Value)$conf.int[1], digits = 2), sep=""),
-                          paste(
-                            round(t.test.ratio(Value, baselineGlobal[baselineGlobal$Benchmark == Benchmark,]$Value)$conf.int[2], digits = 2), ">", sep=""),
-                          sep=" - ")
+                         paste("\\pm",
+                               round(t.test.ratio(Value, baselineGlobal[baselineGlobal$Benchmark == Benchmark,]$Value)$conf.int[2] - 
+                                 t.test.ratio(Value, baselineGlobal[baselineGlobal$Benchmark == Benchmark,]$Value)$estimate[3], digits=2),
+                               sep="")
                        }, error = function(e) {
                           "Too few values"
                        }),
