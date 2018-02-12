@@ -53,7 +53,7 @@ print(
 <<languages-overall-table>>=
 awfOverall <- summarizeOverall(awfTableData, ~ VM)
 colnames <- c("Runtime", "OF","CI-95%","Sd.", "Min","Max", "Median")
-kable(arrange(awfOverall, Geomean), 
+kable(arrange(awfOverall, OF2), 
        booktabs = T,
        format = "latex",
        digits = 2,
@@ -66,24 +66,24 @@ kable(arrange(awfOverall, Geomean),
 
 \def\SomPEMean{
 <<languages-summary-sompeMean>>=
-cat(round(awfOverall$Geomean[awfOverall$VM == "SOMpe"], digits=2))
+cat(round(awfOverall$OF2[awfOverall$VM == "SOM"], digits=2))
 @
 }
 
-\def\SomMTMean{
-<<languages-summary-sommtMean>>=
-cat(round(awfOverall$Geomean[awfOverall$VM == "SOMmt"], digits=2))
+\def\MatePEMean{
+<<languages-summary-matepeMean>>=
+cat(round(awfOverall$OF2[awfOverall$VM == "Mate"], digits=2))
 @
 }
 
 \def\NodeMean{
 <<languages-summary-nodeMean>>=
-cat(round(awfOverall$Geomean[awfOverall$VM == "Node"], digits=2))
+cat(round(awfOverall$OF2[awfOverall$VM == "Node"], digits=2))
 @
 }
 
 \def\PharoMean{
 <<languages-summary-pharoMean>>=
-cat(round(awfOverall$Geomean[awfOverall$VM == "Pharo"], digits=2))
+cat(round(awfOverall$OF2[awfOverall$VM == "Pharo"], digits=2))
 @
 }
