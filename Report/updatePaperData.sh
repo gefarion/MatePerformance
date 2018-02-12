@@ -20,3 +20,4 @@ IMAGES_PATH="$SCRIPT_PATH_ESCAPED\/images"
 PAPER_IMAGES_PATH="Images"
 
 sed -i -e "s/$IMAGES_PATH/$PAPER_IMAGES_PATH/g" $PAPER_PATH/sections/experiments.tex
+sed -i -e 's/\\\textbackslash{}pm\([0-9]*\.[0-9]*\)/$\\\pm\1$/g' $PAPER_PATH/sections/experiments.tex
