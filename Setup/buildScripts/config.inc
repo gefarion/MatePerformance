@@ -9,33 +9,28 @@ popd > /dev/null
 ##  take the first, might pick up outdated version unfortunately
 #GRAAL_CORE_CMD=`find $SCRIPT_PATH -type f -name java | grep "product/bin/" | head -n 1`
 
+#set pypy and java wich jvmci enabled dirs manually
+PYPY_DIR="/Users/guidochari/Documents/Projects/PyPy/pypy2-v5.8.0-src"
+JAVA_JVMCI_DIR="/Users/guidochari/Documents/Projects/java-jvmci-8"
+GRAAL_OFICIAL="/Users/guidochari/Documents/Projects/graalvm-0.29"
+
+
 if [ -z $ROOT_PATH ]
 then
   ROOT_PATH="$SCRIPT_PATH/.."
 fi
 
 IMPLEMENTATIONS_PATH=$ROOT_PATH/Implementations
-
 DATA_DIR=$ROOT_PATH/Data
-
-#GRAAL_HOME=$IMPLEMENTATIONS_PATH/graalvm
-GRAAL_CORE_CMD=/home/guido/Documents/Projects/GraalBasic/graal-jvmci-8/jdk1.8.0_101/product/bin/java
 
 GRAAL_HOSTED_FLAGS="-server -XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI -d64 "
 GRAAL_JIT_FLAGS="-server -XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI -XX:+UseJVMCICompiler -d64 "
 
 BENCHMARKS_DIR=$ROOT_PATH/Benchmarks
 
-#set pypy and java wich jvmci enabled dirs manually
-PYPY_DIR="/home/guido/Documents/Projects/pypy"
-JAVA_JVMCI_DIR="/home/guido/Documents/Projects/java-jvmci-8"
-GRAAL_OFICIAL="/home/guido/Documents/Projects/graalvm-0.27"
-
 ## GraalVM Binary
 export GRAAL_VM_CMD=$IMPLEMENTATIONS_PATH/graalvm/bin/java
 export GRAAL_JS=$IMPLEMENTATIONS_PATH/graalvm/bin/node
-
-export RBX_314_CMD=/home/guido/Documents/Projects/rubinius/3.69/bin/rbx
 
 if [ -x /usr/libexec/java_home ]   # usually on OS X, this tool is available
 then
@@ -60,8 +55,6 @@ then
   ERR "Java 8 was not found. Please check config.inc file"
   exit 1
 fi
-
-export JRUBY_CMD=$SCRIPT_PATH/JRuby/bin/jruby
 
 function home_from_command() {
   HOME=`dirname $1`

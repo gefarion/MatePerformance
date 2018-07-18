@@ -1,6 +1,6 @@
 <<InherentPerformance, echo=FALSE, message=FALSE>>=
 knitr::opts_chunk$set(fig.width=10, fig.height=5,
-                      echo=FALSE, warning=FALSE, message=FALSE, results="asis", cache=TRUE)
+                      echo=FALSE, warning=FALSE, message=FALSE, results="asis", cache=TRUE, comment=NA, background=NA)
 
 steadyOwn <- getWarmedupData("../../Data/inherent.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), 
                           vmNamesMap(), 
@@ -15,7 +15,6 @@ steadyAWF <- getWarmedupData("../../Data/areWeFast.data", c("Value", "Benchmark"
 #                          c("SOMpe", "SOMmt", "MATEpe", "MATEmt"),
                           numberOfIterationsPerBenchmark)
 includeNaive <- TRUE
-
 steady <- rbind(steadyOwn, steadyAWF)
 #steady <- subset(steady, Benchmark != "CD")
 
@@ -35,7 +34,6 @@ if (includeNaive){
   macroNaive <- droplevels(subset(steadyNaive, Suite == "classic-macro-steady" | Benchmark %in% macroBenchmarks))
   naiveMicroSummary <- summarizedPerBenchmark(microNaive, c(0,10000), sompeSteady, "SOMpe")
   naiveMicroWithoutRecursiveSummary <- summarizedPerBenchmark(microWithoutRecursiveNaive, c(0,10000), sompeSteady, "SOMpe")
-  macroAux <- subset(macroNaive, Benchmark == "Json")
   naiveMacroSummary <- summarizedPerBenchmark(macroNaive, c(0,10000), sompeSteady, "SOMpe")
 }  
 
@@ -121,7 +119,7 @@ print(
 <<micro-overall-table>>=
 overallData <- summarizeOverall(summaryDataMicro, ~ VM)
 colnames <- c("Runtime", "OF","CI-95%","Sd.", "Min","Max", "Median")
-kable(arrange(overallData, Geomean), 
+kable(arrange(overallData, OF2), 
        booktabs = T,
        format = "latex",
        digits = 2,
@@ -158,7 +156,7 @@ print(
 <<macro-overall-table>>=
 overallData <- summarizeOverall(summaryDataMacro, ~ VM)
 colnames <- c("Runtime", "OF","CI-95%","Sd.", "Min","Max", "Median")
-kable(arrange(overallData, Geomean), 
+kable(arrange(overallData, OF2), 
        booktabs = T,
        format = "latex",
        digits = 2,
@@ -172,8 +170,8 @@ kable(arrange(overallData, Geomean),
 \def\OverallTableOverall{%
 <<inherent-overall-table>>=
 if (includeNaive){
-  overallMicro <- arrange(summarizeOverall(rbind(summaryDataMicro, naiveMicroWithoutRecursiveSummary), ~ VM), Geomean)
-  overallMacro <- arrange(summarizeOverall(rbind(summaryDataMacro, naiveMacroSummary), ~ VM), Geomean)
+  overallMicro <- arrange(summarizeOverall(rbind(summaryDataMicro, naiveMicroWithoutRecursiveSummary), ~ VM), OF2)
+  overallMacro <- arrange(summarizeOverall(rbind(summaryDataMacro, naiveMacroSummary), ~ VM), OF2)
   summarizedInherent <- rbind(microMTSummaryWithoutRecursive, microPESummaryWithoutRecursive, macroMTSummary, macroPESummary, naiveMicroWithoutRecursiveSummary, naiveMacroSummary)
   groups <- list(c(1, 3), c(4, 6), c(7, 9))
 } else {
@@ -184,7 +182,7 @@ if (includeNaive){
 }
 
 summarizedInherent <- summarizedInherent[,c(2,1,3,4:8)]
-overallAll <- arrange(summarizeOverall(summarizedInherent, ~ VM), Geomean)
+overallAll <- arrange(summarizeOverall(summarizedInherent, ~ VM), OF2)
 
 overallAggregated <- rbind(overallMicro, overallMacro, overallAll)
 
@@ -211,34 +209,34 @@ multiplot(plotlist = list(boxplotMicro, boxplotMacro), rows = 2)
 
 \def\MatePEMeanMicro{
 <<micro-summary-matepeMean>>=
-cat(round(overallAggregated$Geomean[overallAggregated$VM == "MATEpe"][1], digits=2))
+cat(round(overallAggregated$OF2[overallAggregated$VM == "MATEpe"][1], digits=2))
 @
 }
 \def\MatePEMeanMacro{
 <<macro-summary-matepeMean>>=
-cat(round(overallAggregated$Geomean[overallAggregated$VM == "MATEpe"][2], digits=2))
+cat(round(overallAggregated$OF2[overallAggregated$VM == "MATEpe"][2], digits=2))
 @
 }
 
 \def\MateMTMeanMicro{
 <<micro-summary-matemtMean>>=
-cat(round(overallAggregated$Geomean[overallAggregated$VM == "MATEmt"][1], digits=2))
+cat(round(overallAggregated$OF2[overallAggregated$VM == "MATEmt"][1], digits=2))
 @
 }
 \def\MateMTMeanMacro{
 <<macro-summary-matemtMean>>=
-cat(round(overallAggregated$Geomean[overallAggregated$VM == "MATEmt"][2], digits=2))
+cat(round(overallAggregated$OF2[overallAggregated$VM == "MATEmt"][2], digits=2))
 @
 }
 
 \def\MateNoOptMeanMicro{
 <<micro-summary-matenoMean>>=
-cat(round(overallAggregated$Geomean[overallAggregated$VM == "MATEpe-NoOpt"][1], digits=2))
+cat(round(overallAggregated$OF2[overallAggregated$VM == "MATEpe-NoOpt"][1], digits=2))
 @
 }
 \def\MateNoOptMeanMacro{
 <<macro-summary-matenoMean>>=
-cat(round(overallAggregated$Geomean[overallAggregated$VM == "MATEpe-NoOpt"][2], digits=2))
+cat(round(overallAggregated$OF2[overallAggregated$VM == "MATEpe-NoOpt"][2], digits=2))
 @
 }
 

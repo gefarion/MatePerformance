@@ -176,7 +176,7 @@ multiplot(plotlist = plotsAppendix[c((length(plotsAppendix)%/%2) + 1: ceil(lengt
 
 \def\WarmupsTableSummary{
 <<warmups-summary-table>>=
-iterations <- c(1,5,20,40)
+iterations <- c(0,4,19,39)
 warmups   <- data.frame()
 warmupsIndividual <- data.frame()
 warmupsRO <- data.frame()
@@ -224,8 +224,10 @@ for (i in iterations){
   warmupsTracing <- rbind(warmupsTracing, summaryTracingIter)
 }
 
-summaryAll <- rbind(warmups, warmupsIndividual, warmupsRO, warmupsTracing)[,c(2,1,5,3,4)]
-colnames(summaryAll)[4] <- "OF"
+summaryAll <- rbind(warmups, warmupsIndividual, warmupsRO, warmupsTracing)[,c(2,1,9,5,3,4)]
+summaryAll$Iterations <- summaryAll$Iterations + 1
+#colnames(summaryAll)[4] <- "OF"
+
 
 print(
   kable(arrange(summaryAll, Benchmark), 
@@ -241,23 +243,25 @@ print(
 
 \def\WarmupsTableOverall{%
 <<warmups-overall-table>>=
-colnames(warmups)[3] <- "OF"
 summarizedOverall <- summarizeOverall(warmups, ~ VM + Iterations)
 #tableData <- summarizedOverall[,c(2:ncol(summarizedOverall))]
 
-colnames(warmupsIndividual)[3] <- "OF"
 summarizedIndividual <- summarizeOverall(warmupsIndividual, ~ VM + Iterations)
 #tableDataIndividual <- summarizedOverall[,c(2:ncol(summarizedOverall))]
 
-colnames(warmupsRO)[3] <- "OF"
-summarizedRO <- summarizeOverall(warmupsRO, ~ VM + Iterations)
+summarizedRO <- warmupsRO[,c(1,9,3:8)]
+colnames(summarizedRO)[3] <- "OF2"
+#summarizeOverall(warmupsRO, ~ VM + Iterations)
 
-colnames(warmupsTracing)[3] <- "OF"
 summarizedTracing <- summarizeOverall(warmupsTracing, ~ VM + Iterations)
 
 columnNames <- c("Iterations", "VM", "OF","CI-95%","Sd.", "Min", "Max", "Median")
 
-kable(rbind(arrange(summarizedOverall, Iterations), arrange(summarizedIndividual, Iterations), arrange(summarizedRO, Iterations), arrange(summarizedTracing, Iterations)), 
+values <- rbind(arrange(summarizedOverall, Iterations), arrange(summarizedIndividual, Iterations), arrange(summarizedRO, Iterations), arrange(summarizedTracing, Iterations))
+
+values$Iterations <- values$Iterations + 1
+
+kable(values, 
        booktabs = T,
        format = "latex",
        digits = 2,

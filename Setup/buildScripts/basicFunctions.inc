@@ -4,6 +4,10 @@ pushd `dirname $0` > /dev/null
 SCRIPT_PATH=`pwd`
 popd > /dev/null
 
+MY_PATH=`dirname ${BASH_SOURCE[0]}`
+
+source $MY_PATH/config.inc
+
 # set up color commands
 if [ -t 1 -a -t 2 -a \( `type -t tput` = "file" \) ]; then
   _colors=`tput colors`
@@ -86,7 +90,8 @@ function check_for_ant() {
 }
 
 function check_for_graalvm() {
-  if [ ! -x "$SCRIPT_PATH/graalvm/bin/javao" ]
+  echo "$1/bin/java"
+  if [ ! -e "$1/bin/java" ]
   then
     ERR "GraalVM not found."
     ERR "To run benchmarks on the GraalVM, please see 'implementations/graalvm/README.md'"
@@ -165,11 +170,15 @@ function find_and_link() {
   then
     app_dir=$dir    
   else
-    INFO "${1} env variable not set in config.inc, let's try the $2 directories in your os"
+    INFO "${1} env variable not set in config.inc or its pointing to a wrong directory, let's try the $2 directories in your os"
     look_in_and_choose "$HOME" $2 $3
   fi
   if [ ! -z $app_dir ]
   then
+    if [ -L $2 ]
+    then
+      rm $2
+    fi
     INFO "Linking $2 to $app_dir"
     `ln -s $app_dir $2`
     OK done
