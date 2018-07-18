@@ -90,7 +90,6 @@ function check_for_ant() {
 }
 
 function check_for_graalvm() {
-  echo "$1/bin/java"
   if [ ! -e "$1/bin/java" ]
   then
     ERR "GraalVM not found."
@@ -115,11 +114,11 @@ function checkout() {
     else
       git init
       git config core.sparseCheckout true
-      git remote add -f $(basename $2) $2
+      git remote add -f origin $2
       for dir in $(echo $4 | tr ";" "\n"); do
         echo "$dir" >> .git/info/sparse-checkout    
       done  
-      git pull --depth=1 $(basename $2) $3
+      git pull --depth=1 origin $3
       git checkout $3
       load_submodule
     fi
@@ -127,7 +126,7 @@ function checkout() {
   else
     WARN $2 was already cloned, Updating
     pushd $1
-    git pull
+    git pull origin $3
     load_submodule
     popd > /dev/null
   fi
@@ -142,7 +141,6 @@ function update_git_repo() {
     remote="origin"
   fi
 
-  echo $1
   if [ -d $1 ]
   then
     pushd $1
@@ -227,3 +225,11 @@ function buildBench {
   OK $1 Benchmarks Build Completed. 
   
 } 
+
+pushd () {
+    command pushd "$@" > /dev/null
+}
+
+popd () {
+    command popd "$@" > /dev/null
+}
