@@ -10,9 +10,9 @@ check_for_node    "non-fatal"
 check_for_graalvm $GRAAL_OFICIAL
 check_for_pypy  "non-fatal"
 
-#$BUILDSCRIPTS/build-mate.sh "MOInShape" "master" "metaobjectInShape"
-#$BUILDSCRIPTS/build-mate.sh "MOInObject" "environmentInObject" "metaobjectInObject"
-#$BUILDSCRIPTS/build-pharo.sh
+$BUILDSCRIPTS/build-mate.sh "EnvironmentInShape" "master" "metaobjectInShape"
+#$BUILDSCRIPTS/build-mate.sh "EnvironmentInObject" "environmentInObject" "metaobjectInObject"
+$BUILDSCRIPTS/build-pharo.sh
 $BUILDSCRIPTS/build-benchmarks.sh
 
 OK done.

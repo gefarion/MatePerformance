@@ -7,5 +7,5 @@ if [ "$1" == "--envInObject" ]
 then
     exec $SCRIPT_PATH/TruffleMate/EnvironmentInObject/som ${@:2}
 else
-    exec $SCRIPT_PATH/TruffleMate/Standard/som "$@"
+    exec $SCRIPT_PATH/TruffleMate/EnvironmentInShape/som "$@"
 fi
