@@ -1,13 +1,5 @@
 #!/bin/bash
 
-pushd `dirname $0` > /dev/null
-SCRIPT_PATH=`pwd`
-popd > /dev/null
-
-MY_PATH=`dirname ${BASH_SOURCE[0]}`
-
-source $MY_PATH/config.inc
-
 # set up color commands
 if [ -t 1 -a -t 2 -a \( `type -t tput` = "file" \) ]; then
   _colors=`tput colors`
@@ -147,19 +139,27 @@ function update_git_repo() {
     reponame=`git remote show $2 | grep Fetch | cut -d ' ' -f 5`
     branchname=`git branch | grep \* | cut -d ' ' -f 2`
     INFO Updating git repository $reponame branch $branchname
-    echo git pull $remote $branchname
     git pull $remote $branchname
     INFO Updating submodules
     load_submodule
-    if [ -f Makefile ]
-    then
-      INFO Compiling
-      JIT=1 make clean; JIT=1 make
-    fi
     popd > /dev/null
     OK done
   fi
 } 
+
+function compile_with_ant() {
+  pushd $1
+  INFO Compiling $1
+  ant clobber; ant compile
+  popd
+}
+
+function compile_with_makefile() {
+  pushd $1
+  INFO Compiling $1
+  make clean; make
+  popd
+}
 
 function find_and_link() {
   INFO "$2 is still not linked, linking..." 
@@ -216,15 +216,6 @@ function download_zip {
   unzip $1
   rm $1
 }
-
-function buildBench {
-  INFO Building $1 Benchmarks
-  pushd $2
-  $3
-  popd > /dev/null
-  OK $1 Benchmarks Build Completed. 
-  
-} 
 
 pushd () {
     command pushd "$@" > /dev/null

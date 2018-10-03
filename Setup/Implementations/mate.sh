@@ -1,11 +1,16 @@
 #!/bin/bash
-SCRIPT_PATH=`dirname $0`
-source $SCRIPT_PATH/../buildScripts/config.inc
-export GRAAL_HOME=$GRAAL_HOME
-#export GRAAL_FLAGS=$GRAAL_HOSTED_FLAGS
+SCRIPT_PATH="$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )"
+if [ ! -d $SCRIPT_PATH ]; then
+    echo "Could not determine absolute dir of $0"
+    echo "Maybe accessed with symlink"
+fi
+
+BASE_DIR="$SCRIPT_PATH/.."
+source $BASE_DIR/config.inc
+
 if [ "$1" == "--envInObject" ]
 then
-    exec $SCRIPT_PATH/TruffleMate/EnvironmentInObject/som ${@:2}
+    exec $TRUFFLE_MATE_DIR/EnvironmentInObject/som ${@:2}
 else
-    exec $SCRIPT_PATH/TruffleMate/EnvironmentInShape/som "$@"
+    exec $TRUFFLE_MATE_DIR/$TRUFFLEMATE_REPO_MO_NAME/som "$@"
 fi

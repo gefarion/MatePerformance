@@ -1,36 +1,52 @@
 #!/bin/bash
-#set -e # make script fail on first error
-SCRIPT_PATH=`dirname $0`
-source $SCRIPT_PATH/basicFunctions.inc
-source $SCRIPT_PATH/config.inc
+set -e # make script fail on first error
+
+SCRIPT_PATH="$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )"
+if [ ! -d $SCRIPT_PATH ]; then
+    echo "Could not determine absolute dir of $0"
+    echo "Maybe accessed with symlink"
+fi
+
+BASE_DIR="$SCRIPT_PATH/.."
+source "$BASE_DIR/config.inc"
+
+source "$BUILDSCRIPTS_DIR/basicFunctions.inc"
 
 INFO Build MATE Implementations
-NAME="$1"
+IMPLEMENTATION_NAME="$1"
 TRUFFLE_BRANCH="$2"
 PYPY_BRANCH="$3"
-if [ ! -d $ROOT_PATH/Implementations/TruffleMate ]
+
+if [ ! -d "$TRUFFLE_MATE_DIR" ]
 then
-  mkdir $ROOT_PATH/Implementations/TruffleMate
+  mkdir "$TRUFFLE_MATE_DIR"
 fi
-checkout $ROOT_PATH/Implementations/TruffleMate/$NAME "https://github.com/charig/TruffleMATE.git" $TRUFFLE_BRANCH
-pushd $ROOT_PATH/Implementations/TruffleMate/$NAME
+
+#checkout "$TRUFFLE_MATE_DIR/$IMPLEMENTATION_NAME" "$TRUFFLEMATE_REPO_URL" "$TRUFFLE_BRANCH"
+pushd "$TRUFFLE_MATE_DIR/$IMPLEMENTATION_NAME"
 INFO "Compiling TruffleMATE" 
-make clean; make
+if [ ! -z "$JAVA_HOME_TRUFFLE" ]
+then
+  export JAVA_HOME="$JAVA_HOME_TRUFFLE"
+fi
+compile_with_ant $TRUFFLE_MATE_DIR/$IMPLEMENTATION_NAME
 OK TruffleMATE Build Completed.
 popd > /dev/null
 
-if [ ! -d $ROOT_PATH/Implementations/RTruffleMate ]
+if [ ! -d "$RTRUFFLE_MATE_DIR" ]
 then
-  mkdir $ROOT_PATH/Implementations/RTruffleMate
+  mkdir "$RTRUFFLE_MATE_DIR"
 fi
-checkout $ROOT_PATH/Implementations/RTruffleMate/$NAME "https://github.com/charig/RTruffleMATE.git" $PYPY_BRANCH
-pushd $ROOT_PATH/Implementations/RTruffleMate/$NAME
+checkout "$RTRUFFLE_MATE_DIR/$IMPLEMENTATION_NAME" "$RTRUFFLEMATE_REPO_URL" "$PYPY_BRANCH"
+pushd "$RTRUFFLE_MATE_DIR/$IMPLEMENTATION_NAME"
 if [ ! -d "pypy" ]
 then
   find_and_link PYPY_DIR "pypy" "/home/guido/pypy" 
 fi
 INFO "Compiling RTruffleMATE in JIT mode (may take some time...)"
-make clean; JIT=True make
+export JIT=1
+compile_with_makefile $TRUFFLE_MATE_DIR/$TRUFFLEMATE_REPO_MO_NAME
+export JIT=0
 OK RTruffleMATE Build Completed.
 popd > /dev/null
 OK MATE Build Completed.
