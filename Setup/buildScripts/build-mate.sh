@@ -9,7 +9,6 @@ fi
 
 BASE_DIR="$SCRIPT_PATH/.."
 source "$BASE_DIR/config.inc"
-
 source "$BUILDSCRIPTS_DIR/basicFunctions.inc"
 
 INFO Build MATE Implementations
@@ -22,7 +21,7 @@ then
   mkdir "$TRUFFLE_MATE_DIR"
 fi
 
-#checkout "$TRUFFLE_MATE_DIR/$IMPLEMENTATION_NAME" "$TRUFFLEMATE_REPO_URL" "$TRUFFLE_BRANCH"
+checkout "$TRUFFLE_MATE_DIR/$IMPLEMENTATION_NAME" "$TRUFFLEMATE_REPO_URL" "$TRUFFLE_BRANCH"
 pushd "$TRUFFLE_MATE_DIR/$IMPLEMENTATION_NAME"
 INFO "Compiling TruffleMATE" 
 if [ ! -z "$JAVA_HOME_TRUFFLE" ]
@@ -45,7 +44,7 @@ then
 fi
 INFO "Compiling RTruffleMATE in JIT mode (may take some time...)"
 export JIT=1
-compile_with_makefile $TRUFFLE_MATE_DIR/$TRUFFLEMATE_REPO_MO_NAME
+compile_with_makefile $RTRUFFLE_MATE_DIR/$IMPLEMENTATION_NAME
 export JIT=0
 OK RTruffleMATE Build Completed.
 popd > /dev/null

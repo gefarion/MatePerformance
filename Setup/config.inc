@@ -14,7 +14,8 @@ RTRUFFLE_MATE_DIR=$IMPLEMENTATIONS_PATH/RTruffleMate
 ## Repositories
 TRUFFLEMATE_REPO_URL="https://github.com/charig/TruffleMATE.git"
 RTRUFFLEMATE_REPO_URL="https://github.com/charig/RTruffleMATE.git"
-TRUFFLEMATE_REPO_MO_NAME="EnvironmentInShape"
+MATE_IMPL_INSHAPE_NAME="EnvironmentInShape"
+MATE_IMPL_INOBJECT_NAME="EnvironmentInShape"
 
 ## Environment settings for compiling
-JAVA_HOME_TRUFFLE="/Library/Java/JavaVirtualMachines/jdk-11.jdk/Contents/Home"
+JAVA_HOME_TRUFFLE="/usr/lib/jvm/java-11-oracle/"

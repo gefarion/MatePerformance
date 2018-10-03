@@ -18,7 +18,7 @@ check_for_node  "non-fatal"
 check_for_pypy  "non-fatal"
 
 ## Install the different implementations
-$BUILDSCRIPTS_DIR/build-mate.sh "EnvironmentInShape" "master" "metaobjectInShape"
-#$BUILDSCRIPTS/build-mate.sh "EnvironmentInObject" "environmentInObject" "metaobjectInObject"
-$BUILDSCRIPTS/build-pharo.sh
-$BUILDSCRIPTS/build-benchmarks.sh
+$BUILDSCRIPTS_DIR/build-mate.sh "$MATE_IMPL_INSHAPE_NAME" "master" "metaobjectInShape"
+#$BUILDSCRIPTS/build-mate.sh "$MATE_IMPL_INOBJECT_NAME" "environmentInObject" "metaobjectInObject"
+$BUILDSCRIPTS_DIR/build-pharo.sh
+$BUILDSCRIPTS_DIR/build-benchmarks.sh
