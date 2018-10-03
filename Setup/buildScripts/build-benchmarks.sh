@@ -1,14 +1,21 @@
 #!/bin/bash
 #set -e # make script fail on first error
-SCRIPT_PATH=`dirname $0`
-source $SCRIPT_PATH/basicFunctions.inc
+SCRIPT_PATH="$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )"
+if [ ! -d $SCRIPT_PATH ]; then
+    echo "Could not determine absolute dir of $0"
+    echo "Maybe accessed with symlink"
+fi
+
+BASE_DIR="$SCRIPT_PATH/.."
+source "$BASE_DIR/config.inc"
+source "$BUILDSCRIPTS_DIR/basicFunctions.inc"
 
 INFO Build Benchmarks
 if [ ! -d $BENCHMARKS_DIR ]
 then
   mkdir $BENCHMARKS_DIR
 fi
-checkout $ROOT_PATH/Benchmarks/AreWeFast "https://github.com/charig/are-we-fast-yet.git" "master" "benchmarks"
+checkout "$BENCHMARKS_DIR/AreWeFast" "https://github.com/charig/are-we-fast-yet.git" "master" "benchmarks"
 checkout "$BENCHMARKS_DIR/Mate" "https://github.com/charig/som.git" "reflectiveCompiler" "Examples/Benchmarks/*;Smalltalk/*"
 INFO Downloading MTG JSON data files 
 pushd $BENCHMARKS_DIR/Mate/Examples/Benchmarks/Mate/Tracing/ 

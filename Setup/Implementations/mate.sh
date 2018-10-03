@@ -10,7 +10,7 @@ source $BASE_DIR/config.inc
 
 if [ "$1" == "--envInObject" ]
 then
-    exec $TRUFFLE_MATE_DIR/EnvironmentInObject/som ${@:2}
+    exec "$TRUFFLE_MATE_DIR/$MATE_IMPL_INOBJECT_NAME/som" ${@:2}
 else
-    exec $TRUFFLE_MATE_DIR/$TRUFFLEMATE_REPO_MO_NAME/som "$@"
+    exec "$TRUFFLE_MATE_DIR/$MATE_IMPL_INSHAPE_NAME/som" "$@"
 fi
