@@ -12,20 +12,19 @@ Instructions for Running the Experiments
 
 To checkout the code:
 
-    git clone -b papers/phdThesis https://github.com/charig/MatePerformance.git directoryName
+    git clone https://github.com/charig/MatePerformance.git directoryName
     cd directoryName
     
 To build all the implementations needed for running all the experiments by yourself:
 
-    cd Setup
-    ./setup.sh
+    ./Setup/setup.sh
     
-*Note that the experimental setup has many dependencies: git, ant, make, mv, rebench, cc, c++, graalvm, pypy. 
-For [Graal](http://www.oracle.com/technetwork/oracle-labs/program-languages/downloads/index.html) and [PyPy](https://pypy.org/download.html), they must be downloaded and then their corresponding downloaded dir set in [config.inc](Setup/buildScripts/config.inc)*
+*Note that the experimental setup has many dependencies: git, ant, make, mv, rebench, cc, c++ and pypy. 
+For [PyPy](https://pypy.org/download.html), they must be downloaded and then their corresponding downloaded dir set in [config.inc](Setup/buildScripts/config.inc). In addition, take into account that TruffleMate requires a java version >= 11. If the default version on your system does not comply with this, you can manually provide the path to an alternative version in config.inc also*
 
 After building, for running the experiments just execute:
 
-    ./runExperiments.sh
+    ./Setup/runExperiments.sh
 
 Finally, to produce all the images, tables, and data:
 
