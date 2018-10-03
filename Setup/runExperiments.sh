@@ -1,5 +1,11 @@
 #!/bin/bash
-SCRIPT_PATH=`dirname $0`
+SCRIPT_PATH="$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )"
+if [ ! -d $SCRIPT_PATH ]; then
+    echo "Could not determine absolute dir of $0"
+    echo "Maybe accessed with symlink"
+fi
+
+BASE_DIR="$SCRIPT_PATH"
 
 ALL=false
 
@@ -15,6 +21,6 @@ fi
 
 if [[ "$ALL" = true || "$@" == "AreWeFast" || "$@" == "Inherent" || "$@" == "IndividualActivations" || "$@" == "Readonly" || "$@" == "Tracing" || "$@" == "ReflectiveCompilation" ]]
 then
-    ./runScripts/runBenchs.sh $@
+    "$SCRIPT_PATH/runScripts/runBenchs.sh" $@
 fi
 
