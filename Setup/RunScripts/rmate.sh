@@ -18,10 +18,10 @@ else
 fi
 if [[ "$1" == "--envInObject" || "$2" == "--envInObject" ]]
 then
-    DIR=$SCRIPT_PATH/RTruffleMate/EnvironmentInObject
+    DIR=$RTRUFFLE_MATE_DIR/$MATE_IMPL_INOBJECT_NAME
     ARGS=$((ARGS + 1))
 else
-    DIR=$SCRIPT_PATH/RTruffleMate/Standard
+    DIR=$RTRUFFLE_MATE_DIR/$MATE_IMPL_INSHAPE_NAME
 fi
 
 exec $DIR/$BIN ${@:$ARGS}
