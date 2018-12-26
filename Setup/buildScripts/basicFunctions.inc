@@ -1,5 +1,8 @@
 #!/bin/bash
 
+MY_PATH="$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )"
+source $MY_PATH/../config.inc
+
 # set up color commands
 if [ -t 1 -a -t 2 -a \( `type -t tput` = "file" \) ]; then
   _colors=`tput colors`
@@ -223,4 +226,23 @@ pushd () {
 
 popd () {
     command popd "$@" > /dev/null
+}
+
+function buildBench {
+  PAR_NAME=$1
+  PAR_DIR=$2
+  PAR_CMD=$3
+  
+  INFO Building $1 Benchmarks
+  execCmdIn $PAR_DIR $PAR_CMD
+  OK $1 Benchmarks Build Completed.   
+} 
+
+function execCmdIn {
+  PAR_DIR=$1
+  PAR_CMD=$2
+
+  pushd $PAR_DIR
+  $PAR_CMD
+  popd > /dev/null
 }

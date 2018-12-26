@@ -7,9 +7,8 @@ if [ ! -d $SCRIPT_PATH ]; then
     echo "Maybe accessed with symlink"
 fi
 
-BASE_DIR="$SCRIPT_PATH/.."
-source "$BASE_DIR/config.inc"
-source "$BUILDSCRIPTS_DIR/basicFunctions.inc"
+BUILDSCRIPTS="$SCRIPT_PATH"
+source "$BUILDSCRIPTS/basicFunctions.inc"
 
 INFO Build MATE Implementations
 IMPLEMENTATION_NAME="$1"
@@ -18,10 +17,10 @@ PYPY_BRANCH="$3"
 
 if [ ! -d "$TRUFFLE_MATE_DIR" ]
 then
-  mkdir "$TRUFFLE_MATE_DIR"
+  mkdir -p "$TRUFFLE_MATE_DIR"
 fi
 
-checkout "$TRUFFLE_MATE_DIR/$IMPLEMENTATION_NAME" "$TRUFFLEMATE_REPO_URL" "$TRUFFLE_BRANCH"
+#checkout "$TRUFFLE_MATE_DIR/$IMPLEMENTATION_NAME" "$TRUFFLEMATE_REPO_URL" "$TRUFFLE_BRANCH"
 pushd "$TRUFFLE_MATE_DIR/$IMPLEMENTATION_NAME"
 INFO "Compiling TruffleMATE" 
 if [ ! -z "$JAVA_HOME_TRUFFLE" ]

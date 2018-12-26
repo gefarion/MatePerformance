@@ -5,8 +5,6 @@ if [ ! -d $SCRIPT_PATH ]; then
     echo "Maybe accessed with symlink"
 fi
 
-BASE_DIR="$SCRIPT_PATH"
-
 ALL=false
 
 if [ "$#" -eq 0 ]
@@ -16,11 +14,11 @@ fi
 
 if [[ "$@" == "dynMetrics"  ]]
 then
-    ./runScripts/runDynMetrics.sh
+    "$SCRIPT_PATH/RunScripts/runDynMetrics.sh"
 fi
 
 if [[ "$ALL" = true || "$@" == "AreWeFast" || "$@" == "Inherent" || "$@" == "IndividualActivations" || "$@" == "Readonly" || "$@" == "Tracing" || "$@" == "ReflectiveCompilation" ]]
 then
-    "$SCRIPT_PATH/runScripts/runBenchs.sh" $@
+    "$SCRIPT_PATH/RunScripts/runBenchs.sh" $@
 fi
 
