@@ -5,8 +5,9 @@ if [ ! -d $SCRIPT_PATH ]; then
     echo "Maybe accessed with symlink"
 fi
 
-BASE_DIR="$SCRIPT_PATH/.."
+BUILDSCRIPTS="$SCRIPT_PATH../BuildScripts"
+source "$BUILDSCRIPTS/basicFunctions.inc"
 
-pushd $BASE_DIR
+pushd $ROOT_PATH
 exec sudo env "PATH=$PATH" rebench -d mate.conf "$@"
 popd
