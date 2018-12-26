@@ -5,8 +5,8 @@ if [ ! -d $SCRIPT_PATH ]; then
     echo "Maybe accessed with symlink"
 fi
 
-BASE_DIR="$SCRIPT_PATH/.."
-source $BASE_DIR/config.inc
+BUILDSCRIPTS="$SCRIPT_PATH../BuildScripts"
+source "$BUILDSCRIPTS/basicFunctions.inc"
 
 if [ "$1" == "--envInObject" ]
 then
