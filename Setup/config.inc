@@ -7,7 +7,8 @@ then
 fi
 
 #set pypy and java wich jvmci enabled dirs manually
-PYPY_DIR="/Users/guidochari/.local/pypy2-v6.0.0-src"
+PYPY_DIR="/home/guido/Documents/Projects/pypy"
+#PYPY_DIR="/Users/guidochari/.local/pypy2-v6.0.0-src"
 
 # Directories
 SETUP_DIR="$ROOT_PATH/Setup"
@@ -26,5 +27,5 @@ MATE_IMPL_INSHAPE_NAME="EnvironmentInShape"
 MATE_IMPL_INOBJECT_NAME="EnvironmentInObject"
 
 # Environment settings for compiling
-JAVA_HOME_TRUFFLE="/Library/Java/JavaVirtualMachines/jdk-11.jdk/Contents/Home"
-# JAVA_HOME_TRUFFLE="/usr/lib/jvm/java-11-oracle/"
+#JAVA_HOME_TRUFFLE="/Library/Java/JavaVirtualMachines/jdk-11.jdk/Contents/Home"
+JAVA_HOME_TRUFFLE="/usr/lib/jvm/java-11-oracle/"
