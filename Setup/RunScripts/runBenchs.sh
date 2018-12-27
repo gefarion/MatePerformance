@@ -5,7 +5,7 @@ if [ ! -d $SCRIPT_PATH ]; then
     echo "Maybe accessed with symlink"
 fi
 
-BUILDSCRIPTS="$SCRIPT_PATH../BuildScripts"
+BUILDSCRIPTS="$SCRIPT_PATH/../BuildScripts"
 source "$BUILDSCRIPTS/basicFunctions.inc"
 
 pushd $ROOT_PATH
