@@ -11,7 +11,7 @@ source "$BUILDSCRIPTS/basicFunctions.inc"
 
 INFO Building Benchmarks
 # JAVA
-buildBench Java $BENCHMARKS_DIR/AreWeFast/benchmarks/Java "ant jar"
+buildBench "Java" "$BENCHMARKS_DIR/AreWeFast/benchmarks/Java" "ant jar"
 
 #buildBench Crystal $BENCHMARKS_DIR/AreWeFast/benchmarks/Crystal "build.sh"
 

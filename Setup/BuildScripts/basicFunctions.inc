@@ -229,20 +229,21 @@ popd () {
 }
 
 function buildBench {
-  PAR_NAME=$1
-  PAR_DIR=$2
-  PAR_CMD=$3
+  PAR_NAME="$1"
+  PAR_DIR="$2"
+  PAR_CMD="$3"
   
   INFO Building $1 Benchmarks
-  execCmdIn $PAR_DIR $PAR_CMD
-  OK $1 Benchmarks Build Completed.   
+  execCmdIn "$PAR_DIR" "$PAR_CMD"
+  OK $PAR_NAME Benchmarks Build Completed.   
 } 
 
 function execCmdIn {
-  PAR_DIR=$1
-  PAR_CMD=$2
+  PAR_DIR="$1"
+  PAR_CMD="$2"
 
   pushd $PAR_DIR
-  $PAR_CMD
-  popd > /dev/null
+  echo $PAR_CMD
+  exec $PAR_CMD
+  popd
 }
