@@ -13,7 +13,7 @@ if [ ! "$1" = "guido@mostaza.cuartos.inv.dc.uba.ar" ]
 then
     source "$SCRIPT_PATH/BuildScripts/basicFunctions.inc"
 else
-    MOSTAZA_ROOT_PATH='/Documents/Projects/mateperformance/Setup'
+    MOSTAZA_ROOT_PATH='Documents/Projects/mateperformance/Setup'
     MOSTAZA_DATA_PATH=$MOSTAZA_ROOT_PATH/../Data
 fi
 
