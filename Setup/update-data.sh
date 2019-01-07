@@ -1,14 +1,19 @@
 #!/bin/bash
 set -e # make script fail on first error
-SCRIPT_PATH=`dirname $0`
+
+SCRIPT_PATH="$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )"
+if [ ! -d $SCRIPT_PATH ]; then
+    echo "Could not determine absolute dir of $0"
+    echo "Maybe accessed with symlink"
+fi
+
+
 
 if [ ! "$1" = "guido@mostaza.cuartos.inv.dc.uba.ar" ]
 then
-    BUILDSCRIPTS=$SCRIPT_PATH/buildScripts
-    source $BUILDSCRIPTS/basicFunctions.inc
-    source $BUILDSCRIPTS/config.inc
+    source "$SCRIPT_PATH/BuildScripts/basicFunctions.inc"
 else
-    MOSTAZA_ROOT_PATH='Documents/Projects/MatePerformance/Setup'
+    MOSTAZA_ROOT_PATH='/Documents/Projects/mateperformance/Setup'
     MOSTAZA_DATA_PATH=$MOSTAZA_ROOT_PATH/../Data
 fi
 
@@ -16,16 +21,6 @@ date=`date "+%d-%m-%y"`
 name="experiments$date.tar.gz" 
 
 prepare_data() {
-    INFO Moving data from $ROOT_PATH to $DATA_DIR
-    pushd $SCRIPT_PATH
-    for file in *.data; do
-        if [ ! -e $file ]
-        then
-            break
-        fi
-        mv "$file" "$DATA_DIR/$file"
-    done
-    popd > /dev/null
     pushd $DATA_DIR
     INFO Compressing data into $name
     tar -czvf $name *.data
@@ -37,7 +32,7 @@ if [ $# -eq 1 ]
 then
     if [ "$1" = "zorzal" ]
     then
-        ssh gchari@zorzal.dc.uba.ar 'bash -s' < $SCRIPT_PATH/$0 "guido@mostaza.cuartos.inv.dc.uba.ar"
+        ssh gchari@zorzal.dc.uba.ar 'bash -s' < "$SCRIPT_PATH/$(basename $0)" "guido@mostaza.cuartos.inv.dc.uba.ar"
         scp "gchari@zorzal.dc.uba.ar:$name" $DATA_DIR/
         ssh gchari@zorzal.dc.uba.ar "rm $name"
         pushd $DATA_DIR
