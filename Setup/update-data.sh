@@ -33,7 +33,7 @@ then
     if [ "$1" = "zorzal" ]
     then
         ssh gchari@zorzal.dc.uba.ar 'bash -s' < "$SCRIPT_PATH/$(basename $0)" "guido@mostaza.cuartos.inv.dc.uba.ar"
-        scp "gchari@zorzal.dc.uba.ar:$name" $DATA_DIR/
+        scp "gchari@zorzal.dc.uba.ar:$name" "$DATA_DIR/$name"
         ssh gchari@zorzal.dc.uba.ar "rm $name"
         pushd $DATA_DIR
         INFO Uncompressing $name
