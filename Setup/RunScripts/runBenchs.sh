@@ -10,4 +10,5 @@ source "$BUILDSCRIPTS/basicFunctions.inc"
 
 pushd $ROOT_PATH
 exec sudo env "PATH=$PATH" rebench -d mate.conf "$@"
+mv *.data $DATA_DIR/ 
 popd
