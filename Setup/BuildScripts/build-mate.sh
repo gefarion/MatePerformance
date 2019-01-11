@@ -27,7 +27,7 @@ if [ ! -z "$JAVA_HOME_TRUFFLE" ]
 then
   export JAVA_HOME="$JAVA_HOME_TRUFFLE"
 fi
-compile_with_ant $TRUFFLE_MATE_DIR/$IMPLEMENTATION_NAME
+compile_with_ant $TRUFFLE_MATE_DIR
 OK TruffleMATE Build Completed.
 popd > /dev/null
 
