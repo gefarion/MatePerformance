@@ -8,9 +8,4 @@ fi
 BUILDSCRIPTS="$SCRIPT_PATH/../BuildScripts"
 source "$BUILDSCRIPTS/basicFunctions.inc"
 
-if [ "$1" == "--envInObject" ]
-then
-    exec "$TRUFFLE_MATE_DIR/$MATE_IMPL_INOBJECT_NAME/som" ${@:2}
-else
-    exec "$TRUFFLE_MATE_DIR/$MATE_IMPL_INSHAPE_NAME/som" "$@"
-fi
+exec "$TRUFFLE_MATE_DIR/som" "$@"
