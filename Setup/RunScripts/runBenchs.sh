@@ -9,6 +9,6 @@ BUILDSCRIPTS="$SCRIPT_PATH/../BuildScripts"
 source "$BUILDSCRIPTS/basicFunctions.inc"
 
 pushd $ROOT_PATH
-exec sudo env "PATH=$PATH" rebench -d mate.conf "$@"
+exec sudo env "PATH=$PATH:/home/guido/.local/bin/" rebench -d mate.conf "$@"
 mv *.data $DATA_DIR/ 
 popd
