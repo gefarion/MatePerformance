@@ -45,20 +45,44 @@ fi
 
 if [ "$(uname -s)" = 'Linux' ]; then
   REBENCH=$(readlink -f $1)
-  AWF_PATH=$(readlink -f $2)
-  SOM_PATH=$(readlink -f $3)
-  TMATE_PATH=$(readlink -f $4)
-  RMATE_PATH=$(readlink -f $5)
-  RMATE_PATH_OBJ=$(readlink -f $6)
-  PHARO_PATH=$(readlink -f $7)
+  if [[ -d "$2" ]]; then
+    AWF_PATH=$(readlink -f $2)
+  fi
+  if [[ -d "$3" ]]; then
+    SOM_PATH=$(readlink -f $3)
+  fi
+  if [[ -d "$4" ]]; then
+    TMATE_PATH=$(readlink -f $4)
+  fi
+  if [[ -d "$5" ]]; then
+    RMATE_PATH=$(readlink -f $5)
+  fi
+  if [[ -d "$6" ]]; then
+    RMATE_PATH_OBJ=$(readlink -f $6)
+  fi
+  if [[ -d "$7" ]]; then
+    PHARO_PATH=$(readlink -f $7)
+  fi
 else
   REBENCH=$(realpath -f $1)
-  AWF_PATH=$(realpath -f $2)
-  SOM_PATH=$(realpath -f $3)
-  TMATE_PATH=$(realpath -f $4)
-  RMATE_PATH=$(realpath -f $5)
-  RMATE_PATH_OBJ=$(realpath -f $6)
-  PHARO_PATH=$(realpath -f $7)
+  if [[ -d "$2" ]]; then
+    AWF_PATH=$(realpath -f $2)
+  fi
+  if [[ -d "$3" ]]; then
+    SOM_PATH=$(realpath -f $3)
+  fi
+  if [[ -d "$4" ]]; then
+    TMATE_PATH=$(realpath -f $4)
+  fi
+  if [[ -d "$5" ]]; then
+    RMATE_PATH=$(realpath -f $5)
+  fi
+  if [[ -d "$6" ]]; then
+    RMATE_PATH_OBJ=$(realpath -f $6)
+  fi
+  if [[ -d "$7" ]]; then
+    PHARO_PATH=$(realpath -f $7)
+  fi
 fi
 
 shift
