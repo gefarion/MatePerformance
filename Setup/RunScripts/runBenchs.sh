@@ -100,7 +100,7 @@ fi
 TMPDIR=$(mktemp -d /tmp/rbench.XXXXXX)
 pushd $TMPDIR
 
-cp "$REBENCH" .
+cp "$REBENCH" ./rebench.conf
 if [[ ! -z $AWF_PATH ]]; then
   sed -i.bak "s+%%AWF_BENCHMARKS_PATH%%+$AWF_PATH+" rebench.conf
 fi 
