@@ -43,6 +43,8 @@ if [[ ! -d "$7" ]]; then
   WARN "7th parameter must specify a valid directory for Pharo"
 fi
 
+shift
+
 if [ "$(uname -s)" = 'Linux' ]; then
   REBENCH=$(readlink -f $1)
   if [[ -d "$2" ]]; then
