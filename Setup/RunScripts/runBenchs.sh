@@ -47,51 +47,55 @@ if [ "$(uname -s)" = 'Linux' ]; then
   REBENCH=$(readlink -f $1)
   if [[ -d "$2" ]]; then
     AWF_PATH=$(readlink -f $2)
+    shift
   fi
   if [[ -d "$3" ]]; then
     SOM_PATH=$(readlink -f $3)
+    shift
   fi
   if [[ -d "$4" ]]; then
     TMATE_PATH=$(readlink -f $4)
+    shift
   fi
   if [[ -d "$5" ]]; then
     RMATE_PATH=$(readlink -f $5)
+    shift
   fi
   if [[ -d "$6" ]]; then
     RMATE_PATH_OBJ=$(readlink -f $6)
+    shift
   fi
   if [[ -d "$7" ]]; then
     PHARO_PATH=$(readlink -f $7)
+    shift
   fi
 else
   REBENCH=$(realpath -f $1)
   if [[ -d "$2" ]]; then
     AWF_PATH=$(realpath -f $2)
+    shift
   fi
   if [[ -d "$3" ]]; then
     SOM_PATH=$(realpath -f $3)
+    shift
   fi
   if [[ -d "$4" ]]; then
     TMATE_PATH=$(realpath -f $4)
+    shift
   fi
   if [[ -d "$5" ]]; then
     RMATE_PATH=$(realpath -f $5)
+    shift
   fi
   if [[ -d "$6" ]]; then
     RMATE_PATH_OBJ=$(realpath -f $6)
+    shift
   fi
   if [[ -d "$7" ]]; then
     PHARO_PATH=$(realpath -f $7)
+    shift
   fi
 fi
-
-shift
-shift
-shift
-shift
-shift
-shift
-shift
 
 TMPDIR=$(mktemp -d /tmp/rbench.XXXXXX)
 pushd $TMPDIR
