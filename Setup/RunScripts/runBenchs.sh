@@ -43,10 +43,9 @@ if [[ ! -d "$7" ]]; then
   WARN "7th parameter must specify a valid directory for Pharo"
 fi
 
-shift
-
 if [ "$(uname -s)" = 'Linux' ]; then
   REBENCH=$(readlink -f $1)
+  shift
   if [[ -d "$2" ]]; then
     AWF_PATH=$(readlink -f $2)
     shift
@@ -73,6 +72,7 @@ if [ "$(uname -s)" = 'Linux' ]; then
   fi
 else
   REBENCH=$(realpath -f $1)
+  shift
   if [[ -d "$2" ]]; then
     AWF_PATH=$(realpath -f $2)
     shift
