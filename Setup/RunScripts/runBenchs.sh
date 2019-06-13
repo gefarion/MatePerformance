@@ -74,7 +74,7 @@ if [ "$(uname -s)" = 'Linux' ]; then
   if [[ -d "$8" ]]; then
     JDK8_PATH=$(readlink -f $8)
   fi
-  if [[ -d "$8" ]]; then
+  if [[ -d "$9" ]]; then
     GRAAL_PATH=$(readlink -f $9)
   fi
 else
@@ -100,7 +100,7 @@ else
   if [[ -d "$8" ]]; then
     JDK8_PATH=$(realpath -f $8)
   fi
-  if [[ -d "$8" ]]; then
+  if [[ -d "$9" ]]; then
     GRAAL_PATH=$(realpath -f $9)
   fi
 fi
