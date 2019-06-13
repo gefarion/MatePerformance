@@ -7,8 +7,7 @@ if [ ! -d $SCRIPT_PATH ]; then
   echo "Maybe accessed with symlink"
 fi
 
-BUILD_SCRIPTS=$SCRIPT_PATH/buildScripts
-source $BUILD_SCRIPTS/basicFunctions.inc
+source $SCRIPT_PATH/../basicFunctions.inc
 
 # Find abs path in MacOS
 realpath() {
