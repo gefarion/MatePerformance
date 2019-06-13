@@ -7,8 +7,8 @@ then
 fi
 
 #set pypy and java wich jvmci enabled dirs manually
-PYPY_DIR="/home/guido/Documents/Projects/pypy"
-#PYPY_DIR="/Users/guidochari/.local/pypy2-v6.0.0-src"
+#PYPY_DIR="/home/guido/Documents/Projects/pypy"
+PYPY_DIR="/Users/guidochari/.local/pypy2-v6.0.0-src"
 
 # Directories
 SETUP_DIR="$ROOT_PATH/Setup"
