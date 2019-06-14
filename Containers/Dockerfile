@@ -28,7 +28,7 @@ RUN set -eux && \
 # Links, Build MATE and Rebench
 RUN cd /opt/ && \
     ln -s graalvm-ce-$GRAAL_VERSION graal && \
-    ln -s oraclejdk1.8.0_212-jvmci-20-b03 openjdk8JVMCI && \
+    ln -s openjdk1.8.0_212-jvmci-20-b03 openjdk8JVMCI && \
     ln -s /opt/pypy2.7-v7.1.1-linux64/bin/pypy /usr/local/bin/pypy && \
     ln -s pypy2.7-v7.1.1-src pypy && \
     git clone --depth 1 https://github.com/charig/TruffleMATE.git -b master /opt/TruffleMate && \
