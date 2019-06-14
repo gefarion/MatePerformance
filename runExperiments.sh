@@ -26,7 +26,7 @@ then
     systemctl stop ondemand
     
     docker run --privileged=true -v "$SCRIPT_PATH/Data:/Data" test_mate \
-        /opt/MatePerformance/Scripts/runBenchs.sh mate.conf /opt/Benchmarks/AreWeFast/ /opt/Som/ /opt/TruffleMate/ /opt/RTruffleMate/MOInShape/ /opt/RTruffleMate/MOInObject /opt/Pharo /opt/openjdk8JVMCI /opt/graal \
+        /opt/MatePerformance/Scripts/runBenchs.sh /opt/MatePerformance/mate.conf /opt/Benchmarks/AreWeFast/ /opt/Som/ /opt/TruffleMate/ /opt/RTruffleMate/MOInShape/ /opt/RTruffleMate/MOInObject /opt/Pharo /opt/openjdk8JVMCI /opt/graal \
         $@
     
 fi
