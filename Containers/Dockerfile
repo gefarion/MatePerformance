@@ -9,7 +9,7 @@ ARG GRAAL_LIBS_LOCATION="/opt/graal/jre/lib"
 
 # Update sources and install dependencies
 RUN apt-get update -yq && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y -qq git python-pip make curl openjdk-8-jdk ant zip unzip nodejs pkg-config zlib1g-dev libssl-dev libncurses5-dev libbz2-dev libffi-dev nano && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y -qq git python-pip make curl openjdk-8-jdk ant zip unzip nodejs pkg-config zlib1g-dev libssl-dev libncurses5-dev libbz2-dev libffi-dev nano libxml2-dev && \
     pip install pycparser && rm -rf /var/lib/apt/lists/*
 
 # Clone all required repositories and download Graal and Pypy
@@ -34,7 +34,7 @@ RUN cd /opt/ && \
     git clone --depth 1 https://github.com/charig/TruffleMATE.git -b master /opt/TruffleMate && \
     git clone --depth 1 https://github.com/charig/RTruffleMATE.git -b metaobjectInShape /opt/RTruffleMate/MOInShape && \
     git clone --depth 1 https://github.com/charig/RTruffleMATE.git -b metaobjectInObject /opt/RTruffleMate/MOInObject && \
-    cd /opt/TruffleMate && ant compile -Dgraallib.dir=$GRAAL_LIBS_LOCATION && \
+    cd /opt/TruffleMate && JAVA_HOME="/opt/openjdk8JVMCI" ant compile -Dgraallib.dir=$GRAAL_LIBS_LOCATION && \
     cd /opt/RTruffleMate/MOInShape && ln -s /opt/pypy pypy && export JIT=1 && make && \
     cd /opt/RTruffleMate/MOInObject && ln -s /opt/pypy pypy && export JIT=1 && make && \
     cd /opt/ReBench && pip install .
