@@ -19,92 +19,98 @@ if [[ ! -f "$1" ]]; then
   exit 1
 fi
 
-if [[ ! -d "$2" ]]; then
-  WARN "2nd parameter must specify a valid directory for the awf benchmark suite"
+if [[ ! -f "$2" ]]; then
+  echo "Second parameter must specify a directory to persist the data files"
+  exit 1
 fi
 
 if [[ ! -d "$3" ]]; then
-  WARN "3rd parameter must specify a valid directory for the som benchmark suite"
+  WARN "3nd parameter must specify a valid directory for the awf benchmark suite"
 fi
 
 if [[ ! -d "$4" ]]; then
-  WARN "4th parameter must specify a valid directory for TruffleMate"
+  WARN "4rd parameter must specify a valid directory for the som benchmark suite"
 fi
 
 if [[ ! -d "$5" ]]; then
-  WARN "5th parameter must specify a valid directory for RTruffleMate"
+  WARN "5th parameter must specify a valid directory for TruffleMate"
 fi
 
 if [[ ! -d "$6" ]]; then
-  WARN "6th parameter must specify a valid directory for RTruffleMate with environment in object configuration"
+  WARN "6th parameter must specify a valid directory for RTruffleMate"
 fi
 
 if [[ ! -d "$7" ]]; then
-  WARN "7th parameter must specify a valid directory for Pharo"
+  WARN "7th parameter must specify a valid directory for RTruffleMate with environment in object configuration"
 fi
 
 if [[ ! -d "$8" ]]; then
-  WARN "8th parameter must specify a valid directory for an java jdk8 with JVMCI enabled"
+  WARN "8th parameter must specify a valid directory for Pharo"
 fi
 
 if [[ ! -d "$9" ]]; then
-  WARN "9th parameter must specify a valid directory for a graal VM"
+  WARN "9th parameter must specify a valid directory for an java jdk8 with JVMCI enabled"
+fi
+
+if [[ ! -d "$10" ]]; then
+  WARN "10th parameter must specify a valid directory for a graal VM"
 fi
 
 if [ "$(uname -s)" = 'Linux' ]; then
   REBENCH=$(readlink -f $1)
-  if [[ -d "$2" ]]; then
-    AWF_PATH=$(readlink -f $2)
-  fi
+  DATA_PATH=$(readlink -f $2)
   if [[ -d "$3" ]]; then
-    SOM_PATH=$(readlink -f $3)
+    AWF_PATH=$(readlink -f $3)
   fi
   if [[ -d "$4" ]]; then
-    TMATE_PATH=$(readlink -f $4)
+    SOM_PATH=$(readlink -f $4)
   fi
   if [[ -d "$5" ]]; then
-    RMATE_PATH=$(readlink -f $5)
+    TMATE_PATH=$(readlink -f $5)
   fi
   if [[ -d "$6" ]]; then
-    RMATE_PATH_OBJ=$(readlink -f $6)
+    RMATE_PATH=$(readlink -f $6)
   fi
   if [[ -d "$7" ]]; then
-    PHARO_PATH=$(readlink -f $7)
+    RMATE_PATH_OBJ=$(readlink -f $7)
   fi
   if [[ -d "$8" ]]; then
-    JDK8_PATH=$(readlink -f $8)
+    PHARO_PATH=$(readlink -f $8)
   fi
   if [[ -d "$9" ]]; then
-    GRAAL_PATH=$(readlink -f $9)
+    JDK8_PATH=$(readlink -f $9)
+  fi
+  if [[ -d "$10" ]]; then
+    GRAAL_PATH=$(readlink -f $10)
   fi
 else
   REBENCH=$(realpath -f $1)
-  if [[ -d "$2" ]]; then
-    AWF_PATH=$(realpath -f $2)
-  fi
+  DATA_PATH=$(realpath -f $2)
   if [[ -d "$3" ]]; then
-    SOM_PATH=$(realpath -f $3)
+    AWF_PATH=$(realpath -f $3)
   fi
   if [[ -d "$4" ]]; then
-    TMATE_PATH=$(realpath -f $4)
+    SOM_PATH=$(realpath -f $4)
   fi
   if [[ -d "$5" ]]; then
-    RMATE_PATH=$(realpath -f $5)
+    TMATE_PATH=$(realpath -f $5)
   fi
   if [[ -d "$6" ]]; then
-    RMATE_PATH_OBJ=$(realpath -f $6)
+    RMATE_PATH=$(realpath -f $6)
   fi
   if [[ -d "$7" ]]; then
-    PHARO_PATH=$(realpath -f $7)
+    RMATE_PATH_OBJ=$(realpath -f $7)
   fi
   if [[ -d "$8" ]]; then
-    JDK8_PATH=$(realpath -f $8)
+    PHARO_PATH=$(realpath -f $8)
   fi
   if [[ -d "$9" ]]; then
-    GRAAL_PATH=$(realpath -f $9)
+    JDK8_PATH=$(realpath -f $9)
+  fi
+  if [[ -d "$10" ]]; then
+    GRAAL_PATH=$(realpath -f $10)
   fi
 fi
-
 
 shift
 shift
@@ -147,6 +153,11 @@ fi
 
 rebench rebench.conf "$@"
 RES=$?
+
+TIMESTAMP=$(timestamp)
+
+tar -zcvf "mateExperiments-$TIMESTAMP.tar.gz" .
+cp "mateExperiments-$TIMESTAMP.tar.gz" "$DATA_PATH/mateExperiments-$TIMESTAMP.tar.gz"
 
 popd
 rm -rf $TMPDIR
