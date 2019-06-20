@@ -19,7 +19,7 @@ if [[ ! -f "$1" ]]; then
   exit 1
 fi
 
-if [[ ! -f "$2" ]]; then
+if [[ ! -d "$2" ]]; then
   echo "Second parameter must specify a directory to persist the data files"
   exit 1
 fi
@@ -80,8 +80,8 @@ if [ "$(uname -s)" = 'Linux' ]; then
   if [[ -d "$9" ]]; then
     JDK8_PATH=$(readlink -f $9)
   fi
-  if [[ -d "$10" ]]; then
-    GRAAL_PATH=$(readlink -f $10)
+  if [[ -d "${10}" ]]; then
+    GRAAL_PATH=$(readlink -f ${10})
   fi
 else
   REBENCH=$(realpath -f $1)
@@ -107,11 +107,12 @@ else
   if [[ -d "$9" ]]; then
     JDK8_PATH=$(realpath -f $9)
   fi
-  if [[ -d "$10" ]]; then
-    GRAAL_PATH=$(realpath -f $10)
+  if [[ -d "${10}" ]]; then
+    GRAAL_PATH=$(realpath -f ${10})
   fi
 fi
 
+shift
 shift
 shift
 shift
@@ -153,6 +154,10 @@ fi
 
 rebench rebench.conf "$@"
 RES=$?
+
+timestamp() {
+  date "+%Y%m%d-%H%M"
+}
 
 TIMESTAMP=$(timestamp)
 
