@@ -52,7 +52,7 @@ if [[ ! -d "$9" ]]; then
   WARN "9th parameter must specify a valid directory for an java jdk8 with JVMCI enabled"
 fi
 
-if [[ ! -d "$10" ]]; then
+if [[ ! -d "${10}" ]]; then
   WARN "10th parameter must specify a valid directory for a graal VM"
 fi
 
@@ -161,8 +161,8 @@ timestamp() {
 
 TIMESTAMP=$(timestamp)
 
-tar -zcvf "mateExperiments-$TIMESTAMP.tar.gz" .
-cp "mateExperiments-$TIMESTAMP.tar.gz" "$DATA_PATH/mateExperiments-$TIMESTAMP.tar.gz"
+tar -zcvf "/tmp/mateExperiments-$TIMESTAMP.tar.gz" .
+cp "/tmp/mateExperiments-$TIMESTAMP.tar.gz" "$DATA_PATH/mateExperiments-$TIMESTAMP.tar.gz"
 
 popd
 rm -rf $TMPDIR
