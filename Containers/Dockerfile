@@ -54,8 +54,4 @@ RUN cd /opt/Benchmarks/AreWeFast/benchmarks/Java && ant jar && \
     rm /opt/Benchmarks/AreWeFast/benchmarks/Smalltalk/Pharo.image && \
     rm /opt/Benchmarks/AreWeFast/benchmarks/Smalltalk/Pharo.changes && \
     cd /opt/Som/Examples/Benchmarks/Mate/Tracing/ && \
-    curl --fail --silent --location --retry 3 https://mtgjson.com/json/AllSets.json.zip | gunzip
-    #download_zip "AllSets-x.json.zip" "https://mtgjson.com/json/AllSets-x.json.zip"
-    #download_zip "AllSets.json.zip" "https://mtgjson.com/json/AllSets.json.zip"
-    #python cleanJsonFile "AllSets-x"
-    #python cleanJsonFile "AllSets"
+    curl --fail --silent --location --retry 3 https://mtgjson.com/json/AllCards.json.zip | gunzip > AllCards.json
