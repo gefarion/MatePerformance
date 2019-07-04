@@ -54,18 +54,31 @@ normalizeData <- function (dataset, grouping, baseline, keepBaseline) {
   return (norm)
 }
 
-normalizePerIteration <- function (dataset, filterFunction, filterCriteria, baselineNames, keepBaseline) {
+normalizePerIteration <- function (dataset, normalizations, extraBaseline, keepBaseline = TRUE) {
   # normalize for each benchmark separately to the baseline
   result <- data.frame(matrix(NA, nrow = 0, ncol = length(dataset[[1]])))
   colnames(result) <- colnames(dataset)
-  for (i in 1:length(filterCriteria)) {
-    base <<- baselineNames[i]
-    filtered <- filterFunction(dataset, filterCriteria[i])
-    norm <- ddply(filtered, ~ Benchmark, transform,
-                  RuntimeRatio = Value / Value[VM == base & Iteration == Iteration])
+  for (normalization in normalizations) {
+    baseline <<- tail(normalization, 1)
+    filtered <- subset(dataset, VM %in% normalization)
+    if (missing(extraBaseline))
+      norm <- ddply(filtered, ~ Benchmark, transform,
+                    RuntimeRatio = Value / Value[VM == baseline & Iteration == Iteration])
+    else {
+      if (extraBaseline[[1]] == "Benchmark") {
+        benchBaseline <<- extraBaseline[[2]]
+        norm <- ddply(filtered, .(), transform,
+                      RuntimeRatio = Value / Value[VM == baseline & Iteration == Iteration & Benchmark == benchBaseline])
+      }
+      else if (extraBaseline[[1]] == "Var") 
+        norm <- ddply(filtered, .(), transform,
+                      RuntimeRatio = Value / Value[VM == baseline & Iteration == Iteration & Benchmark == Benchmark & Var == FALSE])
+      else
+        norm <- NA    
+    }
     result <- rbind(result, norm)
     if (!keepBaseline){
-      result <- subset(result, VM != base)
+      result <- subset(result, VM != baseline)
     } 
   }   
   return (result)

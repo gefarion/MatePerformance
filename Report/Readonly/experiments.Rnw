@@ -1,16 +1,15 @@
 <<ReadonlyPerformance, echo=FALSE, message=FALSE>>=
-knitr::opts_chunk$set(fig.width=10, fig.height=5,
-                      echo=FALSE, warning=FALSE, message=FALSE, results="asis", cache=TRUE)
-
-steady <- getWarmedupData("../../Data/readonly.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), 
-                          vmNamesMap(), 
-                          c("MATEpe", "MATEmt"), 
-                          numberOfIterationsPerBenchmark)
+steady <- getWarmedupData(
+  paste(root_path, "/../Data/readonly.data", sep=""), 
+  c("Value", "Benchmark", "VM", "Suite", "Iteration"), 
+  vmNamesMap(), 
+  c("MATEpe", "MATEmt"), 
+  numberOfIterationsPerBenchmark)
 #, "MATEpe-NoOpt"
 
 readonly <- droplevels(subset(steady, Benchmark == "DelegationProxiesSumKeys" | Benchmark == "ReadonlySumKeys"))
 
-readonly <- change_names(readonly, list("DelegationProxiesSumKeys" = "Proxies", "ReadonlySumKeys"	 = "MOP"), "Benchmark")
+readonly <- change_names(readonly, readonly_benchs_name_map, "Benchmark")
 
 readonlyMT <- droplevels(subset(readonly, VM %in% mtVMs))
 readonlyPE <- droplevels(subset(readonly, VM %in% peVMs))
@@ -28,9 +27,8 @@ readonlyNormalizedPE <- ddply(readonlyPE, ~ Benchmark, transform, RuntimeRatio =
 #summarizedReadonly <- summarizeData(readonlyNormalized)
 @
 \def\ReadonlyPerfComparisonPlot{%
-<<perf-overview-readonly, fig.width=4, fig.height=2, fig.cap='Overhead factors of implementing read-only reference using Handles with Mate (MOP) and using delegation proxies (Proxies).', fig.align='center', out.width = "0.7\\textwidth", fig.pos="H">>=
-readonly <- boxplot(list(rbind(readonlyNormalizedMT, readonlyNormalizedPE)), TRUE, "OF", list(), fill = TRUE)
-print(readonly)
+<<perf-overview-readonly, out.width = "0.7\\textwidth", fig.cap='Overhead factors of implementing read-only reference using Handles with Mate (MOP) and using delegation proxies (Proxies).', fig.align='center', fig.pos="H">>=
+boxplotMateToSomNormalized(rbind(readonlyNormalizedMT, readonlyNormalizedPE), "Overhead Factor", "Benchmark", "Readonly Approaches Overhead")
 @
 }%
 
@@ -50,10 +48,10 @@ baselinePE <- rbind(baselinePE, baselinePEProxies)
 
 readonlySummaryMT <- summarizedPerBenchmark(readonlyNormalizedMT, c(0,10000), baselineMT, "", normalized = TRUE)
 readonlySummaryPE <- summarizedPerBenchmark(readonlyNormalizedPE, c(0,10000), baselinePE, "", normalized = TRUE)
-summaryDataRO <- rbind(readonlySummaryMT, readonlySummaryPE)[,c(2,1,3,4:8)]
+readonlySummary <- rbind(readonlySummaryMT, readonlySummaryPE)[,c(2,1,3,4:8)]
 #summaryDataRO <- readonlySummaryPE[,c(2,1,3:5,7,8,6)]
 print(
-  kable(arrange(summaryDataRO, Benchmark), 
+  kable(arrange(readonlySummary, Benchmark), 
        booktabs = T,
        format = "latex",
        longtable = T,
@@ -66,7 +64,7 @@ print(
 
 \def\ReadonlyTableOverall{%
 <<readonly-overall-table>>=
-overall <- arrange(summarizeOverall(summaryDataRO, ~ VM), Geomean)
+overall <- arrange(summarizeOverall(summaryDataRO, ~ VM), OF2)
 colnames <- c("Runtime", "OF","CI-95%","Sd.", "Min","Max", "Median")
 kable(overall, 
        booktabs = T,

@@ -1,20 +1,17 @@
 <<performance, echo=FALSE, include=FALSE>>=
-if (Sys.getenv("RSTUDIO") == "1") { 
-  setwd("/Users/guidochari/Documents/Projects/MatePerformance/Report") 
-  #setwd("/home/guido/Documents/Projects/MatePerformance/Report")
-}
+
+setwd("/Users/guidochari/Documents/Projects/Research/SOM/MatePerformance/Report") 
 
 root_path <- getwd()
-
-opts_knit$set(child.path = "")
 
 knitr::opts_chunk$set(fig.path=paste0(getwd(),"/images/"), echo=FALSE, warning=FALSE, message=FALSE, results="asis", cache=TRUE, knitr.table.format = "latex")
-
-root_path <- getwd()
 
 options(scipen = 5)
 
 source("Scripts/libraries.R", chdir=TRUE, echo=FALSE)
+
+opts_knit$set(child.path = "")
+
 source("Scripts/data-processing.R")
 source("Scripts/plots.R")
 source("Scripts/colors.R", chdir=TRUE, echo=FALSE)
@@ -24,8 +21,6 @@ iterationsAndInliningFilename <- "../../Data/iterationsAndInlining.tsv"
 iterationsAndInliningCols <- c("Benchmark", "Iterations")
 numberOfIterationsPerBenchmark <- 50
 
-@
-<<Changepoint, child='Warmups/changepoint.Rnw', results='asis'>>=
 @
 <<InherentPerformance, child='Inherent/mate.Rnw', results='asis'>>=
 @
@@ -37,9 +32,7 @@ numberOfIterationsPerBenchmark <- 50
 @
 <<TracingPerformance, child='Tracing/experiments.Rnw', results='asis'>>=
 @
-<<ReflectiveCompilation, child='ReflectiveCompilation/instanceMigration.Rnw', results='asis'>>=
-@
-<<ReflectiveCompilation2, child='ReflectiveCompilation/indirectVariability.Rnw', results='asis'>>=
+<<MOLocation, child='InObjectVsInLayout/experiments.Rnw', results='asis'>>=
 @
 <<Warmups, child='Warmups/warmups.Rnw', results='asis'>>=
 @

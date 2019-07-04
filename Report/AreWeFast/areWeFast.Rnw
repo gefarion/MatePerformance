@@ -1,18 +1,16 @@
 <<LanguagesPerformance, echo=FALSE, message=FALSE>>=
-knitr::opts_chunk$set(fig.width=10, fig.height=5,
-                      echo=FALSE, warning=FALSE, message=FALSE, results="asis")
-
-steady <- getWarmedupData("../../Data/areWeFast.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), 
-                          vmNamesMap(), 
-                          c("SOMpe", "SOMmt", "Java", "Pharo", "Node.js"),
-                          numberOfIterationsPerBenchmark)
+steady <- getWarmedupData(
+    paste(root_path, "/../Data/areWeFast.data", sep=""), 
+    c("Value", "Benchmark", "VM", "Suite", "Iteration"), 
+    vmNamesMap(), 
+    c("SOMpe", "SOMmt", "Java11", "Pharo", "Node.js"),
+    numberOfIterationsPerBenchmark)
 
 vmNames <- list("Node.js"     = "Node", 
-                "SOMpe-Ent"   = "SOMpe",
                 "SOMpe"       = "SOMpe",
                 "SOMmt"       = "SOMmt",
                 "Pharo"       = "Pharo",
-                "Java"        = "Java")
+                "Java11"      = "Java")
 
 steady <- change_names(steady, vmNames, "VM")
 
@@ -24,14 +22,15 @@ somSteady <- steady[steady$VM == "SOM",]
 steadySOMMATE <- droplevels(subset(steady, VM == "Mate" | VM == "SOM"))
 normalizedToSOMPerBenchAndVM <- summarizedPerBenchmark(steadySOMMATE, c(0,10000), somSteady, "SOM")
 
-vm_colors <- brewer.pal(12, "Paired")  # to replace scale_fill_brewer(type = "qual", palette = "Paired")
+vm_colors <- brewer.pal(length(vmNames), "Set3")
+# to replace scale_fill_brewer(type = "qual", palette = "Paired")
 
 names(vm_colors) <- vmNames
 
 @
 \def\LanguagesPerfComparisonPlot{%
-<<languages-perf-overview, fig.width=5, fig.height=2, fig.cap='Overhead factor of different dynamic programming language implementations normalized to Java. Benchmarks were selected from Marr et al.\\ in~\\cite{Marr:2016:AWFY}. The suite was designed for cross-comparing language implementations', out.width = "0.8\\textwidth", fig.align="center">>=
-overview_box_plot(summarizedPerBenchAndVM, c(1,18))
+<<languages-perf-overview, fig.cap='Overhead factor of Node, both SOM implementations, and Pharo normalized to Java using ~\\citet{Marr:2016:AWFY} benchmarks suite', out.width = "0.7\\textwidth", fig.align="center">>=
+boxplotOverview(summarizedPerBenchAndVM, title="Performance Overhead To Java11", yTitle="Overhead Factor", xTitle="Runtime")
 @
 }%
 

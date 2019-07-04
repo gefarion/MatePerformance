@@ -1,12 +1,11 @@
 <<IndividualMateoperationsPerformance, echo=FALSE, message=FALSE>>=
-knitr::opts_chunk$set(fig.width=10, fig.height=5,
-                      echo=FALSE, warning=FALSE, message=FALSE, results="asis", cache=TRUE)
-
-mop <- getWarmedupData("../../Data/individualActivations.data", c("Value", "Benchmark", "VM", "Suite", "Iteration"), 
-                          vmNamesMap(), 
-#                          c("MATEpe", "MATEmt", "MATEpe-NoOpt"),
-                          c("MATEpe", "MATEmt"),
-                          numberOfIterationsPerBenchmark)
+mop <- getWarmedupData(
+  paste(root_path, "/../Data/individualActivations.data", sep=""), 
+  c("Value", "Benchmark", "VM", "Suite", "Iteration"), 
+  vmNamesMap(), 
+  #c("MATEpe", "MATEmt", "MATEpe-NoOpt"),
+  c("MATEpe", "MATEmt"),
+  numberOfIterationsPerBenchmark)
 
 includeNaive <- FALSE
 
@@ -32,22 +31,7 @@ allOperations <- ddply(allOperations, ~ Benchmark + VM , transform,
 allOperations$Benchmark <- factor(allOperations$Benchmark)
 allOperations <- droplevels(subset(allOperations, Benchmark != "VMReflectiveReturn"))
 
-name_map <- list(
-	"LayoutFieldRead"		 = "FieldRead",
-	"LayoutFieldWrite"	 = "FieldWrite",
-	"ArgumentRead"	     = "ArgRead",
-	"LocalVariableRead"	 = "LocalRead",
-	"LocalVariableWrite" = "LocalWrite",
-	"MessageSend"			   = "Send",
-	"MethodActivation" 	 = "Activation",
-	"AllOperations" 		 = "All",
-	"SeveralObjectsFieldRead" 	= "Mega2",
-	"SeveralObjectsFieldReadOneMO" 	= "Mono2",
-	"SeveralObjectsFieldRead2" 	= "Mega",
-	"SeveralObjectsFieldReadOneMO2" = "Mono"
-)
-
-allOperations <- change_names(allOperations, name_map, "Benchmark")
+allOperations <- change_names(allOperations, individual_benchs_name_map, "Benchmark")
 
 allOperations <- droplevels(subset(allOperations, VM != "MATEpe-NoOpt" & Benchmark != "LocalWrite"))
 
@@ -74,8 +58,8 @@ megamorphicNormalized <- droplevels(subset(
 
 @
 \def\IndividualMOPPerfComparisonPlot{%
-<<perf-overview-mop, fig.width=5, fig.height=2, fig.align='center', fig.cap='Overhead factor for redefining VM operations at the language-level. The baseline for each bench, is the execution of the same benchmark in the same VM but without redefining the corresponding VM operation.', fig.pos = 'H'>>=
-print(boxplot(list(mopNormalized), TRUE, "OF", list(), fill = TRUE))
+<<perf-overview-mop, out.width = "0.8\\textwidth", fig.align='center', fig.cap='Overhead factor for redefining VM operations at the language-level. The baseline for each bench, is the execution of the same benchmark in the same VM but without redefining the corresponding VM operation.', fig.pos = 'H'>>=
+boxplotMateToSomNormalized(mopNormalized, "Overhead Factor", "Benchmark", "Individual Operations Overhead Using the MOP")
 @
 }%
 
@@ -89,8 +73,8 @@ if (includeNaive){
 }%
 
 \def\MegaMorphicPerfComparisonPlot{%
-<<perf-overview-mega, fig.width=4, fig.height=2, fig.align='center', fig.cap='Overhead factor a monomorphic versus a megamorphic IH site.', fig.pos = 'H'>>=
-print(boxplot(list(megamorphicNormalized), TRUE, "OF", list(), fill = TRUE))
+<<perf-overview-mega, out.width = "0.8\\textwidth", fig.align='center', fig.pos = 'H', fig.cap='Overhead factor a monomorphic versus a megamorphic IH site.'>>=
+boxplotMateToSomNormalized(megamorphicNormalized, "Overhead Factor", "Benchmark", "Reflective Field Reading: Monomorphic vs Megamorphic Intercession Handling Site")
 @
 }%
 
@@ -166,8 +150,8 @@ print(
 
 \def\IndividualTableOverall{%
 <<individual-overall-table>>=
-overallMop <- arrange(summarizeOverall(summaryDataMop, ~ VM), Geomean)
-overallMega <- arrange(summarizeOverall(summaryDataMegamorphic, ~ VM), Geomean)
+overallMop <- arrange(summarizeOverall(summaryDataMop, ~ VM), OF2)
+overallMega <- arrange(summarizeOverall(summaryDataMegamorphic, ~ VM), OF2)
 #summarizedAll <- rbind(summaryDataMop, summaryDataMegamorphic)
 #overallAll <- arrange(summarizeOverall(summarizedAll, ~ VM), Geomean)
 #overallAggregated <- rbind(overallMop, overallMega, overallAll)[,c(2,1,7,3:6)]
