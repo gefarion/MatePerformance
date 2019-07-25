@@ -1,31 +1,17 @@
 <<LanguagesPerformance, echo=FALSE, message=FALSE>>=
-steady <- getWarmedupData(
+awfRawData <- getWarmedupData(
     paste(root_path, "/../Data/areWeFast.data", sep=""), 
     c("Value", "Benchmark", "VM", "Suite", "Iteration"), 
     vmNamesMap(), 
-    c("SOMpe", "SOMmt", "Java11", "Pharo", "Node.js"),
+    c("SOMpe", "SOMmt", "Java", "Pharo", "Node"),
     numberOfIterationsPerBenchmark)
 
-vmNames <- list("Node.js"     = "Node", 
-                "SOMpe"       = "SOMpe",
-                "SOMmt"       = "SOMmt",
-                "Pharo"       = "Pharo",
-                "Java11"      = "Java")
-
-steady <- change_names(steady, vmNames, "VM")
-
-javaSteady <- steady[steady$VM == "Java",]
-summarizedPerBenchAndVM <- summarizedPerBenchmark(steady, c(0,10000), javaSteady, "Java")
+summarizedPerBenchAndVM <- summarizedPerBenchmark(awfRawData, awfRawData[awfRawData$VM == "Java",], "Java")
 
 #To use later in the warmup plots to draw am horizontal line with the mean overhead factor between mate and som
-somSteady <- steady[steady$VM == "SOM",]
-steadySOMMATE <- droplevels(subset(steady, VM == "Mate" | VM == "SOM"))
-normalizedToSOMPerBenchAndVM <- summarizedPerBenchmark(steadySOMMATE, c(0,10000), somSteady, "SOM")
-
-vm_colors <- brewer.pal(length(vmNames), "Set3")
-# to replace scale_fill_brewer(type = "qual", palette = "Paired")
-
-names(vm_colors) <- vmNames
+somSteady <- steady[awfRawData$VM == "SOM",]
+steadySOMMATE <- droplevels(subset(awfRawData, VM == "Mate" | VM == "SOM"))
+normalizedToSOMPerBenchAndVM <- summarizedPerBenchmark(steadySOMMATE, somSteady, "SOM")
 
 @
 \def\LanguagesPerfComparisonPlot{%

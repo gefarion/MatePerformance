@@ -79,14 +79,16 @@ lineplot <- function (data, xCol, yCol, yTitle, xTitle, title, extraStuff, yLimi
 
 boxplotOverview <- function(stats, yLimits, yTitle, xTitle, title) {
   stats$VM <- reorder(stats$VM, X=stats$OF)
-  color_values <- sapply(levels(droplevels(stats)$VM), function(x) vm_colors[[x]])
-  
+  vm_colors <- brewer.pal(length(vmNames), "Set3")
+  # to replace scale_fill_brewer(type = "qual", palette = "Paired")
+  names(vm_colors) <- vmNames
+
   colorify <- function(plot) {
     plot + 
       geom_hline(yintercept = 1, linetype = "dashed") + 
       geom_boxplot(outlier.size = 0.5, alpha = 0.8, aes(fill=VM)) + 
       stat_summary(fun.y=mean, geom="point", shape=20, size=4, color="black") +
-      scale_fill_manual(values = color_values) + 
+      scale_fill_manual(values = vm_colors) + 
       geom_jitter()
   }
   

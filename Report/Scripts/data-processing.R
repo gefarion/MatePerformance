@@ -158,10 +158,10 @@ tracingBenchmarks <- c("QuickSort", "NBody", "DeltaBlue", "JsonBig")
 #Name mappings
 
 vmNamesMap <- function() {
-  return (list(
-    "Java"                                  = "Java11",
+  list(
+    "Java"                                  = "Java",
     #"GraalJS"                              = "JavaScript, GraalJS",
-    "Node"                                  = "Node.js",
+    "Node"                                  = "Node",
     "TruffleSOM"                            = "SOMpe",
     "TruffleMate"                           = "MATEpe",
     "RTruffleSOM"                           = "SOMmt",
@@ -169,7 +169,7 @@ vmNamesMap <- function() {
     "RTruffleMate-envInObject"              = "MATEmt-obj",
     "TruffleMate-envInObject"               = "MATEpe-obj",
     "TruffleMate-graal-enterprise-naive"    = "MATEpe-noOpt",
-    "Pharo"                                 = "Pharo"))
+    "Pharo"                                 = "Pharo")
 }
 
 individual_benchs_name_map <- 

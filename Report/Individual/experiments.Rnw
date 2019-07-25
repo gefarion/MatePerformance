@@ -9,37 +9,30 @@ mop <- getWarmedupData(
 
 includeNaive <- FALSE
 
-allOperations <- droplevels(subset(mop, (
-				(Suite == "mop-operations-steady" & Benchmark != "VMReflectiveFieldRead" & Benchmark != "VMReflectiveFieldWrite"))))
-
-duplicatedOps <- droplevels(subset(mop, Benchmark == "FieldRead" | Benchmark == "SeveralObjectsFieldRead" | Benchmark == "SeveralObjectsFieldRead2" | Benchmark == "FieldWrite" | Benchmark == "MessageSend"))
-
-duplicatedOps <- change_names(duplicatedOps, list("FieldRead" = "LayoutFieldRead", "SeveralObjectsFieldRead" = "SeveralObjectsFieldReadOneMO", "SeveralObjectsFieldRead2" = "SeveralObjectsFieldReadOneMO2", "FieldWrite"	= "LayoutFieldWrite", "MessageSend"	= "MethodActivation"), "Benchmark")
-
-allOperations <- rbind(allOperations, duplicatedOps)
-
-duplicatedOps <- droplevels(subset(mop, Benchmark == "FieldRead"))
-
-duplicatedOps <- change_names(duplicatedOps, list("FieldRead" = "Return"), "Benchmark")
-
-allOperations <- rbind(allOperations, duplicatedOps)
-
+# More than one reflective operation compares with, i.e, field read or message send.
+duplicatedBaselines <- duplicateAndRenameBench(
+  mop, 
+  c("FieldRead", "FieldRead", "SeveralObjectsFieldRead","SeveralObjectsFieldRead2","FieldWrite", "MessageSend"), 
+  c("LayoutFieldRead", "Return", "SeveralObjectsFieldReadOneMO","SeveralObjectsFieldReadOneMO2","LayoutFieldWrite", "MethodActivation"))
+allOperations <- rbind(mop, duplicatedBaselines)
+                       
 allOperations <- ddply(allOperations, ~ Benchmark + VM , transform, 
 	Var = grepl("Reflective", Benchmark),
 	Benchmark = gsub("VMReflective", "", Benchmark))
 
 allOperations$Benchmark <- factor(allOperations$Benchmark)
-allOperations <- droplevels(subset(allOperations, Benchmark != "VMReflectiveReturn"))
-
+#allOperations <- droplevels(subset(allOperations, Benchmark != "VMReflectiveReturn"))
 allOperations <- change_names(allOperations, individual_benchs_name_map, "Benchmark")
 
 allOperations <- droplevels(subset(allOperations, VM != "MATEpe-NoOpt" & Benchmark != "LocalWrite"))
-
 allOperationsNormalized <- ddply(allOperations, ~ Benchmark + VM, transform,
                    RuntimeRatio = Value / mean(Value[Var == FALSE]))
 
 mopNormalized <- droplevels(subset(
     allOperationsNormalized, (Var == TRUE & Benchmark != "Mega" & Benchmark != "Mono" & Benchmark != "Mega2" & Benchmark != "Mono2")))
+
+megamorphicNormalized <- droplevels(subset(
+    allOperationsNormalized, (Var == TRUE & (Benchmark == "Mono" | Benchmark == "Mega"))))
 
 if (includeNaive){
   allOperationNaive <- droplevels(subset(allOperations, VM == "MATEpe" | VM == "MATEpe-NoOpt"))
@@ -51,11 +44,6 @@ megamorphicNaiveNormalized <- droplevels(subset(
 #    allOperationsNormalized, (Var == TRUE & (Benchmark == "Mono" | Benchmark == "Mega" | Benchmark == "Mono2" | Benchmark == "Mega2"))))
     allOperationsNaiveNormalized, (Var == TRUE & (Benchmark == "Mono" | Benchmark == "Mega") & VM == "MATEpe-NoOpt")))
 }
-
-megamorphicNormalized <- droplevels(subset(
-#    allOperationsNormalized, (Var == TRUE & (Benchmark == "Mono" | Benchmark == "Mega" | Benchmark == "Mono2" | Benchmark == "Mega2"))))
-    allOperationsNormalized, (Var == TRUE & (Benchmark == "Mono" | Benchmark == "Mega"))))
-
 @
 \def\IndividualMOPPerfComparisonPlot{%
 <<perf-overview-mop, out.width = "0.8\\textwidth", fig.align='center', fig.cap='Overhead factor for redefining VM operations at the language-level. The baseline for each bench, is the execution of the same benchmark in the same VM but without redefining the corresponding VM operation.', fig.pos = 'H'>>=

@@ -173,15 +173,19 @@ overheadFactors <- function(data, baseline, iterations){
   
 }
 
-summarizedPerBenchmark <- function(data, iterations, baseline, baselineName, normalized = FALSE) {
-  data <- droplevels(subset(data, Iteration >= iterations[1] & Iteration <= iterations[2])) 
-  if (!normalized){
+summarizedPerBenchmark <- function(data, baseline, baselineName, iterations) {
+  if (!missing(iterations))
+    data <- droplevels(subset(data, Iteration >= iterations[1] & Iteration <= iterations[2])) 
+  if (!missing(baselineName)){
     normalized <- normalizeData(data, ~ Benchmark, baselineName, FALSE)
   } else {
     normalized <- data
   }
   #make it global to use it in ddply
-  baselineGlobal <<- droplevels(subset(baseline, Iteration >= iterations[1] & Iteration <= iterations[2] & Benchmark %in% levels(factor(normalized$Benchmark))))
+  if (!missing(iterations))
+    baselineGlobal <<- droplevels(subset(baseline, Iteration >= iterations[1] & Iteration <= iterations[2] & Benchmark %in% levels(factor(normalized$Benchmark))))
+  else
+    baselineGlobal <<- droplevels(subset(baseline, Benchmark %in% levels(factor(normalized$Benchmark))))
   return (ddply(normalized, ~ VM + Benchmark, summarise, 
                      OF = 
                        tryCatch({
@@ -240,4 +244,14 @@ intervalToNumbers <- function(confidenceString){
 
 filterVMs <- function(data, vms){
   return (subset(data, VM %in% vms[[1]]))
+}
+
+duplicateAndRenameBench <- function(data, benchs, newNames) {
+  output <- data.frame()
+  for (i in 1:length(benchs)) {
+    newName <<- newNames[[i]]
+    output <- rbind(output, ddply(data[data$Benchmark == benchs[[i]],], .(), transform, Benchmark = newName))
+  }
+  output$.id = NULL
+  return(output)
 }
