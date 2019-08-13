@@ -1,5 +1,4 @@
 <<Warmups, echo=FALSE, message=FALSE>>=
-
 rawStandard <- getRawData(
   c(paste(root_path, "/../Data/areWeFast.data", sep=""), paste(root_path, "/../Data/inherent.data", sep="")), 
   c("Value", "Benchmark", "VM", "Suite", "Iteration"), 
@@ -129,8 +128,8 @@ warmupsTracing <- data.frame()
 for (i in iterations){
   # AWF + Inherent
   iterRange <- c(0,i)
-  summarizedPE <- overheadFactors(subset(rawAWF, VM == "MATEpe"), subset(rawAWF, VM == "SOMpe"), iterRange)
-  summarizedMT <- overheadFactors(subset(rawAWF, VM == "MATEmt"), subset(rawAWF, VM == "SOMmt"), iterRange)  
+  summarizedPE <- overheadFactors(subset(rawStandard, VM == "MATEpe"), subset(rawStandard, VM == "SOMpe"), iterRange)
+  summarizedMT <- overheadFactors(subset(rawStandard, VM == "MATEmt"), subset(rawStandard, VM == "SOMmt"), iterRange)  
   warmupsIter <- rbind(summarizedPE, summarizedMT)
   
   iter <- list(i)

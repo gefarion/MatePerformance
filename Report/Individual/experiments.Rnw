@@ -92,8 +92,8 @@ mopBaselineMT <- droplevels(subset(
 mopBaselinePE <- droplevels(subset(
     allOperationsNormalized, (Var == FALSE & VM %in% peVMs & Benchmark != "Mega" & Benchmark != "Mono" & Benchmark != "Mega2" & Benchmark != "Mono2")))
 
-summarizedMopMT <- summarizedPerBenchmark(mopNormalizedMT, c(0,10000), mopBaselineMT, "", normalized = TRUE) 
-summarizedMopPE <- summarizedPerBenchmark(rbind(mopNormalizedPE), c(0,10000), mopBaselinePE, "", normalized = TRUE)
+summarizedMopMT <- summarizedPerBenchmark(mopNormalizedMT, mopBaselineMT, "") 
+summarizedMopPE <- summarizedPerBenchmark(rbind(mopNormalizedPE), mopBaselinePE, "")
 
 summaryDataMop <- rbind(summarizedMopMT, summarizedMopPE)[,c(2,1,3,4:8)]
 print(
@@ -120,8 +120,8 @@ megamorphicBaselinePE <- droplevels(subset(
 #    allOperationsNormalized, (Var == TRUE & (Benchmark == "Mono" | Benchmark == "Mega" | Benchmark == "Mono2" | Benchmark == "Mega2"))))
     allOperationsNormalized, (Var == FALSE & VM %in% peVMs & (Benchmark == "Mono" | Benchmark == "Mega"))))
 
-summarizedMegamorphicMT <- summarizedPerBenchmark(megamorphicNormalizedMT, c(0,10000), megamorphicBaselineMT, "", normalized = TRUE) 
-summarizedMegamorphicPE <- summarizedPerBenchmark(rbind(megamorphicNormalizedPE), c(0,10000), megamorphicBaselinePE, "", normalized = TRUE)
+summarizedMegamorphicMT <- summarizedPerBenchmark(megamorphicNormalizedMT, megamorphicBaselineMT, "") 
+summarizedMegamorphicPE <- summarizedPerBenchmark(rbind(megamorphicNormalizedPE), megamorphicBaselinePE, "")
 
 summaryDataMegamorphic <- rbind(summarizedMegamorphicMT, summarizedMegamorphicPE)[,c(2,1,3,4:8)]
 print(

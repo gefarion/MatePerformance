@@ -1,5 +1,4 @@
 <<TracingPerformance, echo=FALSE, message=FALSE>>=
- 
 tracing <- getWarmedupData(
   paste(root_path, "/../Data/tracing.data", sep=""), 
   c("Value", "Benchmark", "VM", "Suite", "Iteration"), 
@@ -29,8 +28,8 @@ boxplotMateToSom(list(tracingMT, tracingPE), list('MATEmt-baseline', 'MATEpe-bas
 
 \def\TracingTableSummary{%
 <<perf-summary-table-tracing>>=
-tracingSummaryPE <- summarizedPerBenchmark(tracingPE, c(0,10000), baselinePE, "MATEpe-baseline")
-tracingSummaryMT <- summarizedPerBenchmark(tracingMT, c(0,10000), baselineMT, "MATEmt-baseline")
+tracingSummaryPE <- summarizedPerBenchmark(tracingPE, baselinePE, "MATEpe-baseline", c(0,10000))
+tracingSummaryMT <- summarizedPerBenchmark(tracingMT, baselineMT, "MATEmt-baseline", c(0,10000))
 tracingSummary <- rbind(tracingSummaryPE, tracingSummaryMT)[,c(2,1,3,4:8)]
 print(
   kable(arrange(tracingSummary, Benchmark), 

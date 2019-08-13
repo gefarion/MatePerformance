@@ -13,7 +13,7 @@ theme_mate <- function(font_size = 12, title_size = 14, facet_size=12) {
     ) 
 }
 
-basicPlot <- function(data, xCol, yCol, yTitle, xTitle, title, extraStuff, yLimits, xLabelVertical = FALSE, horizontal = FALSE) {
+basicPlot <- function(data, useTheme, xCol, yCol, yTitle, xTitle, title, extraStuff, yLimits, xLabelVertical = FALSE, horizontal = FALSE) {
   if (missing(yTitle)) {
     yTitle = ""
   }
@@ -31,7 +31,7 @@ basicPlot <- function(data, xCol, yCol, yTitle, xTitle, title, extraStuff, yLimi
   }
   
   p <- ggplot(data, aes_string(x = xCol, y = yCol))  
-  
+  p <- p + useTheme()
   if (xLabelVertical) 
     p <- p + theme (axis.text.x = element_text(angle = 90, hjust = 1, vjust=0.5))
   
@@ -55,21 +55,19 @@ basicPlot <- function(data, xCol, yCol, yTitle, xTitle, title, extraStuff, yLimi
 }
 
 boxplot <- function (data, xCol, yCol, yTitle, xTitle, title, extraStuff, yLimits, xLabelVertical = FALSE, horizontal = FALSE) {
-  p <- basicPlot(data, xCol, yCol, yTitle, xTitle, title, extraStuff, yLimits, xLabelVertical, horizontal)
+  p <- basicPlot(data, theme_mate, xCol, yCol, yTitle, xTitle, title, extraStuff, yLimits, xLabelVertical = xLabelVertical, horizontal)
   p +
     scale_y_continuous(name = yTitle) + 
     scale_x_discrete(name = xTitle) +
-    theme_mate() +
     theme(panel.border = element_rect(colour = "black", fill = NA),
           plot.margin=unit(x=c(0.4,0,0,0),units="mm"))
 }
 
 lineplot <- function (data, xCol, yCol, yTitle, xTitle, title, extraStuff, yLimits, color, xLabelVertical = FALSE, horizontal = FALSE) {
-  p <- basicPlot(data, xCol, yCol, yTitle, xTitle, title, extraStuff, yLimits, xLabelVertical = xLabelVertical, horizontal = horizontal)
+  p <- basicPlot(data, theme_mate, xCol, yCol, yTitle, xTitle, title, extraStuff, yLimits, xLabelVertical = xLabelVertical, horizontal = horizontal)
   if (!missing(color))
     p <- p + geom_line(aes_string(colour = color))
   p +
-    theme_mate() +
     #theme(legend.position = "none", axis.title.y=element_blank(),
     #      plot.title = element_text(size = titleSize, hjust = 0.5),
     #      plot.margin = unit(c(0.1,0.1,0.1,0.1), "lines")) + 
@@ -79,9 +77,9 @@ lineplot <- function (data, xCol, yCol, yTitle, xTitle, title, extraStuff, yLimi
 
 boxplotOverview <- function(stats, yLimits, yTitle, xTitle, title) {
   stats$VM <- reorder(stats$VM, X=stats$OF)
-  vm_colors <- brewer.pal(length(vmNames), "Set3")
+  vm_colors <- brewer.pal(length(levels(stats$VM)), "Set3")
   # to replace scale_fill_brewer(type = "qual", palette = "Paired")
-  names(vm_colors) <- vmNames
+  names(vm_colors) <- levels(stats$VM)
 
   colorify <- function(plot) {
     plot + 

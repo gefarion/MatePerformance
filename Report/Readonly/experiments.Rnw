@@ -46,10 +46,9 @@ baselinePE <- change_names(baselinePE, list("SumKeys"	 = "MOP"), "Benchmark")
 baselineMT <- rbind(baselineMT, baselineMTProxies)
 baselinePE <- rbind(baselinePE, baselinePEProxies)
 
-readonlySummaryMT <- summarizedPerBenchmark(readonlyNormalizedMT, c(0,10000), baselineMT, "", normalized = TRUE)
-readonlySummaryPE <- summarizedPerBenchmark(readonlyNormalizedPE, c(0,10000), baselinePE, "", normalized = TRUE)
+readonlySummaryMT <- summarizedPerBenchmark(readonlyNormalizedMT, baselineMT, "")
+readonlySummaryPE <- summarizedPerBenchmark(readonlyNormalizedPE, baselinePE, "")
 readonlySummary <- rbind(readonlySummaryMT, readonlySummaryPE)[,c(2,1,3,4:8)]
-#summaryDataRO <- readonlySummaryPE[,c(2,1,3:5,7,8,6)]
 print(
   kable(arrange(readonlySummary, Benchmark), 
        booktabs = T,
@@ -64,7 +63,7 @@ print(
 
 \def\ReadonlyTableOverall{%
 <<readonly-overall-table>>=
-overall <- arrange(summarizeOverall(summaryDataRO, ~ VM), OF2)
+overall <- arrange(summarizeOverall(readonlySummary, ~ VM), OF2)
 colnames <- c("Runtime", "OF","CI-95%","Sd.", "Min","Max", "Median")
 kable(overall, 
        booktabs = T,

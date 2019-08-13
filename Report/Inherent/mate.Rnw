@@ -43,18 +43,18 @@ steadyPE <- droplevels(subset(steady, VM %in% peVMs))
 microMT <- droplevels(subset(micro, VM %in% mtVMs))
 microPE <- droplevels(subset(micro, VM %in% peVMs))
 microPE$VM <- revalue(microPE$VM, c("MATEpe" = expression(Mate[pe])))
-microMTSummary <- summarizedPerBenchmark(microMT, c(0,10000), sommtSteady, "SOMmt")
-microPESummary <- summarizedPerBenchmark(microPE, c(0,10000), sompeSteady, "SOMpe")
+microMTSummary <- summarizedPerBenchmark(microMT, sommtSteady , "SOMmt", c(0,10000))
+microPESummary <- summarizedPerBenchmark(microPE, steadyPE, "SOMpe", c(0,10000))
 
 microMTWithoutRecursive <- droplevels(subset(microWithoutRecursive, VM %in% mtVMs))
 microPEWithoutRecursive <- droplevels(subset(microWithoutRecursive, VM %in% peVMs))
-microMTSummaryWithoutRecursive <- summarizedPerBenchmark(microMTWithoutRecursive, c(0,10000), sommtSteady, "SOMmt")
-microPESummaryWithoutRecursive <- summarizedPerBenchmark(microPEWithoutRecursive, c(0,10000), sompeSteady, "SOMpe")
+microMTSummaryWithoutRecursive <- summarizedPerBenchmark(microMTWithoutRecursive, sommtSteady, "SOMmt", c(0,10000))
+microPESummaryWithoutRecursive <- summarizedPerBenchmark(microPEWithoutRecursive, sompeSteady, "SOMpe", c(0,10000))
 
 macroMT <- droplevels(subset(macro, VM %in% mtVMs))
 macroPE <- droplevels(subset(macro, VM %in% peVMs))
-macroMTSummary <- summarizedPerBenchmark(macroMT, c(0,10000), sommtSteady, "SOMmt")
-macroPESummary <- summarizedPerBenchmark(macroPE, c(0,10000), sompeSteady, "SOMpe")
+macroMTSummary <- summarizedPerBenchmark(macroMT, sommtSteady, "SOMmt", c(0,10000))
+macroPESummary <- summarizedPerBenchmark(macroPE, sompeSteady, "SOMpe", c(0,10000))
 @
 
 \def\NaivePerfComparisonPlot{

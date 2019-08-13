@@ -16,12 +16,14 @@ normalizedToSOMPerBenchAndVM <- summarizedPerBenchmark(steadySOMMATE, somSteady,
 @
 \def\LanguagesPerfComparisonPlot{%
 <<languages-perf-overview, fig.cap='Overhead factor of Node, both SOM implementations, and Pharo normalized to Java using ~\\citet{Marr:2016:AWFY} benchmarks suite', out.width = "0.7\\textwidth", fig.align="center">>=
+#, fig.pos = 'H'
 boxplotOverview(summarizedPerBenchAndVM, title="Performance Overhead To Java11", yTitle="Overhead Factor", xTitle="Runtime")
 @
 }%
 
 \def\LanguagesTableSummary{%
 <<languages-summary-table>>=
+#latex_options = c("hold_position")
 awfTableData <- summarizedPerBenchAndVM[,c(2,1,3,4:8)]
 print(
   kable(arrange(awfTableData, Benchmark), 
