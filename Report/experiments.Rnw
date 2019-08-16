@@ -1,6 +1,6 @@
 <<performance, echo=FALSE, include=FALSE>>=
 
-setwd("/Users/guidochari/Documents/Projects/Research/SOM/MatePerformance/Report") 
+setwd("/home/guido/Documents/Projects/Research/SOM/MatePerformance/Report") 
 
 root_path <- getwd()
 

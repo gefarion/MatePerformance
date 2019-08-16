@@ -94,7 +94,7 @@ if (includeNaive){
 }
 
 \def\MicroPerfComparisonPlot{
-<<perf-overview-micro, fig.cap='Overhead of TruffleMate normalized to TruffleSOM, clustered by micro and macro benchmarks, without (above) and with (below) optimizations', out.width = "0.8\\textwidth", fig.align='center'>>=
+<<perf-overview-micro, fig.cap='Overhead of TruffleMate normalized to TruffleSOM, clustered by micro and macro benchmarks, without (above) and with (below) optimizations', out.width = "0.8\\textwidth", fig.align='center', fig.width=8, fig.height=4>>=
 boxplotMateToSom(list(microMTWithoutRecursive, microPEWithoutRecursive), list('SOMmt', 'SOMpe'), yTitle = "Overhead Factor", xTitle="Benchmark", title="Mate Overheads to SOM for Non-Reflective Micro Benchmarks")
 @
 }
@@ -130,7 +130,7 @@ kable(arrange(overallData, OF2),
 }
 
 \def\MacroPerfComparisonPlot{
-<<perf-overview-macro, fig.cap='Overhead of TruffleMate normalized to TruffleSOM, clustered by micro and macro benchmarks, without (above) and with (below) optimizations', out.width = "0.8\\textwidth", fig.align='center'>>=
+<<perf-overview-macro, fig.cap='Overhead of TruffleMate normalized to TruffleSOM, clustered by micro and macro benchmarks, without (above) and with (below) optimizations', out.width = "0.8\\textwidth", fig.align='center', fig.width=8, fig.height=4>>=
 boxplotMateToSom(list(macroMT, macroPE), list('SOMmt', 'SOMpe'), yTitle = "Overhead Factor", xTitle="Benchmark", title="Mate Overheads to SOM for Non-Reflective Macro Benchmarks")
 @
 }

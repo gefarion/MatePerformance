@@ -21,7 +21,7 @@ baselineMT <- droplevels(subset(tracing, VM == "MATEmt-baseline"))
 baselinePE <- droplevels(subset(tracing, VM == "MATEpe-baseline"))
 @
 \def\TracingPerfComparisonPlot{%
-<<perf-overview-tracing, fig.cap='Overhead factors of profiling the amount of method activations in a set of benchmarks.', fig.align='center', out.width = "0.7\\textwidth", fig.pos="H">>=
+<<perf-overview-tracing, fig.cap='Overhead factors for profiling the amount of method activations in a set of benchmarks.', fig.align='center', out.width = "0.8\\textwidth", fig.width = 7, fig.height=3>>=
 boxplotMateToSom(list(tracingMT, tracingPE), list('MATEmt-baseline', 'MATEpe-baseline'), "Overhead Factor", "Benchmark", "Readonly Approaches Overhead")
 @
 }%

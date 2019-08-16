@@ -10,7 +10,7 @@ steady <- getWarmedupData(
   numberOfIterationsPerBenchmark,
   c(individual_benchs_name_map, readonly_benchs_name_map, list("DeltaBlueTrace" = "DeltaBlueT", "NBodyTrace" = "NbodyT")))
 
-steady <- droplevels(subset(steady, 
+steadyPlot <- droplevels(subset(steady, 
   Benchmark == "CD" | Benchmark == "DeltaBlue" | Benchmark == "Havlak" | Benchmark == "Mandelbrot" | Benchmark == "NBody" | Benchmark == "Richards" |
   Benchmark == "FieldRead" | Benchmark == "LocalWrite" | Benchmark == "Mega" | Benchmark == "VMReflectiveMesssageSend" | Benchmark == "All" |
   Benchmark == "Proxies" | Benchmark == "MOP" |
@@ -19,15 +19,17 @@ steady <- droplevels(subset(steady,
 steadyMT <- droplevels(subset(steady, VM %in% mtVMs))
 steadyPE <- droplevels(subset(steady, VM %in% peVMs))
 
+steadyPlotMT <- droplevels(subset(steadyPlot, VM %in% mtVMs))
+steadyPlotPE <- droplevels(subset(steadyPlot, VM %in% peVMs))
+
 baselineMTSteady <- steady[steady$VM == "MATEmt",]
 baselinePESteady <- steady[steady$VM == "MATEpe",]
-
-steadyMTSummary <- summarizedPerBenchmark(steadyMT, c(0,10000), baselineMTSteady, "MATEmt")
-steadyPESummary <- summarizedPerBenchmark(steadyPE, c(0,10000), baselinePESteady, "MATEpe")
+steadyMTSummary <- summarizedPerBenchmark(steadyMT, baselineMTSteady, "MATEmt")
+steadyPESummary <- summarizedPerBenchmark(steadyPE, baselinePESteady, "MATEpe")
 @
 \def\InObjectVsLayoutPlot{%
-<<perf-overview-layoutVsObject, out.width = "0.8\\textwidth">>=
-boxplotMateToSom(list(steadyMT, steadyPE), list('MATEmt', 'MATEpe'), yTitle = "Overhead Factor", xTitle="Benchmark", title="Overheads of Metaobject as Field")
+<<perf-overview-layoutVsObject, out.width = "0.8\\textwidth", fig.width = 7, fig.height = 3, fig.align='center', fig.cap='Peak-performance overhead factor of storing the metaobject as an object field against a baseline with the standard MATE implementation blending metaobjects with object layouts.'>>=
+boxplotMateToSom(list(steadyPlotMT, steadyPlotPE), list('MATEmt', 'MATEpe'), yTitle = "Overhead Factor", xTitle="Benchmark", title="Overheads of Metaobject as Field")
 @
 }%
 \def\InObjectVsLayoutTableSummary{%

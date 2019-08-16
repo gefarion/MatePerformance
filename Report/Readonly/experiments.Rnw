@@ -27,7 +27,7 @@ readonlyNormalizedPE <- ddply(readonlyPE, ~ Benchmark, transform, RuntimeRatio =
 #summarizedReadonly <- summarizeData(readonlyNormalized)
 @
 \def\ReadonlyPerfComparisonPlot{%
-<<perf-overview-readonly, out.width = "0.7\\textwidth", fig.cap='Overhead factors of implementing read-only reference using Handles with Mate (MOP) and using delegation proxies (Proxies).', fig.align='center', fig.pos="H">>=
+<<perf-overview-readonly, out.width = "0.8\\textwidth", fig.cap='Overhead factors of implementing read-only reference using Handles with Mate (MOP) and using delegation proxies (Proxies).', fig.align='center', fig.width=7, fig.height=3>>=
 boxplotMateToSomNormalized(rbind(readonlyNormalizedMT, readonlyNormalizedPE), "Overhead Factor", "Benchmark", "Readonly Approaches Overhead")
 @
 }%
@@ -54,7 +54,7 @@ print(
        booktabs = T,
        format = "latex",
        longtable = T,
-       caption = "Overall Results for the Morphicness Benchmarks",
+       caption = "Overall Results for the Readonly Benchmarks",
        digits = 2)  %>%
        kable_styling(latex_options = c("repeat_header"), font_size = 7)  %>%
        collapse_rows(columns = 1:2))
@@ -73,5 +73,30 @@ kable(overall,
        col.names=colnames
       )  %>%
        kable_styling(latex_options = c("repeat_header"), font_size = 8)
+@
+}
+
+
+\def\RODPPEMean{
+<<readonly-summary-dp-peMean>>=
+cat(round(readonlySummary$OF[readonlySummary$VM == "MATEpe" & readonlySummary$Benchmark == "Proxies"], digits=2))
+@
+}
+
+\def\RODPMTMean{
+<<readonly-summary-dp-mtMean>>=
+cat(round(readonlySummary$OF[readonlySummary$VM == "MATEmt" & readonlySummary$Benchmark == "Proxies"], digits=2))
+@
+}
+
+\def\ROMOPPEMean{
+<<readonly-summary-mop-peMean>>=
+cat(round(readonlySummary$OF[readonlySummary$VM == "MATEpe" & readonlySummary$Benchmark == "MOP"], digits=2))
+@
+}
+
+\def\ROMOPMTMean{
+<<readonly-summary-mop-mtMean>>=
+cat(round(readonlySummary$OF[readonlySummary$VM == "MATEmt" & readonlySummary$Benchmark == "MOP"], digits=2))
 @
 }

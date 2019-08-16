@@ -9,15 +9,15 @@ awfRawData <- getWarmedupData(
 summarizedPerBenchAndVM <- summarizedPerBenchmark(awfRawData, awfRawData[awfRawData$VM == "Java",], "Java")
 
 #To use later in the warmup plots to draw am horizontal line with the mean overhead factor between mate and som
-somSteady <- steady[awfRawData$VM == "SOM",]
+somSteady <- awfRawData[awfRawData$VM == "SOM",]
 steadySOMMATE <- droplevels(subset(awfRawData, VM == "Mate" | VM == "SOM"))
 normalizedToSOMPerBenchAndVM <- summarizedPerBenchmark(steadySOMMATE, somSteady, "SOM")
 
 @
 \def\LanguagesPerfComparisonPlot{%
-<<languages-perf-overview, fig.cap='Overhead factor of Node, both SOM implementations, and Pharo normalized to Java using ~\\citet{Marr:2016:AWFY} benchmarks suite', out.width = "0.7\\textwidth", fig.align="center">>=
+<<languages-perf-overview, fig.cap='Overhead factor of Node, both SOM implementations, and Pharo normalized to Java using ~\\citet{Marr:2016:AWFY} benchmarks suite', out.width = "0.8\\textwidth", fig.align="center", fig.height=4, fig.width=8>>=
 #, fig.pos = 'H'
-boxplotOverview(summarizedPerBenchAndVM, title="Performance Overhead To Java11", yTitle="Overhead Factor", xTitle="Runtime")
+boxplotOverview(summarizedPerBenchAndVM, title="Performance Overhead To Java11", yTitle="Overhead Factor", xTitle="")
 @
 }%
 

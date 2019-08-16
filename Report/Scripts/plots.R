@@ -2,8 +2,8 @@ theme_mate <- function(font_size = 12, title_size = 14, facet_size=12) {
     theme_bw() +
     theme(
       legend.position="none", 
-      plot.title = element_text(size = title_size, family = "Tahoma", face = "bold", hjust = 0.5),
-      text=element_text(family = "Tahoma"),
+      plot.title = element_text(size = title_size, family = "Helvetica", face = "bold", hjust = 0.5),
+      text=element_text(family = "Helvetica"),
       axis.text.x = element_text(colour="black", size = font_size, lineheight=0.7),
       axis.title = element_text(face="bold"),
       axis.text.y          = element_text(size = font_size),
@@ -48,7 +48,7 @@ basicPlot <- function(data, useTheme, xCol, yCol, yTitle, xTitle, title, extraSt
     p <- extraStuff(p)
   
   if (horizontal) {
-    plot <- plot + coord_flip()
+    p <- p + coord_flip()
   }
   
   p
@@ -92,7 +92,7 @@ boxplotOverview <- function(stats, yLimits, yTitle, xTitle, title) {
   
   #stats$VM <- revalue(stats$VM, c("SOMpe" = expression(SOM[pe]), "SOMmt" = expression(SOM[mt])))
   
-  boxplot(stats, "VM", "OF", yTitle, xTitle, title, colorify, yLimits)
+  boxplot(stats, "VM", "OF", yTitle, xTitle, title, colorify, yLimits, horizontal = TRUE)
 }
 
 basicPlottingDecorator <- function(plot) {
@@ -101,9 +101,10 @@ basicPlottingDecorator <- function(plot) {
     geom_boxplot(outlier.size = 0.9)
 }
 
-addFacetDecorator <- function(plot) {
-  basicPlottingDecorator(plot) + 
-    facet_grid(VM~., labeller = label_parsed)
+addFacetDecorator <- function(plot, vertical = TRUE) {
+  if (vertical)
+    basicPlottingDecorator(plot) + 
+      facet_grid(VM~., labeller = label_parsed)
 }
 
 boxplotMateToSom <- function(data, baselineNames, yTitle, xTitle, title) {
