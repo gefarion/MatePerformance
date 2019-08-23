@@ -11,11 +11,11 @@ steadyAWF <- getWarmedupData(
   paste(root_path, "/../Data/areWeFast.data", sep=""), 
   c("Value", "Benchmark", "VM", "Suite", "Iteration"), 
   vmNamesMap(), 
-  c("SOMpe", "SOMmt", "MATEpe", "MATEmt", "MATEpe-NoOpt"),
+  c("SOMpe", "SOMmt", "MATEpe", "MATEmt", "MATEpe-noOpt"),
   #c("SOMpe", "SOMmt", "MATEpe", "MATEmt"),
   numberOfIterationsPerBenchmark)
 
-includeNaive <- FALSE
+includeNaive <- TRUE
 
 steady <- rbind(steadyOwn, steadyAWF)
 sompeSteady <- steady[steady$VM == "SOMpe",]
@@ -26,15 +26,15 @@ microWithoutRecursive <- droplevels(subset(micro, Benchmark != "Fibonacci" & Ben
 macro <- droplevels(subset(steady, Suite == "classic-macro-steady" | Benchmark %in% macroBenchmarks))
 
 if (includeNaive){
-  steadyNaive <- droplevels(subset(steady, VM == "SOMpe" | VM == "MATEpe-NoOpt")) 
+  steadyNaive <- droplevels(subset(steady, VM == "SOMpe" | VM == "MATEpe-noOpt")) 
   microNaive <- droplevels(subset(steadyNaive, Suite == "classic-micro-steady" | Benchmark %in% microBenchmarks))
   microWithoutRecursiveNaive <- droplevels(subset(steadyNaive, 
           (Suite == "classic-micro-steady" | Benchmark %in% microBenchmarks) & 
             Benchmark!= "Fibonacci" & Benchmark != "Recurse"))
   macroNaive <- droplevels(subset(steadyNaive, Suite == "classic-macro-steady" | Benchmark %in% macroBenchmarks))
-  naiveMicroSummary <- summarizedPerBenchmark(microNaive, c(0,10000), sompeSteady, "SOMpe")
-  naiveMicroWithoutRecursiveSummary <- summarizedPerBenchmark(microWithoutRecursiveNaive, c(0,10000), sompeSteady, "SOMpe")
-  naiveMacroSummary <- summarizedPerBenchmark(macroNaive, c(0,10000), sompeSteady, "SOMpe")
+  naiveMicroSummary <- summarizedPerBenchmark(microNaive, sompeSteady, "SOMpe")
+  naiveMicroWithoutRecursiveSummary <- summarizedPerBenchmark(microWithoutRecursiveNaive, sompeSteady, "SOMpe")
+  naiveMacroSummary <- summarizedPerBenchmark(macroNaive, sompeSteady, "SOMpe")
 }  
 
 steadyMT <- droplevels(subset(steady, VM %in% mtVMs))
@@ -43,26 +43,25 @@ steadyPE <- droplevels(subset(steady, VM %in% peVMs))
 microMT <- droplevels(subset(micro, VM %in% mtVMs))
 microPE <- droplevels(subset(micro, VM %in% peVMs))
 microPE$VM <- revalue(microPE$VM, c("MATEpe" = expression(Mate[pe])))
-microMTSummary <- summarizedPerBenchmark(microMT, sommtSteady , "SOMmt", c(0,10000))
-microPESummary <- summarizedPerBenchmark(microPE, steadyPE, "SOMpe", c(0,10000))
+microMTSummary <- summarizedPerBenchmark(microMT, sommtSteady , "SOMmt")
+microPESummary <- summarizedPerBenchmark(microPE, steadyPE, "SOMpe")
 
 microMTWithoutRecursive <- droplevels(subset(microWithoutRecursive, VM %in% mtVMs))
 microPEWithoutRecursive <- droplevels(subset(microWithoutRecursive, VM %in% peVMs))
-microMTSummaryWithoutRecursive <- summarizedPerBenchmark(microMTWithoutRecursive, sommtSteady, "SOMmt", c(0,10000))
-microPESummaryWithoutRecursive <- summarizedPerBenchmark(microPEWithoutRecursive, sompeSteady, "SOMpe", c(0,10000))
+microMTSummaryWithoutRecursive <- summarizedPerBenchmark(microMTWithoutRecursive, sommtSteady, "SOMmt")
+microPESummaryWithoutRecursive <- summarizedPerBenchmark(microPEWithoutRecursive, sompeSteady, "SOMpe")
 
 macroMT <- droplevels(subset(macro, VM %in% mtVMs))
 macroPE <- droplevels(subset(macro, VM %in% peVMs))
-macroMTSummary <- summarizedPerBenchmark(macroMT, sommtSteady, "SOMmt", c(0,10000))
-macroPESummary <- summarizedPerBenchmark(macroPE, sompeSteady, "SOMpe", c(0,10000))
+macroMTSummary <- summarizedPerBenchmark(macroMT, sommtSteady, "SOMmt")
+macroPESummary <- summarizedPerBenchmark(macroPE, sompeSteady, "SOMpe")
 @
 
 \def\NaivePerfComparisonPlot{
-<<perf-overview-naive, fig.width=7, fig.height=3, fig.cap='Overhead of MATEpe normalized to SOMpe when optimizations at the VM-level are not enabled. The results are clustered by micro (left) and macro (right) benchmarks.', fig.align='center', out.width = "0.8\\textwidth">>=
+<<perf-overview-naive, fig.width=7, fig.height=3, fig.cap='Overhead of MATEpe normalized to SOMpe when optimizations at the VM-level are not enabled', fig.align='center', out.width = "0.8\\textwidth">>=
 if (includeNaive){
-  boxplotMicroNaive <- boxplot(list(microWithoutRecursiveNaive), TRUE, "OF", list('SOMpe'), fill = FALSE)
-  boxplotMacroNaive <- boxplot(list(macroNaive), TRUE, "", list('SOMpe'), fill = FALSE)
-  multiplot(plotlist = list(boxplotMicroNaive, boxplotMacroNaive), cols = 2)
+  naivOverall = rbind(microWithoutRecursiveNaive, macroNaive)
+  boxplotMateToSom(list(naivOverall), list('SOMpe'), yTitle = "Overhead Factor", xTitle="Benchmark", title="Non-optimized MATEpe Overheads to SOMpe")
 }
 @
 }
@@ -70,10 +69,11 @@ if (includeNaive){
 \def\NaiveTableOverall{%
 <<naive-overall-table>>=
 if (includeNaive){
-  overallMicro <- arrange(summarizeOverall(naiveMicroWithoutRecursiveSummary, ~ VM), Geomean)
-  overallMacro <- arrange(summarizeOverall(naiveMacroSummary, ~ VM), Geomean)
+  summarizeOverall(naiveMicroWithoutRecursiveSummary, ~ VM)
+  overallMicro <- summarizeOverall(naiveMicroWithoutRecursiveSummary, ~ VM)
+  overallMacro <- summarizeOverall(naiveMacroSummary, ~ VM)
   summarizedAll <- rbind(naiveMicroWithoutRecursiveSummary, naiveMacroSummary)[,c(2,1,7,8,3:6)]
-  overallAll <- arrange(summarizeOverall(summarizedAll, ~ VM), Geomean)
+  overallAll <- summarizeOverall(summarizedAll, ~ VM)
   
   overallAggregated <- rbind(overallMicro, overallMacro, overallAll)
   
@@ -230,18 +230,26 @@ cat(round(overallAggregated$OF2[overallAggregated$VM == "MATEmt"][2], digits=2))
 \def\MateNoOptMeanMicro{
 <<micro-summary-matenoMean>>=
 if (includeNaive){
-  cat(round(overallAggregated$OF2[overallAggregated$VM == "MATEpe-NoOpt"][1], digits=2))
-}
-@
-}
-\def\MateNoOptMeanMacro{
-<<macro-summary-matenoMean>>=
-if (includeNaive){
-  cat(round(overallAggregated$OF2[overallAggregated$VM == "MATEpe-NoOpt"][2], digits=2))
+  cat(round(overallAggregated$OF2[overallAggregated$VM == "MATEpe-noOpt"][1], digits=2))
 }
 @
 }
 
+\def\MateNoOptMeanMacro{
+<<macro-summary-matenoMean>>=
+if (includeNaive){
+  cat(round(overallAggregated$OF2[overallAggregated$VM == "MATEpe-noOpt"][2], digits=2))
+}
+@
+}
+
+\def\MateNoOptMeanOverall{
+<<macro-summary-matenoMean>>=
+if (includeNaive){
+  cat(round(overallAggregated$OF2[overallAggregated$VM == "MATEpe-noOpt"][3], digits=2))
+}
+@
+}
 
 \def\MatePEMeanMicroWorst{
 <<micro-summary-matepeMean-worst>>=

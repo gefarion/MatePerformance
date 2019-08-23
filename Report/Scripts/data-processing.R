@@ -168,7 +168,7 @@ vmNamesMap <- function() {
     "RTruffleMate"                          = "MATEmt",
     "RTruffleMate-envInObject"              = "MATEmt-obj",
     "TruffleMate-envInObject"               = "MATEpe-obj",
-    "TruffleMate-graal-enterprise-naive"    = "MATEpe-noOpt",
+    "TruffleMate-naive"                     = "MATEpe-noOpt",
     "Pharo"                                 = "Pharo")
 }
 
