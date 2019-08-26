@@ -147,8 +147,8 @@ selectData <- function(data, numberOfIterations, warmedup) {
 }
 
 
-microBenchmarks <- c("Bounce", "List", "Mandelbrot", "NBody", "Permute", "Queens", "Sieve", "Storage", "Towers", "Fibonacci", "Recurse")
-macroBenchmarks <- c("CD", "DeltaBlue", "Havlak", "Json", "Richards")
+microBenchmarks <- c("Bounce", "List", "Mandelbrot", "NBody", "Permute", "Queens", "Sieve", "Storage", "Towers", "Fibonacci", "Recurse", "BubbleSort", "BubbleSort", "Fannkuch", "Loop", "FieldLoop", "QuickSort", "Sum", "TreeSort", "WhileLoop")
+macroBenchmarks <- c("CD", "DeltaBlue", "Havlak", "Json", "Richards", "PageRank", "GraphSearch")
 
 mtVMs <- c("SOMmt", "MATEmt", "MATEmt-obj")
 peVMs <- c("SOMpe", "SOMpe-Ent", "MATEpe", "MATEpe-obj")

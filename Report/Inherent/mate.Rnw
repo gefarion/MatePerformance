@@ -3,7 +3,7 @@ steadyOwn <- getWarmedupData(
   paste(root_path, "/../Data/inherent.data", sep=""), 
   c("Value", "Benchmark", "VM", "Suite", "Iteration"), 
   vmNamesMap(), 
-  c("SOMpe", "SOMmt", "MATEpe", "MATEmt", "MATEpe-NoOpt"),
+  c("SOMpe", "SOMmt", "MATEpe", "MATEmt", "MATEpe-noOpt"),
   #c("SOMpe", "SOMmt", "MATEpe", "MATEmt"),
   numberOfIterationsPerBenchmark)
 
@@ -21,17 +21,15 @@ steady <- rbind(steadyOwn, steadyAWF)
 sompeSteady <- steady[steady$VM == "SOMpe",]
 sommtSteady <- steady[steady$VM == "SOMmt",]
 
-micro <- droplevels(subset(steady, (Suite == "classic-micro-steady" | Benchmark %in% microBenchmarks) & Benchmark != "Loop"))
+micro <- droplevels(subset(steady, Benchmark %in% microBenchmarks & Benchmark != "Loop"))
 microWithoutRecursive <- droplevels(subset(micro, Benchmark != "Fibonacci" & Benchmark != "Recurse")) #& Benchmark != "Permute"
-macro <- droplevels(subset(steady, Suite == "classic-macro-steady" | Benchmark %in% macroBenchmarks))
+macro <- droplevels(subset(steady, Benchmark %in% macroBenchmarks))
 
 if (includeNaive){
   steadyNaive <- droplevels(subset(steady, VM == "SOMpe" | VM == "MATEpe-noOpt")) 
-  microNaive <- droplevels(subset(steadyNaive, Suite == "classic-micro-steady" | Benchmark %in% microBenchmarks))
-  microWithoutRecursiveNaive <- droplevels(subset(steadyNaive, 
-          (Suite == "classic-micro-steady" | Benchmark %in% microBenchmarks) & 
-            Benchmark!= "Fibonacci" & Benchmark != "Recurse"))
-  macroNaive <- droplevels(subset(steadyNaive, Suite == "classic-macro-steady" | Benchmark %in% macroBenchmarks))
+  microNaive <- droplevels(subset(steadyNaive, Benchmark %in% microBenchmarks & Benchmark != "Loop"))
+  microWithoutRecursiveNaive <- droplevels(subset(microNaive, Benchmark %in% microBenchmarks & Benchmark!= "Fibonacci" & Benchmark != "Recurse"))
+  macroNaive <- droplevels(subset(steadyNaive, Benchmark %in% macroBenchmarks))
   naiveMicroSummary <- summarizedPerBenchmark(microNaive, sompeSteady, "SOMpe")
   naiveMicroWithoutRecursiveSummary <- summarizedPerBenchmark(microWithoutRecursiveNaive, sompeSteady, "SOMpe")
   naiveMacroSummary <- summarizedPerBenchmark(macroNaive, sompeSteady, "SOMpe")
@@ -94,7 +92,7 @@ if (includeNaive){
 }
 
 \def\MicroPerfComparisonPlot{
-<<perf-overview-micro, fig.cap='Overhead of TruffleMate normalized to TruffleSOM, clustered by micro and macro benchmarks, without (above) and with (below) optimizations', out.width = "0.8\\textwidth", fig.align='center', fig.width=8, fig.height=4>>=
+<<perf-overview-micro, fig.cap='Overhead of MATE normalized to SOM in the context of micro benchmarks', out.width = "0.8\\textwidth", fig.align='center', fig.width=8, fig.height=4>>=
 boxplotMateToSom(list(microMTWithoutRecursive, microPEWithoutRecursive), list('SOMmt', 'SOMpe'), yTitle = "Overhead Factor", xTitle="Benchmark", title="Mate Overheads to SOM for Non-Reflective Micro Benchmarks")
 @
 }
@@ -130,7 +128,7 @@ kable(arrange(overallData, OF2),
 }
 
 \def\MacroPerfComparisonPlot{
-<<perf-overview-macro, fig.cap='Overhead of TruffleMate normalized to TruffleSOM, clustered by micro and macro benchmarks, without (above) and with (below) optimizations', out.width = "0.8\\textwidth", fig.align='center', fig.width=8, fig.height=4>>=
+<<perf-overview-macro, fig.cap='Overhead of MATE normalized to SOM in the context of macro benchmarks', out.width = "0.8\\textwidth", fig.align='center', fig.width=8, fig.height=4>>=
 boxplotMateToSom(list(macroMT, macroPE), list('SOMmt', 'SOMpe'), yTitle = "Overhead Factor", xTitle="Benchmark", title="Mate Overheads to SOM for Non-Reflective Macro Benchmarks")
 @
 }
@@ -244,7 +242,7 @@ if (includeNaive){
 }
 
 \def\MateNoOptMeanOverall{
-<<macro-summary-matenoMean>>=
+<<overall-summary-matenoMean>>=
 if (includeNaive){
   cat(round(overallAggregated$OF2[overallAggregated$VM == "MATEpe-noOpt"][3], digits=2))
 }
