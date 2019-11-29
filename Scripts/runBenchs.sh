@@ -48,12 +48,8 @@ if [[ ! -d "$8" ]]; then
   WARN "8th parameter must specify a valid directory for Pharo"
 fi
 
-if [[ ! -d "$9" ]]; then
-  WARN "9th parameter must specify a valid directory for an java jdk8 with JVMCI enabled"
-fi
-
-if [[ ! -d "${10}" ]]; then
-  WARN "10th parameter must specify a valid directory for a graal VM"
+if [[ ! -d "${9}" ]]; then
+  WARN "9th parameter must specify a valid directory for a graal VM"
 fi
 
 if [ "$(uname -s)" = 'Linux' ]; then
@@ -77,11 +73,8 @@ if [ "$(uname -s)" = 'Linux' ]; then
   if [[ -d "$8" ]]; then
     PHARO_PATH=$(readlink -f $8)
   fi
-  if [[ -d "$9" ]]; then
-    JDK8_PATH=$(readlink -f $9)
-  fi
-  if [[ -d "${10}" ]]; then
-    GRAAL_PATH=$(readlink -f ${10})
+  if [[ -d "${9}" ]]; then
+    GRAAL_PATH=$(readlink -f ${9})
   fi
 else
   REBENCH=$(realpath -f $1)
@@ -104,15 +97,11 @@ else
   if [[ -d "$8" ]]; then
     PHARO_PATH=$(realpath -f $8)
   fi
-  if [[ -d "$9" ]]; then
-    JDK8_PATH=$(realpath -f $9)
-  fi
-  if [[ -d "${10}" ]]; then
-    GRAAL_PATH=$(realpath -f ${10})
+  if [[ -d "${9}" ]]; then
+    GRAAL_PATH=$(realpath -f ${9})
   fi
 fi
 
-shift
 shift
 shift
 shift
@@ -144,9 +133,6 @@ if [[ ! -z $RMATE_PATH_OBJ ]]; then
 fi
 if [[ ! -z $PHARO_PATH ]]; then
   sed -i.bak "s+%%PHARO_PATH%%+$PHARO_PATH+" rebench.conf
-fi
-if [[ ! -z $JDK8_PATH ]]; then
-  sed -i.bak "s+%%JAVA8_JVMCI_PATH%%+$JDK8_PATH+" rebench.conf
 fi
 if [[ ! -z $GRAAL_PATH ]]; then
   sed -i.bak "s+%%GRAAL_PATH%%+$GRAAL_PATH+" rebench.conf
