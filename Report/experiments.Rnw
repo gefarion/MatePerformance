@@ -20,7 +20,7 @@ source("Scripts/auxiliaryFunctions.R", chdir=TRUE)
 iterationsAndInliningFilename <- "../../Data/iterationsAndInlining.tsv"
 iterationsAndInliningCols <- c("Benchmark", "Iterations")
 numberOfIterationsPerBenchmark <- 50
-
+CombineMtAndPe <- FALSE
 @
 <<InherentPerformance, child='Inherent/mate.Rnw', results='asis'>>=
 @

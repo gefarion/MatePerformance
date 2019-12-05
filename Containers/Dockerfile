@@ -47,7 +47,7 @@ RUN cd /opt/ && \
 RUN mkdir /opt/Pharo && cd /opt/Pharo && set -eux && curl --fail --silent --location --retry 3 get.pharo.org/64/vm70 | bash
 RUN cd /opt/Pharo && set -eux && curl --fail --silent --location --retry 3 get.pharo.org/64/stable | bash 
 
-# Build Java, ST benchmarks
+# Build Java, ST, benchmarks
 RUN cd /opt/Benchmarks/AreWeFast/benchmarks/Java && ant jar && \
     cd /opt/Benchmarks/AreWeFast/benchmarks/Smalltalk/ && \
     cp /opt/Pharo/Pharo.image . && \

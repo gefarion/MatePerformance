@@ -8,6 +8,11 @@ mop <- getWarmedupData(
   numberOfIterationsPerBenchmark)
 
 includeNaive <- FALSE
+includeAll <- FALSE
+
+if (!includeAll) {
+  mop <- droplevels(subset(mop, mop$Benchmark != "AllOperations" & mop$Benchmark != "VMReflectiveAllOperations"))
+}
 
 # More than one reflective operation compares with, i.e, field read or message send.
 duplicatedBaselines <- duplicateAndRenameBench(
@@ -44,10 +49,18 @@ megamorphicNaiveNormalized <- droplevels(subset(
 #    allOperationsNormalized, (Var == TRUE & (Benchmark == "Mono" | Benchmark == "Mega" | Benchmark == "Mono2" | Benchmark == "Mega2"))))
     allOperationsNaiveNormalized, (Var == TRUE & (Benchmark == "Mono" | Benchmark == "Mega") & VM == "MATEpe-NoOpt")))
 }
+
+mopNormalizedMT <- droplevels(subset(mopNormalized, VM %in% mtVMs))
+mopNormalizedPE <- droplevels(subset(mopNormalized, VM %in% peVMs))
+
 @
 \def\IndividualMOPPerfComparisonPlot{%
 <<perf-overview-mop, out.width = "0.8\\textwidth", fig.align='center', fig.cap='Overhead factor for redefining VM operations at the language-level. The baseline for each bench, is the execution of the same benchmark in the same VM but without redefining the corresponding VM operation.', fig.width=8, fig.height=4>>=
-boxplotMateToSomNormalized(mopNormalized, "Overhead Factor", "Benchmark", "Individual Operations Overhead Using the MOP")
+if (CombineMtAndPe) {
+  boxplotMateToSomNormalized(rbind(mopNormalizedPE, mopNormalizedMT), "Overhead Factor", "Benchmark", "Individual Operations Overhead Using the MOP")
+} else {
+  boxplotMateToSomNormalized(mopNormalizedPE, "Overhead Factor", "Benchmark", "Individual Operations Overhead Using the MOP")
+}
 @
 }%
 
@@ -85,15 +98,54 @@ if (includeNaive){
 
 \def\MopTableSummary{%
 <<perf-summary-table-mop, results="asis">>=
-mopNormalizedMT <- droplevels(subset(mopNormalized, VM %in% mtVMs))
-mopNormalizedPE <- droplevels(subset(mopNormalized, VM %in% peVMs))
 mopBaselineMT <- droplevels(subset(
     allOperationsNormalized, (Var == FALSE & VM %in% mtVMs & Benchmark != "Mega" & Benchmark != "Mono" & Benchmark != "Mega2" & Benchmark != "Mono2")))
 mopBaselinePE <- droplevels(subset(
     allOperationsNormalized, (Var == FALSE & VM %in% peVMs & Benchmark != "Mega" & Benchmark != "Mono" & Benchmark != "Mega2" & Benchmark != "Mono2")))
 
-summarizedMopMT <- summarizedPerBenchmark(mopNormalizedMT, mopBaselineMT, "") 
-summarizedMopPE <- summarizedPerBenchmark(rbind(mopNormalizedPE), mopBaselinePE, "")
+summarizedPerBenchmark <- function(data, baseline, baselineName, iterations) {
+  if (!missing(iterations))
+    data <- droplevels(subset(data, Iteration >= iterations[1] & Iteration <= iterations[2])) 
+  if (!missing(baselineName)){
+    print ("aaa")
+    normalized <- normalizeData(data, ~ Benchmark, baselineName, FALSE)
+  } else {
+    normalized <- data
+  }
+  #make it global to use it in ddply
+  if (!missing(iterations))
+    baselineGlobal <<- droplevels(subset(baseline, Iteration >= iterations[1] & Iteration <= iterations[2] & Benchmark %in% levels(factor(normalized$Benchmark))))
+  else
+    baselineGlobal <<- droplevels(subset(baseline, Benchmark %in% levels(factor(normalized$Benchmark))))
+  print (baselineGlobal)
+  print (normalized)
+  return (ddply(normalized, ~ VM + Benchmark, summarise, 
+                     OF = 
+                       tryCatch({
+                         t.test.ratio(Value, baselineGlobal[baselineGlobal$Benchmark == Benchmark,]$Value)$estimate[3]
+                       }, error = function(e) {
+                         mean(Value) / mean(baselineGlobal[baselineGlobal$Benchmark == Benchmark,]$Value)
+                       }),
+                     Confidence    = 
+                       tryCatch({
+                          paste(
+                          paste("<", 
+                            round(t.test.ratio(Value, baselineGlobal[baselineGlobal$Benchmark == Benchmark,]$Value)$conf.int[1], digits = 2), sep=""),
+                          paste(
+                            round(t.test.ratio(Value, baselineGlobal[baselineGlobal$Benchmark == Benchmark,]$Value)$conf.int[2], digits = 2), ">", sep=""),
+                          sep=" - ")
+                       }, error = function(e) {
+                          "Too few values"
+                       }),
+                     Sd            = sd(RuntimeRatio),
+                     Median        = median(RuntimeRatio),
+                     Min           = min(RuntimeRatio),
+                     Max           = max(RuntimeRatio)))
+}
+
+
+summarizedMopMT <- summarizedPerBenchmark(mopNormalizedMT, mopBaselineMT) 
+summarizedMopPE <- summarizedPerBenchmark(mopNormalizedPE, mopBaselinePE)
 
 summaryDataMop <- rbind(summarizedMopMT, summarizedMopPE)[,c(2,1,3,4:8)]
 print(
