@@ -92,114 +92,156 @@ if (includeNaive){
 @
 }
 
-\def\MicroPerfComparisonPlot{
-<<perf-overview-micro, fig.cap='Overhead of MATE normalized to SOM in the context of micro benchmarks', out.width = "0.8\\textwidth", fig.align='center', fig.width=8, fig.height=4>>=
-if (CombineMtAndPe) {
-  boxplotMateToSom(list(microMTWithoutRecursive, microPEWithoutRecursive), list('SOMmt', 'SOMpe'), yTitle = "Overhead Factor", xTitle="Benchmark", title="Mate Overheads with respect to SOM for Non-Reflective Micro Benchmarks")
-} else {
-  boxplotMateToSom(list(microPEWithoutRecursive), list('SOMpe'), yTitle = "Overhead Factor", xTitle="Benchmark", title="Mate Overheads to SOM for Non-Reflective Micro Benchmarks")
-}
+\def\MicroPerfComparisonPlotCombined{
+<<perf-overview-micro-combined, fig.cap='Overhead of MATE normalized to SOM in the context of micro benchmarks', out.width = "0.8\\textwidth", fig.align='center', fig.width=8, fig.height=4>>=
+boxplotMateToSom(list(microMTWithoutRecursive, microPEWithoutRecursive), list('SOMmt', 'SOMpe'), yTitle = "Overhead Factor", xTitle="Benchmark", title="Mate Overheads with respect to SOM for Non-Reflective Micro Benchmarks")
 @
 }
 
-\def\MicroTableSummary{%
-<<micro-summary-table>>=
-if (CombineMtAndPe) {
-  summaryDataMicro <- rbind(microMTSummaryWithoutRecursive, microPESummaryWithoutRecursive)[,c(2,1,3,4:8)]
-} else {
-  summaryDataMicro <- microPESummaryWithoutRecursive[,c(2,1,3,4:8)]
-}
-print(
-  kable(arrange(summaryDataMicro, Benchmark), 
-       booktabs = T,
-       format = "latex",
-       longtable = T,
-       caption = "Micro Benchmark Inherent Performance Results",
-       digits = 2)  %>%
-       kable_styling(latex_options = c("repeat_header"), font_size = 7)  %>%
-       collapse_rows(columns = 1:2))
+\def\MicroPerfComparisonPlotPE{
+<<perf-overview-micro-pe, fig.cap='Overhead of MATE normalized to SOM in the context of micro benchmarks', out.width = "0.8\\textwidth", fig.align='center', fig.width=8, fig.height=4>>=
+boxplotMateToSom(list(microPEWithoutRecursive), list('SOMpe'), yTitle = "Overhead Factor", xTitle="Benchmark", title="Mate Overheads with respect to SOM for Non-Reflective Micro Benchmarks")
 @
 }
 
-\def\MicroTableOverall{%
-<<micro-overall-table>>=
+\def\MicroPerfComparisonPlotMT{
+<<perf-overview-micro-mt, fig.cap='Overhead of MATE normalized to SOM in the context of micro benchmarks', out.width = "0.8\\textwidth", fig.align='center', fig.width=8, fig.height=4>>=
+boxplotMateToSom(list(microMTWithoutRecursive), list('SOMmt'), yTitle = "Overhead Factor", xTitle="Benchmark", title="Mate Overheads with respect to SOM for Non-Reflective Micro Benchmarks")
+@
+}
+
+
+\def\MicroTableSummaryCombined{%
+<<micro-summary-table-combined>>=
+summaryDataMicro <- rbind(microMTSummaryWithoutRecursive, microPESummaryWithoutRecursive)[,c(2,1,3,4:8)]
+print(summarizedTable(arrange(summaryDataMicro, Benchmark)))
+@
+}
+
+\def\MicroTableSummaryPE{%
+<<micro-summary-table-pe>>=
+summaryDataMicroPE <- microPESummaryWithoutRecursive[,c(2,1,3,4:8)]
+print(summarizedTable(arrange(summaryDataMicroPE, Benchmark)))
+@
+}
+
+\def\MicroTableSummaryMT{%
+<<micro-summary-table-mt>>=
+summaryDataMicroMT <- microMTSummaryWithoutRecursive[,c(2,1,3,4:8)]
+print(summarizedTable(arrange(summaryDataMicroMT, Benchmark)))
+@
+}
+
+\def\MicroTableOverallCombined{%
+<<micro-overall-table-combined>>=
 overallData <- summarizeOverall(summaryDataMicro, ~ VM)
 colnames <- c("Runtime", "OF","CI-95%","Sd.", "Min","Max", "Median")
-kable(arrange(overallData, OF2), 
-       booktabs = T,
-       format = "latex",
-       digits = 2,
-       caption = "Overall Inherent Results for the Micro Benchmarks",
-       col.names=colnames
-      )  %>%
-       kable_styling(latex_options = c("repeat_header"), font_size = 8)
+print(summarizedTable(arrange(overallData, OF2)), colnames, fontSize=8, title="Overall Inherent Results for the Micro Benchmarks")
 @
 }
 
-\def\MacroPerfComparisonPlot{
-<<perf-overview-macro, fig.cap='Overhead of MATE normalized to SOM in the context of macro benchmarks', out.width = "0.8\\textwidth", fig.align='center', fig.width=8, fig.height=4>>=
-if (CombineMtAndPe) {
-  boxplotMateToSom(list(macroMT, macroPE), list('SOMmt', 'SOMpe'), yTitle = "Overhead Factor", xTitle="Benchmark", title="Mate Overheads to SOM for Non-Reflective Macro Benchmarks")
-} else {
-  boxplotMateToSom(list(macroPE), list('SOMpe'), yTitle = "Overhead Factor", xTitle="Benchmark", title="Mate Overheads with respect to SOM for Non-Reflective Macro Benchmarks")
-}
+\def\MicroTableOverallPE{%
+<<micro-overall-table-pe>>=
+overallDataPE <- summarizeOverall(summaryDataMicroPE, ~ VM)
+colnames <- c("Runtime", "OF","CI-95%","Sd.", "Min","Max", "Median")
+print(summarizedTable(arrange(overallDataPE, OF2)), colnames, fontSize=8, title="Overall Inherent Results for the Micro Benchmarks")
 @
 }
 
-\def\MacroTableSummary{%
-<<macro-summary-table>>=
-if (CombineMtAndPe) {
-  summaryDataMacro <- rbind(macroMTSummary, macroPESummary)[,c(2,1,3,4:8)]
-} else {
-  summaryDataMacro <- macroPESummary[,c(2,1,3,4:8)]
-}
-print(
-  kable(arrange(summaryDataMacro, Benchmark), 
-       booktabs = T,
-       format = "latex",
-       longtable = T,
-       caption = "Macro Benchmark Inherent Performance Results",
-       digits = 2)  %>%
-       kable_styling(latex_options = c("repeat_header"), font_size = 7)  %>%
-       collapse_rows(columns = 1:2))
+\def\MicroTableOverallMT{%
+<<micro-overall-table-mt>>=
+overallDataMT <- summarizeOverall(summaryDataMicroMT, ~ VM)
+colnames <- c("Runtime", "OF","CI-95%","Sd.", "Min","Max", "Median")
+print(summarizedTable(arrange(overallDataMT, OF2)), colnames, fontSize=8, title="Overall Inherent Results for the Micro Benchmarks")
 @
 }
 
-\def\MacroTableOverall{%
-<<macro-overall-table>>=
+\def\MacroPerfComparisonPlotCombined{
+<<perf-overview-macro-combined, fig.cap='Overhead of MATE normalized to SOM in the context of macro benchmarks', out.width = "0.8\\textwidth", fig.align='center', fig.width=8, fig.height=4>>=
+boxplotMateToSom(list(macroMT, macroPE), list('SOMmt', 'SOMpe'), yTitle = "Overhead Factor", xTitle="Benchmark", title="Mate Overheads to SOM for Non-Reflective Macro Benchmarks")
+@
+}
+
+\def\MacroPerfComparisonPlotPE{
+<<perf-overview-macro-pe, fig.cap='Overhead of MATE normalized to SOM in the context of macro benchmarks', out.width = "0.8\\textwidth", fig.align='center', fig.width=8, fig.height=4>>=
+boxplotMateToSom(list(macroPE), list('SOMpe'), yTitle = "Overhead Factor", xTitle="Benchmark", title="Mate Overheads with respect to SOM for Macro Benchmarks")
+@
+}
+
+\def\MacroPerfComparisonPlotMT{
+<<perf-overview-macro-mt, fig.cap='Overhead of MATE normalized to SOM in the context of macro benchmarks', out.width = "0.8\\textwidth", fig.align='center', fig.width=8, fig.height=4>>=
+boxplotMateToSom(list(macroMT), list('SOMmt'), yTitle = "Overhead Factor", xTitle="Benchmark", title="Mate Overheads with respect to SOM for Macro Benchmarks")
+@
+}
+
+\def\MacroTableSummaryCombined{%
+<<macro-summary-table-combined>>=
+summaryDataMacro <- rbind(macroMTSummary, macroPESummary)[,c(2,1,3,4:8)]
+print(summarizedTable(arrange(summaryDataMacro, Benchmark)))
+@
+}
+
+\def\MacroTableSummaryPE{%
+<<macro-summary-table-pe>>=
+summaryDataMacroPE <- macroPESummary[,c(2,1,3,4:8)]
+print(summarizedTable(arrange(summaryDataMacroPE, Benchmark)))
+@
+}
+
+\def\MacroTableSummaryMT{%
+<<macro-summary-table-mt>>=
+summaryDataMacroMT <- macroMTSummary[,c(2,1,3,4:8)]
+print(summarizedTable(arrange(summaryDataMacroMT, Benchmark)))
+@
+}
+
+\def\MacroTableOverallCombined{%
+<<macro-overall-table-combined>>=
 overallData <- summarizeOverall(summaryDataMacro, ~ VM)
 colnames <- c("Runtime", "OF","CI-95%","Sd.", "Min","Max", "Median")
-kable(arrange(overallData, OF2), 
-       booktabs = T,
-       format = "latex",
-       digits = 2,
-       caption = "Overall Inherent Results for the Macro Benchmarks",
-       col.names=colnames
-      )  %>%
-       kable_styling(latex_options = c("repeat_header"), font_size = 8)
+print(summarizedTable(arrange(overallData, OF2)), colnames, fontSize=8, title="Overall Inherent Results for the Macro Benchmarks")
+@
+}
+
+\def\MacroTableOverallPE{%
+<<macro-overall-table-pe>>=
+overallDataPE <- summarizeOverall(summaryDataMacroPE, ~ VM)
+colnames <- c("Runtime", "OF","CI-95%","Sd.", "Min","Max", "Median")
+print(summarizedTable(arrange(overallDataPE, OF2)), colnames, fontSize=8, title="Overall Inherent Results for the Macro Benchmarks")
+@
+}
+
+\def\MacroTableOverallMT{%
+<<macro-overall-table-mt>>=
+overallDataMT <- summarizeOverall(summaryDataMacroMT, ~ VM)
+colnames <- c("Runtime", "OF","CI-95%","Sd.", "Min","Max", "Median")
+print(summarizedTable(arrange(overallDataMT, OF2)), colnames, fontSize=8, title="Overall Inherent Results for the Macro Benchmarks")
 @
 }
 
 \def\OverallTableOverall{%
 <<inherent-overall-table>>=
 if (includeNaive){
-  overallMicro <- arrange(summarizeOverall(rbind(summaryDataMicro, naiveMicroWithoutRecursiveSummary), ~ VM), OF2)
-  overallMacro <- arrange(summarizeOverall(rbind(summaryDataMacro, naiveMacroSummary), ~ VM), OF2)
-  summarizedInherent <- rbind(microMTSummaryWithoutRecursive, microPESummaryWithoutRecursive, macroMTSummary, macroPESummary, naiveMicroWithoutRecursiveSummary, naiveMacroSummary)
-  groups <- list(c(1, 3), c(4, 6), c(7, 9))
+  overallMicro <- arrange(summarizeOverall(rbind(summaryDataMicroPE, naiveMicroWithoutRecursiveSummary), ~ VM), OF2)
+  overallMacro <- arrange(summarizeOverall(rbind(summaryDataMacroPE, naiveMacroSummary), ~ VM), OF2)
 } else {
-  overallMicro <- arrange(summarizeOverall(rbind(summaryDataMicro), ~ VM), OF2)
-  overallMacro <- arrange(summarizeOverall(rbind(summaryDataMacro), ~ VM), OF2)
-  summarizedInherent <- rbind(microMTSummaryWithoutRecursive, microPESummaryWithoutRecursive, macroMTSummary, macroPESummary)
-  groups <- list(c(1, 2), c(3, 4), c(5, 6))
+  overallMicro <- arrange(summarizeOverall(summaryDataMicro, ~ VM), OF2)
+  overallMacro <- arrange(summarizeOverall(summaryDataMacro, ~ VM), OF2)
 }
 
 if (reportAggregates) {
-  summarizedInherent <- summarizedInherent[,c(2,1,3,4:8)]
+  if (includeNaive){
+    summarizedAll <- rbind(microPESummaryWithoutRecursive, macroPESummary, naiveMicroWithoutRecursiveSummary, naiveMacroSummary)[,c(2,1,3,4:8)]
+    groups <- list(c(1, 2), c(3, 4), c(5, 6))
+  } else {
+    summarizedInherent <- rbind(microPESummaryWithoutRecursive, macroPESummary)
+    groups <- list(c(1, 1), c(2, 2), c(3, 3))
+  }
   overallAll <- arrange(summarizeOverall(summarizedInherent, ~ VM), OF2)
   overall <- rbind(overallMicro, overallMacro, overallAll)
 } else {
   overall <- rbind(overallMicro, overallMacro)
+  groups <- list(c(1, 2), c(3, 4))
 }
 
 colnames <- c("Runtime", "OF","CI-95%","Sd.", "Min","Max", "Median")

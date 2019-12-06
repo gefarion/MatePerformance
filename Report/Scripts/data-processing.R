@@ -174,8 +174,8 @@ vmNamesMap <- function() {
 
 individual_benchs_name_map <- 
   list(
-    "LayoutFieldRead"		 = "FieldRead",
-    "LayoutFieldWrite"	 = "FieldWrite",
+    "LayoutFieldRead"		 = "LFieldRead",
+    "LayoutFieldWrite"	 = "LFieldWrite",
     "ArgumentRead"	     = "ArgRead",
     "LocalVariableRead"	 = "LocalRead",
     "LocalVariableWrite" = "LocalWrite",

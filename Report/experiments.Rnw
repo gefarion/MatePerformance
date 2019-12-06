@@ -32,6 +32,8 @@ CombineMtAndPe <- FALSE
 @
 <<TracingPerformance, child='Tracing/experiments.Rnw', results='asis'>>=
 @
+<<PartialEvaluationVsMetaTracing, child='PeVsMt/experiments.Rnw', results='asis'>>=
+@
 <<MOLocation, child='InObjectVsInLayout/experiments.Rnw', results='asis'>>=
 @
 <<Warmups, child='Warmups/warmups.Rnw', results='asis'>>=

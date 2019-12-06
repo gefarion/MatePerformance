@@ -210,15 +210,25 @@ summarizedPerBenchmark <- function(data, baseline, baselineName, iterations) {
                      Max           = max(RuntimeRatio)))
 }
 
-summarizedTable <- function(data, columns) {  
-  tableData <- data[,columns]
+summarizedTable <- function(data, nameOfColumns, columns, fontSize=7, title="") {  
+  if (!missing(columns)){
+    tableData <- data[,columns]
+  } else {
+    tableData <- data
+  }
+  if (!missing(nameOfColumns))
+    names <- nameOfColumns
+  else
+    names <- colnames(tableData)
   return(
-    kable(arrange(tableData, Benchmark), 
+    kable(tableData, 
           booktabs = T,
           format = "latex",
           longtable = T,
-          digits = 2)  %>%
-      kable_styling(latex_options = c("repeat_header"), font_size = 7)  %>%
+          digits = 2,
+          caption = title,
+          col.names = names)  %>%
+      kable_styling(latex_options = c("repeat_header"), font_size = fontSize)  %>%
       collapse_rows(columns = 1:2))
 }  
 
