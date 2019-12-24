@@ -7,7 +7,7 @@ LABEL Mantainer="Guido Chari"
 ARG GRAAL_VERSION_RELEASE=1.0.0-rc16
 ARG GRAAL_VERSION_DEV=19.3
 ARG GRAAL_DEV_LIBS_LOCATION="/opt/graal"
-ARG GRAAL_RELEASE_LIBS_LOCATION="/opt/graalvm-ce-1.0.0-rc16"
+ARG GRAAL_RELEASE_LIBS_LOCATION="/opt/graalvm-ce-1.0.0-rc16/jre/lib"
 
 # Update sources and install dependencies
 RUN apt-get update -yq && \
@@ -44,7 +44,7 @@ RUN cd /opt/ && \
     cd /opt/graal/truffle && mx build && \
     cd /opt/graal/sdk && mx build && \
     cd /opt/TruffleMateJ11 && ant compile -Dgraal.dir=$GRAAL_DEV_LIBS_LOCATION -DgraalVersion=.graalJava11 && \
-    cd /opt/TruffleMateJ8 && ant compile -Dgraal.dir=$GRAAL_RELEASE_LIBS_LOCATION -DgraalVersion=.graalJava11 && \
+    cd /opt/TruffleMateJ8 && JAVA_HOME=/opt/openjdk1.8.0_212-jvmci-20-b03 ant compile -Dgraal.dir=$GRAAL_RELEASE_LIBS_LOCATION -DgraalVersion=.graalJava8 && \
     cd /opt/RTruffleMate/MOInShape && ln -s /opt/pypy pypy && export JIT=1 && make && \
     cd /opt/RTruffleMate/MOInObject && ln -s /opt/pypy pypy && export JIT=1 && make && \
     cd /opt/ReBench && pip install .
