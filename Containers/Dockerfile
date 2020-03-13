@@ -22,7 +22,7 @@ RUN set -eux && \
     git clone --depth 1 https://github.com/charig/MatePerformance.git -b master /opt/MatePerformance && \
     git clone --depth 1 https://github.com/charig/ReBench.git -b envVarsSupport /opt/ReBench &&  \
     curl --fail --silent --location --retry 3 https://github.com/oracle/graal/releases/download/vm-$GRAAL_VERSION_RELEASE/graalvm-ce-$GRAAL_VERSION_RELEASE-linux-amd64.tar.gz | gunzip | tar x -C /opt/ && \
-    curl --fail --silent --location --retry 3 https://github.com/graalvm/openjdk8-jvmci-builder/releases/download/jvmci-20-b03/openjdk-8u212_1-jvmci-20-b03-linux-amd64.tar.gz | gunzip | tar x -C /opt/ && \
+    curl --fail --silent --location --retry 3 https://github.com/graalvm/openjdk8-jvmci-builder/releases/download/jvmci-19.3-b07/openjdk-8u242-jvmci-19.3-b07-linux-amd64.tar.gz | gunzip | tar x -C /opt/ && \
     git clone --depth 1 https://github.com/oracle/graal.git -b release/graal-vm/$GRAAL_VERSION_DEV /opt/graal && \
     git clone --depth 1 https://github.com/graalvm/mx.git /opt/mx && \
     curl -L --fail --silent --location --retry 3 https://bitbucket.org/pypy/pypy/downloads/pypy2.7-v7.2.0-linux64.tar.bz2 | tar xj -C /opt/ && \
@@ -40,11 +40,11 @@ RUN cd /opt/ && \
     git clone --depth 1 https://github.com/charig/TruffleMATE.git -b java11 /opt/TruffleMateJ8 && \
     git clone --depth 1 https://github.com/charig/RTruffleMATE.git -b metaobjectInShape /opt/RTruffleMate/MOInShape && \
     git clone --depth 1 https://github.com/charig/RTruffleMATE.git -b metaobjectInObject /opt/RTruffleMate/MOInObject && \
-    cd /opt/graal/compiler && mx build && \
-    cd /opt/graal/truffle && mx build && \
-    cd /opt/graal/sdk && mx build && \
-    cd /opt/TruffleMateJ11 && ant compile -Dgraal.dir=$GRAAL_DEV_LIBS_LOCATION -DgraalVersion=.graalJava11 && \
-    cd /opt/TruffleMateJ8 && JAVA_HOME=/opt/openjdk1.8.0_212-jvmci-20-b03 ant compile -Dgraal.dir=$GRAAL_RELEASE_LIBS_LOCATION -DgraalVersion=.graalJava8 && \
+    JAVA_HOME=/opt/openjdk1.8.0_242-jvmci-19.3-b07 cd /opt/graal/compiler && mx build && \
+    JAVA_HOME=/opt/openjdk1.8.0_242-jvmci-19.3-b07 cd /opt/graal/truffle && mx build && \
+    JAVA_HOME=/opt/openjdk1.8.0_242-jvmci-19.3-b07 cd /opt/graal/sdk && mx build && \
+    #cd /opt/TruffleMateJ11 && ant compile -Dgraal.dir=$GRAAL_DEV_LIBS_LOCATION -DgraalVersion=.graalJava11 && \
+    cd /opt/TruffleMateJ8 && JAVA_HOME=/opt/openjdk1.8.0_242-jvmci-19.3-b07 ant compile -Dgraal.dir=$GRAAL_RELEASE_LIBS_LOCATION -DgraalVersion=.graalJava8 && \
     cd /opt/RTruffleMate/MOInShape && ln -s /opt/pypy pypy && export JIT=1 && make && \
     cd /opt/RTruffleMate/MOInObject && ln -s /opt/pypy pypy && export JIT=1 && make && \
     cd /opt/ReBench && pip install .
