@@ -1,0 +1,13 @@
+\begin{center}
+\begin{tabular}{ c | l r r r r r r}
+\toprule
+\textbf{Benchmark} & \textbf{Baseline} & \textbf{Mean} & \textbf{Sd.} & \textbf{Min} & \textbf{Max} & \textbf{Median} & \textbf{p95}\\
+\toprule
+{% for bench, values in data.iteritems() %}
+\multirow{3}{*}{ {{bench}} } & RTrueffleSOM & {{values['RTruffleSOM']['mean']}} & {{values['RTruffleSOM']['std']}} & {{values['RTruffleSOM']['min']}} & {{values['RTruffleSOM']['max']}} & {{values['RTruffleSOM']['median']}} & {{values['RTruffleSOM']['p95']}} \\
+& OpenJDK & {{values['Java']['mean']}} & {{values['Java']['std']}} & {{values['Java']['min']}} & {{values['Java']['max']}} & {{values['Java']['median']}} & {{values['Java']['p95']}} \\
+& NodeJS & {{values['Node']['mean']}} & {{values['Node']['std']}} & {{values['Node']['min']}} & {{values['Node']['max']}} & {{values['Node']['median']}} & {{values['Node']['p95']}} \\
+\midrule
+{% endfor %}
+\end{tabular}
+\end{center}

@@ -1,0 +1,16 @@
+\begin{center}
+\begin{tabular}{ c | l r r r r r}
+\toprule
+\textbf{Benchmark} & \textbf{Ejecutor} & \textbf{Sd.} & \textbf{Min} & \textbf{Max} & \textbf{Median} & \textbf{p95}\\
+\toprule
+
+\multirow{2}{*}{ ReadonlySumKeys } & Baseline & 0.45 & 4.09 & 6.32 & 4.13 & 5.13 \\
+& Readonly & 0.25 & 15.07 & 17.05 & 15.25 & 15.81 \\
+\midrule
+
+\multirow{2}{*}{ DelegationProxiesSumKeys } & Baseline & 0.42 & 4.09 & 6.32 & 4.13 & 4.47 \\
+& Readonly & 0.77 & 33.67 & 41.33 & 34.02 & 34.85 \\
+\midrule
+
+\end{tabular}
+\end{center}

@@ -1,0 +1,11 @@
+\begin{center}
+\begin{tabular}{l c c c c c c}
+\toprule
+\textbf{Benchmark} & \textbf{FS} & \textbf{Sd.} & \textbf{Min} & \textbf{Max} & \textbf{Median} & \textbf{p95}\\
+\toprule
+{% for row in rows %}
+{{row[0]}} & {{row[1]['mean']}} & {{row[1]['std']}} & {{row[1]['min']}} & {{row[1]['max']}} & {{row[1]['median']}} & {{row[1]['p95']}} \\
+\midrule
+{% endfor %}
+\end{tabular}
+\end{center}

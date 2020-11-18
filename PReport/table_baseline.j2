@@ -1,0 +1,12 @@
+\begin{center}
+\begin{tabular}{ c | l r r r r r r}
+\toprule
+\textbf{Benchmark} & \textbf{Baseline} & \textbf{FS} & \textbf{Sd.} & \textbf{Min} & \textbf{Max} & \textbf{Median} & \textbf{p95}\\
+\toprule
+{% for bench, values in data.iteritems() %}
+\multirow{2}{*}{ {{bench}} } & OpenJDK & {{values['OpenJDK']['mean']}} & {{values['OpenJDK']['std']}} & {{values['OpenJDK']['min']}} & {{values['OpenJDK']['max']}} & {{values['OpenJDK']['median']}} & {{values['OpenJDK']['p95']}} \\
+& NodeJS & {{values['NodeJS']['mean']}} & {{values['NodeJS']['std']}} & {{values['NodeJS']['min']}} & {{values['NodeJS']['max']}} & {{values['NodeJS']['median']}} & {{values['NodeJS']['p95']}} \\
+\midrule
+{% endfor %}
+\end{tabular}
+\end{center}

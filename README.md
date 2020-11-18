@@ -1,33 +1,34 @@
 # MatePerformance
-This repository contains the experimental setting for assessing the performance of our reflective VMs: [TruffleMATE](https://github.com/charig/TruffleMATE/tree/papers/phdThesis) and [RTruffleMATE](https://github.com/charig/rtrufflemate/tree/papers/phdThesis).
+Este repositorio contiene herramientas que permiten evaluar el rendimiento de [RTruffleMATE], una máquina virtual reflexiva que implementa el modelo propuesto por MATE.
 
-The repository is organized in the following way:
+El repositorio esta organizado de la siguiente manera:
 
-* The [Data](Data) directory contains a compressed file with all the fresh data of our complete last run for the experiments. 
-* The [Report](Report) directory contains all the reporting files. They only need a fresh data file to produce all the results. The reporting is based on [R](https://www.r-project.org/) and its [Knitr](https://yihui.name/knitr/) report generation framework.  
-* The [Setup](Setup) directory contains the scripts to build all the necessary language implementations. 
+* El directorio [Data](Data) contiene archivos comprimidos con los resultados luego de la ejecución de los diferentes benchmarks.
+* El directorio [PReport](PReport) contiene diferentes scripts para procesar los resultados y representarlos en forma de tablas y gráficos compatibles con Latex.
+* El directorio [Containers](Containers) contiene un Dockerfile con la configuración para construir un container con las herramientas necesarias para ejecutar los experimentos.
+* El directorio  [Scripts](Scripts) contiene diferentes utilitarios utilizado para ejecutar los experimentos dentro del container.
 
-Instructions for Running the Experiments
-----------------------------------------
+Instrucciones para ejecutar los experimentos
+--------------------------------------------
 
-To checkout the code:
+Clonar el repositorio:
 
-    git clone https://github.com/charig/MatePerformance.git directoryName
+    git clone https://github.com/gefarion/MatePerformance.git directoryName
     cd directoryName
-    
-To build all the implementations needed for running all the experiments by yourself:
 
-    ./Setup/setup.sh
-    
-*Note that the experimental setup has many dependencies: git, ant, make, mv, rebench, cc, c++ and pypy. 
-For [PyPy](https://pypy.org/download.html), they must be downloaded and then their corresponding downloaded dir set in [config.inc](Setup/buildScripts/config.inc). In addition, take into account that TruffleMate requires a java version >= 11. If the default version on your system does not comply with this, you can manually provide the path to an alternative version in config.inc also*
+Para construir el container Docker ejecutar:
+    cd Containers
+    make build
 
-After building, for running the experiments just execute:
+Luego para correr un experimento ejecutar:
+    ./Setup/runExperiments.sh EXPERIMENTO
 
-    ./Setup/runExperiments.sh
-
-Finally, to produce all the images, tables, and data:
-
-    cd ../Report
-    ./compile.sh experiments.Rnw
-
+Exprimentos disponibles:
+- "AreWeFast"
+- "Inherent"
+- "IndividualActivations"
+- "Readonly"
+- "ReadonlyAwf"
+- "Tracing"
+- "ReflectiveCompilation"
+- "Baseline"

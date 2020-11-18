@@ -1,0 +1,12 @@
+\begin{center}
+\begin{tabular}{ c | l r r r r r}
+\toprule
+\textbf{Benchmark} & \textbf{Ejecutor} & \textbf{Sd.} & \textbf{Min} & \textbf{Max} & \textbf{Median} & \textbf{p95}\\
+\toprule
+{% for bench, values in data.iteritems() %}
+\multirow{2}{*}{ {{bench}} } & {{base}} & {{values['base']['std']}} & {{values['base']['min']}} & {{values['base']['max']}} & {{values['base']['median']}} & {{values['base']['p95']}} \\
+& {{target}} & {{values['target']['std']}} & {{values['target']['min']}} & {{values['target']['max']}} & {{values['target']['median']}} & {{values['target']['p95']}} \\
+\midrule
+{% endfor %}
+\end{tabular}
+\end{center}
