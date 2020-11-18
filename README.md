@@ -18,6 +18,7 @@ Clonar el repositorio:
     cd directoryName
 
 Para construir el container Docker ejecutar:
+
     cd Containers
     make build
 
