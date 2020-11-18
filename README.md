@@ -25,7 +25,7 @@ Para construir el container Docker ejecutar:
 Luego para correr un experimento ejecutar:
     ./Setup/runExperiments.sh EXPERIMENTO
 
-Exprimentos disponibles:
+Experimentos disponibles:
 - "AreWeFast"
 - "Inherent"
 - "IndividualActivations"
