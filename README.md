@@ -7,6 +7,7 @@ El repositorio esta organizado de la siguiente manera:
 * El directorio [PReport](PReport) contiene diferentes scripts para procesar los resultados y representarlos en forma de tablas y gráficos compatibles con Latex.
 * El directorio [Containers](Containers) contiene un Dockerfile con la configuración para construir un container con las herramientas necesarias para ejecutar los experimentos.
 * El directorio  [Scripts](Scripts) contiene diferentes utilitarios utilizado para ejecutar los experimentos dentro del container.
+* El directorio  [Conf](Conf) contiene la definiciones de los experimentos para ejecutar mediante el framework rebench.
 
 Instrucciones para ejecutar los experimentos
 --------------------------------------------
